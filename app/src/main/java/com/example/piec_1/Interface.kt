@@ -77,17 +77,10 @@ class Interface {
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "Blab",
+                        text = "MedTrack",
                         fontFamily = MontserratFont,
                         fontWeight = FontWeight.Bold,
                         fontSize = 48.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Blob Blib",
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.Thin,
-                        fontFamily = MontserratFont,
                         color = Color.White
                     )
                 }
