@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.piec_1.CameraViewModel
+import com.example.piec_1.viewModel.CameraViewModel
 import com.example.piec_1.ui.screen.TelaCadastro
 import com.example.piec_1.ui.screen.TelaCamera
 import com.example.piec_1.ui.screen.TelaInicial
