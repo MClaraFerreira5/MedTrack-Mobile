@@ -1,4 +1,4 @@
-package com.example.MedTrackMobile.ui.theme
+package com.example.piec_1.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
