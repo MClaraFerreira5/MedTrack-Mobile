@@ -27,6 +27,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.piec_1.ui.theme.ButtonCamera
+import com.example.piec_1.ui.theme.ButtonColor
+import com.example.piec_1.ui.theme.PrimaryColor
+import com.example.piec_1.ui.theme.SecondaryColor
 
 class Interface {
 
@@ -38,7 +42,7 @@ class Interface {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0xFF88E6D0), Color(0xFF59D0AC))
+                        colors = listOf(PrimaryColor, SecondaryColor)
                     )
                 ),
             contentAlignment = Alignment.Center
@@ -89,7 +93,7 @@ class Interface {
                         navController.navigate("TelaCadastro")
                     },
                     shape = RoundedCornerShape(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7E57C2)),
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonColor),
                     modifier = Modifier
                         .padding(top = 50.dp)
                         .width(260.dp)
@@ -136,7 +140,7 @@ class Interface {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0xFF88E6D0), Color(0xFF59D0AC))
+                        colors = listOf(PrimaryColor, SecondaryColor)
                     )
                 ),
             contentAlignment = Alignment.Center
@@ -190,7 +194,7 @@ class Interface {
                     Button(
                         onClick = {navController.navigate("TelaPrincipal")},
                         shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF59D0AC)),
+                        colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
                         modifier = Modifier
                             .width(260.dp)
                             .height(50.dp)
@@ -244,10 +248,10 @@ class Interface {
             visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color.White,
-                focusedBorderColor = Color(0xFF59D0AC),
+                focusedBorderColor = SecondaryColor,
                 unfocusedBorderColor = Color.Gray,
-                cursorColor = Color(0xFF59D0AC),
-                focusedLabelColor = Color(0xFF59D0AC),
+                cursorColor = SecondaryColor,
+                focusedLabelColor = SecondaryColor,
                 unfocusedLabelColor = Color(0xFF999999),
                 focusedTextColor = Color.Black
 
@@ -265,7 +269,7 @@ class Interface {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0xFF88E6D0), Color(0xFF59D0AC))
+                        colors = listOf(PrimaryColor, SecondaryColor)
                     )
                 ),
             contentAlignment = Alignment.Center
@@ -315,7 +319,7 @@ class Interface {
                     .width(363.dp)
                     .height(590.dp)
                     .padding(top = 60.dp)
-                    .background(Color(0xFFEDE9E9))
+                    .background(ButtonCamera)
                     .align(Alignment.TopStart)
                     .verticalScroll(rememberScrollState()))
                 {
