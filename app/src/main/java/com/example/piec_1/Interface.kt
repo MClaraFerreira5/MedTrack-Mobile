@@ -1,5 +1,7 @@
 package com.example.piec_1
 
+import android.widget.Toast
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -7,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -23,6 +27,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -112,25 +119,30 @@ class Interface {
     }
 
     //Criar uma navegação entre as telas
-    @Composable
-    fun AppNavigation() {
-        val navController = rememberNavController()
-
-        NavHost(
-            navController = navController,
-            startDestination = "TelaInicial"
-        ) {
-            composable("TelaInicial") {
-                TelaInicial(navController)
-            }
-            composable("TelaCadastro") {
-                TelaCadastro(navController)
-            }
-            composable("TelaPrincipal"){
-                TelaPrincipal()
-            }
-        }
-    }
+//    @Composable
+//    fun AppNavigation() {
+//        val navController = rememberNavController()
+//
+//        NavHost(
+//            navController = navController,
+//            startDestination = "TelaInicial"
+//        ) {
+//            composable("TelaInicial") {
+//                TelaInicial(navController)
+//            }
+//            composable("TelaCadastro") {
+//                TelaCadastro(navController)
+//            }
+//            composable("TelaPrincipal"){
+//                TelaPrincipal(navController)
+//            }
+//            composable("TelaCamera"){
+//                val viewModel: CameraViewModel = viewModel()
+//                TelaCamera(navController, viewModel)
+//
+//            }
+//        }
+//    }
 
     //Interface Tela de Cadastro
     @Composable
@@ -261,9 +273,7 @@ class Interface {
 
     //Tela principal
     @Composable
-    fun TelaPrincipal(
-
-    ){
+    fun TelaPrincipal(navController: NavController){
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -302,7 +312,7 @@ class Interface {
                         .height(50.dp)
                         .align(Alignment.TopEnd))
 
-                Button(onClick = {},
+                Button(onClick = {navController.navigate("TelaCamera")},
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -313,7 +323,9 @@ class Interface {
                     Icon(painter = painterResource(id = R.drawable.img_2),
                         contentDescription = "imagem de uma câmera",
                         tint = Color.Unspecified,
-                        modifier = Modifier.width(78.dp).height(58.dp))
+                        modifier = Modifier
+                            .width(78.dp)
+                            .height(58.dp))
                 }
                 Box(modifier = Modifier
                     .width(363.dp)
@@ -347,7 +359,8 @@ class Interface {
             .height(100.dp)
             .padding(bottom = 6.dp)
             .background(
-                Color.White),
+                Color.White
+            ),
             contentAlignment = Alignment.CenterStart)
 
         {
@@ -370,6 +383,52 @@ class Interface {
             )
         }
     }
+
+    // Tela da Câmera
+    @Composable
+    fun TelaCamera(
+        navController: NavController,
+        viewModel: CameraViewModel = viewModel()
+    ) {
+        val context = LocalContext.current
+        val lifecycleOwner = LocalLifecycleOwner.current
+        val previewView = remember { PreviewView(context) }
+
+        LaunchedEffect(Unit) {
+            viewModel.startCamera(previewView, lifecycleOwner)
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AndroidView(
+                factory = { previewView },
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Button(
+                onClick = {
+                    viewModel.capturePhoto(context) { imagePath ->
+                        Toast.makeText(context, "Foto salva em: $imagePath", Toast.LENGTH_LONG).show()
+                    }
+                },
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .align(Alignment.BottomEnd)
+
+            ) {
+                Icon(painter = painterResource(id = R.drawable.img_2),
+                    contentDescription = "imagem de uma câmera",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .width(78.dp)
+                        .height(58.dp))
+            }
+        }
+    }
+
 
     //Fontes utilizadas
     private val MontserratFont = FontFamily(
