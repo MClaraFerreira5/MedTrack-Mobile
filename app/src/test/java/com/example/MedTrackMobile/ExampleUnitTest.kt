@@ -1,4 +1,4 @@
-package com.example.piec_1
+package com.example.MedTrackMobile
 
 import org.junit.Test
 

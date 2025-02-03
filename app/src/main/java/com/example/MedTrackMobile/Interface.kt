@@ -1,4 +1,4 @@
-package com.example.piec_1
+package com.example.MedTrackMobile
 
 import android.widget.Toast
 import androidx.camera.view.PreviewView
@@ -31,13 +31,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.piec_1.ui.theme.ButtonCamera
-import com.example.piec_1.ui.theme.ButtonColor
-import com.example.piec_1.ui.theme.PrimaryColor
-import com.example.piec_1.ui.theme.SecondaryColor
+import com.example.MedTrackMobile.ui.theme.ButtonCamera
+import com.example.MedTrackMobile.ui.theme.ButtonColor
+import com.example.MedTrackMobile.ui.theme.PrimaryColor
+import com.example.MedTrackMobile.ui.theme.SecondaryColor
 
 class Interface {
 

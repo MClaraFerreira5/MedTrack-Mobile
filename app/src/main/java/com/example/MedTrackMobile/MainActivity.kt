@@ -1,4 +1,4 @@
-package com.example.piec_1
+package com.example.MedTrackMobile
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -20,7 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 
-import com.example.piec_1.ui.theme.PIEC1Theme
+import com.example.MedTrackMobile.ui.theme.PIEC1Theme
 
 
 class MainActivity : ComponentActivity() {
