@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")
 }
 
 android {
@@ -66,4 +67,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
     implementation(libs.google.play.services.mlkit.text.recognition)
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    implementation(libs.androidx.room.ktx)
 }
