@@ -20,10 +20,15 @@ class CameraViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun capturePhoto(onImageCaptured: (String) -> Unit) {
-        cameraService.capturePhoto { path ->
+    fun capturePhoto(onImageCaptured: (String) -> Unit,  onTextRecognized: (String) -> Unit) {
+        cameraService.capturePhoto( { path ->
             _photoPath.postValue(path)
             onImageCaptured(path)
-        }
+            Log.d("CameraX", "Imagem Capturada")
+
+        }, { text ->
+            Log.d("OCR", "Texto extraído: $text")
+            onTextRecognized(text)
+        })
     }
 }

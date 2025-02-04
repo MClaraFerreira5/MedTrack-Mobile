@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ fun TelaCamera(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
+    val recognizedText = remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.startCamera(previewView, lifecycleOwner)
@@ -43,7 +45,7 @@ fun TelaCamera(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 16.dp)
+            .padding(bottom = 48.dp)
     ) {
         AndroidView(
             factory = { previewView },
@@ -52,9 +54,13 @@ fun TelaCamera(
 
         Button(
             onClick = {
-                viewModel.capturePhoto { imagePath ->
+                viewModel.capturePhoto (
+                    onImageCaptured = { imagePath ->
                     Toast.makeText(context, "Foto salva em: $imagePath", Toast.LENGTH_LONG).show()
-                }
+                },
+                    onTextRecognized = { text ->
+                        recognizedText.value = text
+                    })
             },
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier

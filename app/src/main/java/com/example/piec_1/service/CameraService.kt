@@ -1,6 +1,7 @@
 package com.example.piec_1.service
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -10,6 +11,10 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.File
 
 class CameraService(
@@ -40,7 +45,7 @@ class CameraService(
         }, ContextCompat.getMainExecutor(context))
     }
 
-    fun capturePhoto(onImageCaptured: (String) -> Unit){
+    fun capturePhoto(onImageCaptured: (String) -> Unit, onTextRecognized: (String) -> Unit){
         val file = File(context.externalMediaDirs.first(), "${System.currentTimeMillis()}.jpg")
         val outputFileOptions = ImageCapture.OutputFileOptions.Builder(file).build()
 
@@ -49,11 +54,31 @@ class CameraService(
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     onImageCaptured(file.absolutePath)
+                    processImage(file, onTextRecognized)
                 }
 
                 override fun onError(exception: ImageCaptureException) {
                     Log.e("CameraX", "Erro ao capturar foto: ${exception.message}")
                 }
             })
+    }
+
+    fun processImage(file: File, onTextRecognized: (String) -> Unit) {
+        val image = InputImage.fromFilePath(context, Uri.fromFile(file))
+
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                val extractedText = visionText.text
+                Log.d("MLKit", "Texto extraído: $extractedText")
+                onTextRecognized(extractedText)
+
+                val ocrService = OCRService()
+
+            }
+            .addOnFailureListener { e ->
+                Log.e("MLKit", "Erro ao reconhecer texto", e)
+            }
     }
 }
