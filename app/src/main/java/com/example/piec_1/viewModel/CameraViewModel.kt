@@ -11,8 +11,13 @@ import com.example.piec_1.service.CameraService
 
 class CameraViewModel(application: Application): AndroidViewModel(application) {
     private val cameraService = CameraService(application.applicationContext)
+
     private val _photoPath = MutableLiveData<String?>()
     val photoPath: LiveData<String?> = _photoPath
+
+    private val _recognizedText = MutableLiveData<String>()
+    val recognizedText: LiveData<String> get() = _recognizedText
+
 
     fun startCamera(previewView: PreviewView, lifecycleOwner: LifecycleOwner) {
         cameraService.startCamera(previewView, lifecycleOwner) {
@@ -27,7 +32,9 @@ class CameraViewModel(application: Application): AndroidViewModel(application) {
             Log.d("CameraX", "Imagem Capturada")
 
         }, { text ->
-            Log.d("OCR", "Texto extraído: $text")
+            Log.d("OCR", "Texto processado: $text")
+
+            _recognizedText.postValue(text)
             onTextRecognized(text)
         })
     }
