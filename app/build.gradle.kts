@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -70,4 +71,10 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.room.ktx)
+    implementation(libs.dagger.hilt.android)
+    implementation("com.google.dagger:hilt-android-compiler:2.51.1")
+}
+
+kapt {
+    correctErrorTypes = true
 }
