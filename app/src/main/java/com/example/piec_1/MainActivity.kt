@@ -14,10 +14,7 @@ import androidx.core.content.ContextCompat
 import android.Manifest
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.example.piec_1.navigation.AppNavigation
 
 
 import com.example.piec_1.ui.theme.PIEC1Theme
@@ -34,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 if (isPermissionGranted.value) {
                     AppNavigation()
                 } else {
-                    RequestCameraPermission { isGranted ->
+                    RequestPermission { isGranted ->
                         isPermissionGranted.value = isGranted
                     }
                 }
@@ -43,33 +40,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun AppNavigation() {
-        val navController = rememberNavController()
-        val interfaceHelper = Interface()
-
-        NavHost(
-            navController = navController,
-            startDestination = "TelaInicial"
-        ) {
-            composable("TelaInicial") {
-                interfaceHelper.TelaInicial(navController)
-            }
-            composable("TelaCadastro") {
-                interfaceHelper.TelaCadastro(navController)
-            }
-            composable("TelaPrincipal"){
-                interfaceHelper.TelaPrincipal(navController)
-            }
-            composable("TelaCamera"){
-                val viewModel: CameraViewModel = viewModel()
-                interfaceHelper.TelaCamera(navController, viewModel)
-
-            }
-        }
-    }
-
-    @Composable
-    fun RequestCameraPermission(onPermissionResult: (Boolean) -> Unit) {
+    fun RequestPermission(onPermissionResult: (Boolean) -> Unit) {
         val context = LocalContext.current
         val permissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
@@ -86,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     Manifest.permission.CAMERA
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                onPermissionResult(true) // Se já tem permissão, inicia navegação
+                onPermissionResult(true)
             } else {
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }

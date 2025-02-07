@@ -1,6 +1,5 @@
 package com.example.piec_1.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +50,7 @@ fun PIEC1Theme(
 
     MaterialTheme(
       colorScheme = colorScheme,
-      typography = Typography,
+      typography = AppTypography,
       content = content
     )
 }
