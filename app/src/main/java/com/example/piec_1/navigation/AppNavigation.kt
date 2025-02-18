@@ -11,6 +11,7 @@ import com.example.piec_1.ui.screen.TelaCamera
 import com.example.piec_1.ui.screen.TelaEsqueciSenha
 import com.example.piec_1.ui.screen.TelaInicial
 import com.example.piec_1.ui.screen.TelaPrincipal
+import com.example.piec_1.ui.screen.TelaRedefinirSenha
 
 @Composable
 fun AppNavigation() {
@@ -36,6 +37,9 @@ fun AppNavigation() {
         }
         composable("TelaEsqueciSenha"){
             TelaEsqueciSenha(navController)
+        }
+        composable("TelaRedefinirSenha"){
+            TelaRedefinirSenha(navController)
         }
     }
 }

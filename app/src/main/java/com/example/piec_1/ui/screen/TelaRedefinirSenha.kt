@@ -24,18 +24,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
+import com.example.piec_1.ui.components.InfoBox
 import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.RobotoFont
 import com.example.piec_1.ui.theme.SecondaryColor
 
 @Composable
-fun TelaEsqueciSenha(navController: NavController) {
+fun TelaRedefinirSenha(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -76,12 +76,15 @@ fun TelaEsqueciSenha(navController: NavController) {
                     text = "Redinição de senha",
                     fontFamily = RobotoFont,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 46.sp,
-                    textAlign = TextAlign.Center,
+                    fontSize = 23.sp
+                )
+                InfoBox(
+                    message = "Um email foi enviado para exemplo@email.com para finalizar o cadastro.",
+                    success = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = stringResource(id = R.string.esqueci_senha),
+                    text = stringResource(id = R.string.redefinir_senha),
                     fontFamily = RobotoFont,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
@@ -89,12 +92,13 @@ fun TelaEsqueciSenha(navController: NavController) {
 
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    EntradaDeTexto("Email")
-
+                    EntradaDeTexto("Código")
+                    EntradaDeTexto("Nova senha")
+                    EntradaDeTexto("Repita a nova senha")
                 }
                 Spacer(modifier = Modifier.height(40.dp))
                 Button(
-                    onClick = { navController.navigate("TelaRedefinirSenha") },
+                    onClick = {navController.navigate("TelaPrincipal")},
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
                     modifier = Modifier
@@ -103,23 +107,15 @@ fun TelaEsqueciSenha(navController: NavController) {
                         .padding(top = 0.dp)
                 ) {
                     Text(
-                        text = "REDEFINIR SENHA",
+                        text = "REDEFINIR",
                         color = Color.White,
                         fontFamily = RobotoFont,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                TextButton(onClick = {navController.popBackStack()}) {
-                    Text(
-                        modifier = Modifier.padding(top = 0.dp),
-                        text = "Voltar ao login",
-                        fontSize = 14.sp,
-                        fontFamily = RobotoFont,
-
-                        )
-                }
             }
         }
     }
+
 }
