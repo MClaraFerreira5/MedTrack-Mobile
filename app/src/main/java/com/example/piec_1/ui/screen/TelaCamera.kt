@@ -1,16 +1,13 @@
 package com.example.piec_1.ui.screen
 
-import android.widget.Toast
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -18,15 +15,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.piec_1.viewModel.CameraViewModel
-import com.example.piec_1.R
 
 @Composable
 fun TelaCamera(
@@ -52,29 +48,39 @@ fun TelaCamera(
             modifier = Modifier.fillMaxSize()
         )
 
-        Button(
-            onClick = {
-                viewModel.capturePhoto (
-                    onImageCaptured = { imagePath ->
-                    Toast.makeText(context, "Foto salva em: $imagePath", Toast.LENGTH_LONG).show()
-                },
-                    onTextRecognized = { text ->
-                        recognizedText.value = text
-                    })
-            },
-            shape = RoundedCornerShape(10.dp),
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
+                .size(80.dp)
                 .align(Alignment.BottomCenter)
+                .offset(y = (-40).dp)
+                .clickable {
+                    viewModel.capturePhoto(
+                        onImageCaptured = { imagePath ->
+                            navController.popBackStack()
+                        },
+                        onTextRecognized = { text ->
+                            recognizedText.value = text
 
+                        }
+                    )
+                }
         ) {
-            Icon(painter = painterResource(id = R.drawable.img_2),
-                contentDescription = "imagem de uma câmera",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .width(78.dp)
-                    .height(58.dp))
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val outerRadius = size.maxDimension / 2
+                val innerRadius = outerRadius * 0.7f
+
+                drawCircle(
+                    color = Color.White,
+                    radius = outerRadius,
+                    style = Stroke(width = 8.dp.toPx())
+                )
+
+                drawCircle(
+                    color = Color.White,
+                    radius = innerRadius,
+                )
+            }
         }
     }
 }
+

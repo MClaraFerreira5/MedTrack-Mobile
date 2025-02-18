@@ -93,9 +93,17 @@ fun TelaPrincipal(navController: NavController){
             {
                 Column (modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)){
-                    repeat(20){
-                        ListaHorarios("Rivotril", "18:50")
-                    }
+                    ListaHorarios("Losartana", "06:30")
+                    ListaHorarios("Rivotril", "07:00")
+                    ListaHorarios("Metformina", "08:00")
+                    ListaHorarios("Omeprazol", "08:15")
+                    ListaHorarios("Vitamina D", "12:00")
+                    ListaHorarios("Sertralina", "13:00")
+                    ListaHorarios("Dipirona (se necessário)", "14:30")
+                    ListaHorarios("Losartana", "18:30")
+                    ListaHorarios("Rivotril", "19:00")
+                    ListaHorarios("Sinvastatina", "22:00")
+                    ListaHorarios("Zolpidem", "23:30")
                 }
 
 

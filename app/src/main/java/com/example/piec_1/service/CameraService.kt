@@ -76,10 +76,6 @@ class CameraService(
                 val ocrService = OCRService()
                 val medicamento = ocrService.extrairMedicamentoInfo(extractedText)
 
-                Log.d("OCR", "Medicamento Nome: ${medicamento.nome}")
-                Log.d("OCR", "Composto Ativo: ${medicamento.compostoAtivo}")
-                Log.d("OCR", "Dosagem: ${medicamento.dosagem}")
-
                 onTextRecognized("${medicamento.nome}, ${medicamento.compostoAtivo}, ${medicamento.dosagem}")
 
             }
