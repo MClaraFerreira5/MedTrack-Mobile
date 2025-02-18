@@ -1,45 +1,45 @@
 package com.example.piec_1.viewModel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.piec_1.database.AppDatabase
 import com.example.piec_1.model.Medicamento
 import com.example.piec_1.repository.MedicamentoRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MedicamentoViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val db = AppDatabase.getDatabase(application)
-    private val repository = MedicamentoRepository(db.medicamentoDao())
+@HiltViewModel
+class MedicamentoViewModel @Inject constructor(
+    private val medicamentoRepository: MedicamentoRepository
+) : ViewModel() {
 
     fun inserir(medicamento: Medicamento) {
         viewModelScope.launch {
-            repository.inserir(medicamento)
+            medicamentoRepository.inserir(medicamento)
         }
     }
 
     fun listarTodos(onResult: (List<Medicamento>) -> Unit) {
         viewModelScope.launch {
-            onResult(repository.listarTodos())
+            onResult(medicamentoRepository.listarTodos())
         }
     }
 
     fun listarNaoSincronizados(onResult: (List<Medicamento>) -> Unit) {
         viewModelScope.launch {
-            onResult(repository.listarNaoSincronizados())
+            onResult(medicamentoRepository.listarNaoSincronizados())
         }
     }
 
     fun sincronizar(id: Int) {
         viewModelScope.launch {
-            repository.sincronizar(id)
+            medicamentoRepository.sincronizar(id)
         }
     }
 
     fun deletar(medicamento: Medicamento) {
         viewModelScope.launch {
-            repository.deletar(medicamento)
+            medicamentoRepository.deletar(medicamento)
         }
     }
 }

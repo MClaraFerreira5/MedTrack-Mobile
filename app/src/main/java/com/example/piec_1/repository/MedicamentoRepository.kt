@@ -1,10 +1,12 @@
 package com.example.piec_1.repository
 
-import androidx.lifecycle.LiveData
 import com.example.piec_1.database.MedicamentoDao
 import com.example.piec_1.model.Medicamento
+import javax.inject.Inject
 
-class MedicamentoRepository(private val medicamentoDao: MedicamentoDao) {
+class MedicamentoRepository @Inject constructor(
+    private val medicamentoDao: MedicamentoDao
+) {
 
     suspend fun inserir(medicamento: Medicamento) {
         medicamentoDao.insert(medicamento)
