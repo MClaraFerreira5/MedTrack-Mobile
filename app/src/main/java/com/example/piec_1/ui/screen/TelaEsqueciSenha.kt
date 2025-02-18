@@ -33,7 +33,7 @@ import com.example.piec_1.ui.theme.RobotoFont
 import com.example.piec_1.ui.theme.SecondaryColor
 
 @Composable
-fun TelaCadastro(navController: NavController) {
+fun TelaEsqueciSenha(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -71,13 +71,13 @@ fun TelaCadastro(navController: NavController) {
                     .padding(top = 100.dp)
             ){
                 Text(
-                    text = "Entrar",
+                    text = "Redinição de senha",
                     fontFamily = RobotoFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = 46.sp
                 )
                 Text(
-                    text = "Preencha os campos abaixo.",
+                    text = "@string/esqueci_senha",
                     fontFamily = RobotoFont,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
@@ -85,13 +85,12 @@ fun TelaCadastro(navController: NavController) {
 
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    EntradaDeTexto("Usuário")
-                    EntradaDeTexto("Senha", isPassword = true)
+                    EntradaDeTexto("Email")
 
                 }
                 Spacer(modifier = Modifier.height(40.dp))
                 Button(
-                    onClick = {navController.navigate("TelaPrincipal")},
+                    onClick = { },
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
                     modifier = Modifier
@@ -100,17 +99,17 @@ fun TelaCadastro(navController: NavController) {
                         .padding(top = 0.dp)
                 ) {
                     Text(
-                        text = "Entrar",
+                        text = "REDEFINIR SENHA",
                         color = Color.White,
                         fontFamily = RobotoFont,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                TextButton(onClick = {navController.navigate("TelaEsqueciSenha")}) {
+                TextButton(onClick = {navController.popBackStack()}) {
                     Text(
                         modifier = Modifier.padding(top = 0.dp),
-                        text = "Esqueceu sua senha?",
+                        text = "Voltar ao login",
                         fontSize = 14.sp,
                         fontFamily = RobotoFont,
 

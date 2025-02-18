@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MedTrack</string>
+    <string name="esqueci_senha">Informe o email para o qual deseja redefinir a senha.</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.piec_1.viewModel.CameraViewModel
 import com.example.piec_1.ui.screen.TelaCadastro
 import com.example.piec_1.ui.screen.TelaCamera
+import com.example.piec_1.ui.screen.TelaEsqueciSenha
 import com.example.piec_1.ui.screen.TelaInicial
 import com.example.piec_1.ui.screen.TelaPrincipal
 
@@ -32,6 +33,9 @@ fun AppNavigation() {
             val viewModel: CameraViewModel = viewModel()
             TelaCamera(navController, viewModel)
 
+        }
+        composable("TelaEsqueciSenha"){
+            TelaEsqueciSenha(navController)
         }
     }
 }
