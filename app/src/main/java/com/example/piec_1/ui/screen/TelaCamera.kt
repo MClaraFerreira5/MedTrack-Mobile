@@ -60,7 +60,7 @@ fun TelaCamera(
                 .clickable {
                     viewModel.capturePhoto(
                         onImageCaptured = { imagePath ->
-                            navController.popBackStack()
+                            navController.navigate("TelaConfirmacao")
                         },
                         onTextRecognized = { text ->
                             recognizedText.value = text

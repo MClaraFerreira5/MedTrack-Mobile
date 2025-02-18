@@ -9,8 +9,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.piec_1.model.Medicamento
 import com.example.piec_1.service.CameraService
 import com.example.piec_1.service.DetectionService
+import com.example.piec_1.service.OCRService
 
 class CameraViewModel(application: Application): AndroidViewModel(application) {
     private val context = application.applicationContext
@@ -22,6 +24,9 @@ class CameraViewModel(application: Application): AndroidViewModel(application) {
 
     private val _recognizedText = MutableLiveData<String>()
     val recognizedText: LiveData<String> get() = _recognizedText
+
+    private val _medicamento = MutableLiveData<Medicamento?>()
+    val medicamento: LiveData<Medicamento?> = _medicamento
 
     private val _framePosition = MutableLiveData<Rect?>()
     val framePosition: LiveData<Rect> get() = _framePosition as LiveData<Rect>
@@ -53,7 +58,9 @@ class CameraViewModel(application: Application): AndroidViewModel(application) {
         }, { text ->
             Log.d("OCR", "Texto processado: $text")
 
-            _recognizedText.postValue(text)
+            val medicamentoExtraido = OCRService().extrairMedicamentoInfo(text)
+            _medicamento.postValue(medicamentoExtraido)
+
             onTextRecognized(text)
         })
     }

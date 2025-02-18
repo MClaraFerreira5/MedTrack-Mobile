@@ -2,4 +2,5 @@
     <string name="app_name">MedTrack</string>
     <string name="esqueci_senha">Informe o email para o qual deseja redefinir a senha.</string>
     <string name="redefinir_senha">Por favor, insira no campo abaixo o código de ativação que você recebeu por email e redefina sua nova senha.</string>
+    <string name="confirmacao_falha">Não conseguimos identificar o medicamento.</string>
 </resources>
