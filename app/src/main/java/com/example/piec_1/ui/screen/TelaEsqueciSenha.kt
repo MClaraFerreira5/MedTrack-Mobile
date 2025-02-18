@@ -21,8 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.isDebugInspectorInfoEnabled
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -74,10 +77,12 @@ fun TelaEsqueciSenha(navController: NavController) {
                     text = "Redinição de senha",
                     fontFamily = RobotoFont,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 46.sp
+                    fontSize = 46.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = "@string/esqueci_senha",
+                    text = stringResource(id = R.string.esqueci_senha),
                     fontFamily = RobotoFont,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
