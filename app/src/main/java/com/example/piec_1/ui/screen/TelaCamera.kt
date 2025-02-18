@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -33,6 +36,7 @@ fun TelaCamera(
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
     val recognizedText = remember { mutableStateOf("") }
+    val framePosition = viewModel.framePosition.observeAsState().value
 
     LaunchedEffect(Unit) {
         viewModel.startCamera(previewView, lifecycleOwner)
@@ -78,6 +82,17 @@ fun TelaCamera(
                 drawCircle(
                     color = Color.White,
                     radius = innerRadius,
+                )
+            }
+        }
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            framePosition?.let { rect ->
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(rect.left.toFloat(), rect.top.toFloat()),
+                    size = Size(rect.width().toFloat(), rect.height().toFloat()),
+                    style = Stroke(width = 4.dp.toPx())
                 )
             }
         }
