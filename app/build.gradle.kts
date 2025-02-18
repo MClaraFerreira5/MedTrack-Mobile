@@ -67,9 +67,11 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
     implementation(libs.google.play.services.mlkit.text.recognition)
+    implementation(libs.google.mlkit.objects.detection)
     implementation(libs.androidx.room.runtime)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.room.ktx)
+
 
 }
 
