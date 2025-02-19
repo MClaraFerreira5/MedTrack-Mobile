@@ -44,7 +44,7 @@ fun ContentCard(navController: NavController) {
         ) {
             Icon(
 
-                painter = painterResource(id = R.drawable.iconetransparente),
+                painter = painterResource(id = R.drawable.medtrack_white_icon),
                 contentDescription = "Icone Coração",
                 tint = Color.Unspecified,
                 modifier = Modifier

@@ -34,9 +34,7 @@ fun TelaPrincipal(navController: NavController){
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(PrimaryColor, SecondaryColor)
-                )
+                Brush.verticalGradient(colors = listOf(PrimaryColor, SecondaryColor))
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -52,7 +50,7 @@ fun TelaPrincipal(navController: NavController){
 
         ){
             Icon(
-                painter = painterResource(id = R.drawable.img),
+                painter = painterResource(id = R.drawable.medtrack_green_icon),
                 contentDescription = "Icone Coração",
                 tint = Color.Unspecified,
                 modifier = Modifier
@@ -60,7 +58,7 @@ fun TelaPrincipal(navController: NavController){
                     .height(47.dp))
 
 
-            Icon(painter = painterResource(id = R.drawable.img_1),
+            Icon(painter = painterResource(id = R.drawable.user_icon),
                 contentDescription = "Perfil",
                 tint = Color.Unspecified,
                 modifier = Modifier
@@ -76,13 +74,14 @@ fun TelaPrincipal(navController: NavController){
                     .align(Alignment.BottomEnd)
 
             ) {
-                Icon(painter = painterResource(id = R.drawable.img_2),
+                Icon(painter = painterResource(id = R.drawable.camera_icon),
                     contentDescription = "imagem de uma câmera",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .width(78.dp)
-                        .height(58.dp))
+                        .width(150.dp)
+                        .height(150.dp))
             }
+
             Box(modifier = Modifier
                 .width(363.dp)
                 .height(590.dp)
@@ -93,15 +92,19 @@ fun TelaPrincipal(navController: NavController){
             {
                 Column (modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)){
-                    repeat(20){
-                        ListaHorarios("Rivotril", "18:50")
-                    }
+                    ListaHorarios("Losartana", "06:30")
+                    ListaHorarios("Rivotril", "07:00")
+                    ListaHorarios("Metformina", "08:00")
+                    ListaHorarios("Omeprazol", "08:15")
+                    ListaHorarios("Vitamina D", "12:00")
+                    ListaHorarios("Sertralina", "13:00")
+                    ListaHorarios("Dipirona", "14:30")
+                    ListaHorarios("Losartana", "18:30")
+                    ListaHorarios("Rivotril", "19:00")
+                    ListaHorarios("Sinvastatina", "22:00")
+                    ListaHorarios("Zolpidem", "23:30")
                 }
-
-
             }
-
-
         }
     }
 }

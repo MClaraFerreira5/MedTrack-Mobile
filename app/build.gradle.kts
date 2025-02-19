@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
-    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -67,12 +66,14 @@ dependencies {
     implementation(libs.androidx.camera.video)
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
+    implementation(libs.androidx.runtime.livedata)
     implementation(libs.google.play.services.mlkit.text.recognition)
+    implementation(libs.google.mlkit.objects.detection)
     implementation(libs.androidx.room.runtime)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.room.ktx)
-    implementation(libs.dagger.hilt.android)
-    implementation("com.google.dagger:hilt-android-compiler:2.51.1")
+
+
 }
 
 kapt {

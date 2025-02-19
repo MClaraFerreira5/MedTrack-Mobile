@@ -15,25 +15,26 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
+import com.example.piec_1.ui.components.InfoBox
 import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.RobotoFont
 import com.example.piec_1.ui.theme.SecondaryColor
 
 @Composable
-fun TelaCadastro(navController: NavController) {
+fun TelaRedefinirSenha(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -71,13 +72,18 @@ fun TelaCadastro(navController: NavController) {
                     .padding(top = 100.dp)
             ){
                 Text(
-                    text = "Entrar",
+                    text = "Redinição de senha",
                     fontFamily = RobotoFont,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 46.sp
+                    fontSize = 23.sp
+                )
+                InfoBox(
+                    message = "Um email foi enviado para exemplo@email.com para finalizar o cadastro.",
+                    success = true,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = "Preencha os campos abaixo.",
+                    text = stringResource(id = R.string.redefinir_senha),
                     fontFamily = RobotoFont,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
@@ -85,9 +91,9 @@ fun TelaCadastro(navController: NavController) {
 
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    EntradaDeTexto("Usuário")
-                    EntradaDeTexto("Senha", isPassword = true)
-
+                    EntradaDeTexto("Código")
+                    EntradaDeTexto("Nova senha")
+                    EntradaDeTexto("Repita a nova senha")
                 }
                 Spacer(modifier = Modifier.height(40.dp))
                 Button(
@@ -100,23 +106,15 @@ fun TelaCadastro(navController: NavController) {
                         .padding(top = 0.dp)
                 ) {
                     Text(
-                        text = "Entrar",
+                        text = "Redefinir",
                         color = Color.White,
                         fontFamily = RobotoFont,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                TextButton(onClick = {navController.navigate("TelaEsqueciSenha")}) {
-                    Text(
-                        modifier = Modifier.padding(top = 0.dp),
-                        text = "Esqueceu sua senha?",
-                        fontSize = 14.sp,
-                        fontFamily = RobotoFont,
-
-                        )
-                }
             }
         }
     }
+
 }
