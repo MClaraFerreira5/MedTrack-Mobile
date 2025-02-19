@@ -57,7 +57,7 @@ fun TelaCadastro(navController: NavController) {
 
         {
             Icon(
-                painter = painterResource(id = R.drawable.img),
+                painter = painterResource(id = R.drawable.medtrack_green_icon),
                 contentDescription = "Icone Coração",
                 tint = Color.Unspecified,
                 modifier = Modifier

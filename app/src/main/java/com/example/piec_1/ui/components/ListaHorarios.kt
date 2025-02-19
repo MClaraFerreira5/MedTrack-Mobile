@@ -1,11 +1,13 @@
 package com.example.piec_1.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,36 +19,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piec_1.R
-import com.example.piec_1.ui.theme.RobotoFont
 
 @Composable
-fun ListaHorarios(label: String, time: String){
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(100.dp)
-        .padding(bottom = 6.dp)
-        .background(
-            Color.White
-        ),
-        contentAlignment = Alignment.CenterStart)
-
-    {
-        Icon(painter = painterResource(id = R.drawable.img),
+fun ListaHorarios(label: String, time: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .background(Color.White, shape = RoundedCornerShape(8.dp))
+            .border(1.dp, Color.LightGray, shape = RoundedCornerShape(8.dp))
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.medtrack_green_icon),
             contentDescription = "foto do remédio",
             tint = Color.Unspecified,
             modifier = Modifier
-                .width(60.dp)
-                .height(60.dp)
-                .padding(10.dp))
+                .size(50.dp)
+                .padding(end = 12.dp)
+        )
 
         Text(
-            text = "$label - $time",
-            fontWeight = FontWeight.Normal,
-            fontFamily = RobotoFont,
-            fontSize = 32.sp,
+            text = label,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
             color = Color.Black,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.weight(1f)
+        )
 
+        Text(
+            text = time,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Gray
         )
     }
 }

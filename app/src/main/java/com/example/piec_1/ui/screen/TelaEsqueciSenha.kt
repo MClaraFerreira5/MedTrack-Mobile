@@ -59,7 +59,7 @@ fun TelaEsqueciSenha(navController: NavController) {
 
         {
             Icon(
-                painter = painterResource(id = R.drawable.img),
+                painter = painterResource(id = R.drawable.medtrack_green_icon),
                 contentDescription = "Icone Coração",
                 tint = Color.Unspecified,
                 modifier = Modifier
@@ -103,7 +103,7 @@ fun TelaEsqueciSenha(navController: NavController) {
                         .padding(top = 0.dp)
                 ) {
                     Text(
-                        text = "REDEFINIR SENHA",
+                        text = "Redefinir senha",
                         color = Color.White,
                         fontFamily = RobotoFont,
                         fontSize = 18.sp,
