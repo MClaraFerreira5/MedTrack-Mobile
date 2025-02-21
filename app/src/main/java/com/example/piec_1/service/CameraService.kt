@@ -21,6 +21,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.example.piec_1.model.Medicamento
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -68,7 +69,7 @@ class CameraService(
         }, ContextCompat.getMainExecutor(context))
     }
 
-    fun capturePhoto(onImageCaptured: (String) -> Unit, onTextRecognized: (String) -> Unit){
+    fun capturePhoto(onImageCaptured: (String) -> Unit, medicamento: (Medicamento) -> Unit){
         val file = File(context.externalMediaDirs.first(), "${System.currentTimeMillis()}.jpg")
         val outputFileOptions = ImageCapture.OutputFileOptions.Builder(file).build()
 
@@ -77,7 +78,7 @@ class CameraService(
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     onImageCaptured(file.absolutePath)
-                    processImage(file, onTextRecognized)
+                    processImage(file, medicamento)
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -86,7 +87,7 @@ class CameraService(
             })
     }
 
-    fun processImage(file: File, onTextRecognized: (String) -> Unit) {
+    fun processImage(file: File, medicamento: (Medicamento) -> Unit) {
         val image = InputImage.fromFilePath(context, Uri.fromFile(file))
 
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -97,9 +98,9 @@ class CameraService(
                 Log.d("MLKit", "Texto extraído: $extractedText")
 
                 val ocrService = OCRService()
-                val medicamento = ocrService.extrairMedicamentoInfo(extractedText)
+                val medicamentoExtraido = ocrService.extrairMedicamentoInfo(extractedText)
 
-                onTextRecognized("${medicamento.nome}, ${medicamento.compostoAtivo}, ${medicamento.dosagem}")
+                medicamento(medicamentoExtraido)
 
             }
             .addOnFailureListener { e ->

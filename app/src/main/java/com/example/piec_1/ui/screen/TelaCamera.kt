@@ -62,10 +62,7 @@ fun TelaCamera(
                         onImageCaptured = { imagePath ->
                             navController.navigate("TelaConfirmacao")
                         },
-                        onTextRecognized = { text ->
-                            recognizedText.value = text
-
-                        }
+                        medicamentoExtraido = { }
                     )
                 }
         ) {

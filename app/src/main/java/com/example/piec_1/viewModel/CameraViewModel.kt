@@ -44,7 +44,7 @@ class CameraViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun capturePhoto(onImageCaptured: (String) -> Unit,  onTextRecognized: (String) -> Unit) {
+    fun capturePhoto(onImageCaptured: (String) -> Unit,  medicamentoExtraido: (Medicamento) -> Unit) {
         cameraService.capturePhoto( { imagePath ->
             _photoPath.postValue(imagePath)
             onImageCaptured(imagePath)
@@ -55,13 +55,11 @@ class CameraViewModel(application: Application): AndroidViewModel(application) {
                 _framePosition.value = objectBounds
             }
 
-        }, { text ->
-            Log.d("OCR", "Texto processado: $text")
+        }, { medicamento ->
 
-            val medicamentoExtraido = OCRService().extrairMedicamentoInfo(text)
-            _medicamento.postValue(medicamentoExtraido)
+            _medicamento.postValue(medicamento)
 
-            onTextRecognized(text)
+            medicamentoExtraido(medicamento)
         })
     }
 }
