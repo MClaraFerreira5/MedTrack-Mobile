@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +24,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.piec_1.ui.components.OverlayCamera
 import com.example.piec_1.viewModel.CameraViewModel
 
 @Composable
@@ -35,8 +35,10 @@ fun TelaCamera(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
-    val recognizedText = remember { mutableStateOf("") }
+
+
     val framePosition = viewModel.framePosition.observeAsState().value
+    val isRectangleDetected = viewModel.isRectangleDetected.observeAsState(false).value
 
     LaunchedEffect(Unit) {
         viewModel.startCamera(previewView, lifecycleOwner)
@@ -51,6 +53,8 @@ fun TelaCamera(
             factory = { previewView },
             modifier = Modifier.fillMaxSize()
         )
+
+        OverlayCamera(isRectangleDetected)
 
         Box(
             modifier = Modifier

@@ -63,15 +63,15 @@ fun InfoBoxSuccess(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row {
-                    Text("💊 Nome: ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text("Nome: ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Text(medicamento.nome, fontSize = 18.sp)
                 }
                 Row {
-                    Text("🧪 Composto Ativo: ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text("Composto Ativo: ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Text(medicamento.compostoAtivo, fontSize = 18.sp)
                 }
                 Row {
-                    Text("⚖ Dosagem: ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text("Dosagem: ", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Text(medicamento.dosagem, fontSize = 18.sp)
                 }
             }

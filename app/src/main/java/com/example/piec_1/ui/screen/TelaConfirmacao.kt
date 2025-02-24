@@ -32,6 +32,7 @@ import com.example.piec_1.R
 import com.example.piec_1.model.Medicamento
 import com.example.piec_1.ui.components.InfoBoxError
 import com.example.piec_1.ui.components.InfoBoxSuccess
+import com.example.piec_1.ui.theme.ErrorColor
 import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.RobotoFont
 import com.example.piec_1.ui.theme.SecondaryColor
@@ -133,7 +134,7 @@ fun TelaConfirmacao(
                 Button(
                     onClick = { navController.popBackStack() },
                     shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
+                    colors = ButtonDefaults.buttonColors(containerColor = ErrorColor),
                     modifier = Modifier
                         .width(260.dp)
                         .height(50.dp)

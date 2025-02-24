@@ -35,7 +35,10 @@ class CameraService(
     private val detectionService: DetectionService = DetectionService(context)
     private var imageCapture: ImageCapture? = null
 
-    fun startCamera(previewView: PreviewView, lifecycleOwner: LifecycleOwner, onObjectDetected: (Rect?) -> Unit){
+    fun startCamera(
+        previewView: PreviewView,
+        lifecycleOwner: LifecycleOwner,
+        onObjectDetected: (Boolean, Rect?) -> Unit){
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener({
@@ -113,15 +116,15 @@ class CameraService(
         imageProxy: ImageProxy,
         previewWidth: Int,
         previewHeight: Int,
-        onObjectDetected: (Rect?) -> Unit
+        onObjectDetected: (Boolean, Rect?) -> Unit
     ) {
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val rotationDegrees = imageProxy.imageInfo.rotationDegrees
             val bitmap = mediaImage.toBitmap(rotationDegrees)
 
-            detectionService.detectObjects(bitmap, previewWidth, previewHeight) { objectBounds: Rect? ->
-                onObjectDetected(objectBounds)
+            detectionService.detectObjects(bitmap, previewWidth, previewHeight) { detected, objectBounds: Rect? ->
+                onObjectDetected(detected, objectBounds)
             }
         }
 
