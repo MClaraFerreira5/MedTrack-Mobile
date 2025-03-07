@@ -73,7 +73,7 @@ fun TelaEsqueciSenha(navController: NavController) {
                     .padding(top = 100.dp)
             ){
                 Text(
-                    text = "Redinição de senha",
+                    text = "Redefinição de senha",
                     fontFamily = RobotoFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = 46.sp,

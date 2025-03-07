@@ -6,6 +6,7 @@ val PrimaryColor = Color(0xFF88E6D0)
 val SecondaryColor = Color(0xFF59D0AC)
 val ButtonColor = Color(0xFF7E57C2)
 val ButtonCamera = Color(0xFFEDE9E9)
+val ErrorColor = Color(0xFFD05959)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)

@@ -26,27 +26,47 @@ class DetectionService(private val context: Context) {
         image: Bitmap,
         previewWidth: Int,
         previewHeight: Int,
-        onDetectionResult: (Rect) -> Unit
+        onDetectionResult: (Boolean, Rect?) -> Unit
     ) {
         val inputImage = InputImage.fromBitmap(image, 0)
 
         objectDetector.process(inputImage)
             .addOnSuccessListener { detectedObjects ->
-                if (detectedObjects.isNotEmpty()) {
-                    val objectBounds = detectedObjects.first().boundingBox
+                val rect = detectedObjects
+                    .map{ it.boundingBox }
+                    .find { isRectagle(it, previewWidth, previewHeight) }
+
+                if (rect != null) {
                     val adjustedBounds = adjustBoundingBox(
-                        objectBounds,
+                        rect,
                         image.width,
                         image.height,
                         previewWidth,
                         previewHeight
                     )
-                    onDetectionResult(adjustedBounds)
+                    onDetectionResult(true, adjustedBounds)
+                } else {
+                    onDetectionResult(false, null)
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("DetectionService", "Erro na detecção: ${e.message}")
+                onDetectionResult(false, null)
             }
+    }
+
+    private fun isRectagle(rect: Rect, imageWidth: Int, imageHeight: Int): Boolean {
+        val width = rect.width().toFloat()
+        val height = rect.height().toFloat()
+        val aspectRatio = height / width
+
+        val isVertical = aspectRatio in 1.5..3.5
+        val isHorizontal = aspectRatio in 0.3..0.7
+
+        val minWidth = imageWidth * 0.2
+        val minHeight = imageHeight * 0.2
+
+        return (isVertical || isHorizontal) && (width > minWidth) && (height > minHeight)
     }
 
     private fun adjustBoundingBox(

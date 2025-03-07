@@ -72,8 +72,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.room.ktx)
-
-
+    implementation(libs.squareup.retrofit2.retrofit)
+    implementation(libs.squareup.retrofit2.converter.gson)
+    implementation(libs.squareup.okhttp3.logging.interceptor)
 }
 
 kapt {
