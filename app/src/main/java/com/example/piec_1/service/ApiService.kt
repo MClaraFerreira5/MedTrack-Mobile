@@ -3,6 +3,7 @@ package com.example.piec_1.service
 import com.example.piec_1.model.LoginRequest
 import com.example.piec_1.model.Medicamento
 import com.example.piec_1.model.Usuario
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -12,7 +13,7 @@ import retrofit2.http.Path
 interface ApiService {
 
     @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): Usuario
+    suspend fun login(@Body loginRequest: LoginRequest): Response<String>
 
     @GET("usuario/{id}")
     suspend fun getUsuario(@Path("id") userId: Long): Usuario
