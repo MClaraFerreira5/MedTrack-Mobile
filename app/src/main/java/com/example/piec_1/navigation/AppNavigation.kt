@@ -13,11 +13,13 @@ import com.example.piec_1.ui.screen.TelaInicial
 import com.example.piec_1.ui.screen.TelaPrincipal
 import com.example.piec_1.ui.screen.TelaRedefinirSenha
 import com.example.piec_1.viewModel.CameraViewModel
+import com.example.piec_1.viewModel.LoginViewModel
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val cameraViewModel: CameraViewModel = viewModel()
+    val loginViewModel: LoginViewModel = viewModel()
 
 
     NavHost(
@@ -28,7 +30,7 @@ fun AppNavigation() {
             TelaInicial(navController)
         }
         composable("TelaCadastro") {
-            TelaCadastro(navController)
+            TelaCadastro(navController, loginViewModel)
         }
         composable("TelaPrincipal"){
             TelaPrincipal(navController)

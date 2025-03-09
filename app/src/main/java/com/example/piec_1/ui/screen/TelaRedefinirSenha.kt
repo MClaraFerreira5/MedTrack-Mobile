@@ -16,6 +16,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -35,7 +37,13 @@ import com.example.piec_1.ui.theme.SecondaryColor
 
 @Composable
 fun TelaRedefinirSenha(navController: NavController) {
-    Box(
+
+    val codigo = remember { mutableStateOf("") }
+    val novaSenha = remember { mutableStateOf("") }
+    val repetirNovaSenha = remember { mutableStateOf("") }
+    val errorMessage = remember { mutableStateOf<String?>(null) }
+
+        Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -78,7 +86,7 @@ fun TelaRedefinirSenha(navController: NavController) {
                     fontSize = 23.sp
                 )
                 InfoBox(
-                    message = "Um email foi enviado para exemplo@email.com para finalizar o cadastro.",
+                    message = "Um email foi enviado para você com o código para a alteração da senha",
                     success = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -91,13 +99,39 @@ fun TelaRedefinirSenha(navController: NavController) {
 
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    EntradaDeTexto("Código")
-                    EntradaDeTexto("Nova senha")
-                    EntradaDeTexto("Repita a nova senha")
+                    EntradaDeTexto(
+                        label = "Código",
+                        text = codigo.value,
+                        onTextChange = { codigo.value = it },
+                        isError = errorMessage.value != null
+                    )
+                    EntradaDeTexto(
+                        label = "Nova senha",
+                        text = novaSenha.value,
+                        onTextChange = { novaSenha.value = it },
+                        isPassword = true,
+                        isError = errorMessage.value != null
+                    )
+                    EntradaDeTexto(
+                        label = "Repita a nova senha",
+                        text = repetirNovaSenha.value,
+                        onTextChange = { repetirNovaSenha.value = it },
+                        isPassword = true,
+                        isError = errorMessage.value != null
+                    )
                 }
                 Spacer(modifier = Modifier.height(40.dp))
                 Button(
-                    onClick = {navController.navigate("TelaPrincipal")},
+                    onClick = {
+                        if (codigo.value.isBlank() || novaSenha.value.isBlank() ||
+                            repetirNovaSenha.value.isBlank()) {
+                        errorMessage.value = "Por favor, preencha todos os campos."
+                    } else if (novaSenha.value != repetirNovaSenha.value) {
+                        errorMessage.value = "As senhas não coincidem."
+                    } else {
+                        errorMessage.value = null
+                        navController.navigate("TelaPrincipal")
+                    }},
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
                     modifier = Modifier
