@@ -2,6 +2,7 @@ package com.example.piec_1.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,34 +25,39 @@ import com.example.piec_1.ui.theme.SecondaryColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EntradaDeTexto(label: String, isPassword: Boolean = false) {
-    var text by remember { mutableStateOf("") }
-
+fun EntradaDeTexto(
+    label: String,
+    text: String,
+    onTextChange: (String) -> Unit,
+    isPassword: Boolean = false,
+    isError: Boolean = false
+) {
     Text(
-        text = label + "*",
+        text = label,
         fontSize = 16.sp,
         fontFamily = RobotoFont,
-        color = Color.Black,
+        color = if (isError) Color.Red else Color.Black,
         modifier = Modifier.padding(top = 10.dp)
 
     )
     OutlinedTextField(
         value = text,
-        onValueChange = { text = it },
+        onValueChange = onTextChange,
         label = { Text(label) },
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .heightIn(min = 56.dp),
         shape = RoundedCornerShape(8.dp),
         singleLine = true,
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        visualTransformation = if (isPassword) PasswordVisualTransformation()
+        else VisualTransformation.None,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             containerColor = Color.White,
-            focusedBorderColor = SecondaryColor,
-            unfocusedBorderColor = Color.Gray,
+            focusedBorderColor = if (isError) Color.Red else SecondaryColor,
+            unfocusedBorderColor = if (isError) Color.Red else Color.Gray,
             cursorColor = SecondaryColor,
-            focusedLabelColor = SecondaryColor,
-            unfocusedLabelColor = Color(0xFF999999),
+            focusedLabelColor = if (isError) Color.Red else SecondaryColor,
+            unfocusedLabelColor = if (isError) Color.Red else Color(0xFF999999),
             focusedTextColor = Color.Black
 
         )

@@ -16,7 +16,7 @@ class OCRService {
         for (line in lines) {
 
             if (line.contains(Regex("(?i)generic|genérico|gene"))) {
-                medicamentoNome = "Medicamento Genérico"
+                medicamentoNome = "MEDICAMENTO GENÉRICO"
             }
 
             if (compostoAtivo == null && validarCompostoAtivo(line)) {

@@ -17,6 +17,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -36,6 +38,10 @@ import com.example.piec_1.ui.theme.SecondaryColor
 
 @Composable
 fun TelaEsqueciSenha(navController: NavController) {
+
+    val email = remember { mutableStateOf("") }
+    val errorMessage = remember { mutableStateOf<String?>(null) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -89,12 +95,24 @@ fun TelaEsqueciSenha(navController: NavController) {
 
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    EntradaDeTexto("Email")
+                    EntradaDeTexto(
+                        label = "Email",
+                        text = email.value,
+                        onTextChange = { email.value = it },
+                        isError = errorMessage.value != null
+                    )
 
                 }
                 Spacer(modifier = Modifier.height(40.dp))
                 Button(
-                    onClick = { navController.navigate("TelaRedefinirSenha") },
+                    onClick = {
+                        if (email.value.isBlank()) {
+                            errorMessage.value = "Por favor, insira um email válido."
+                        } else {
+                            errorMessage.value = null
+                            navController.navigate("TelaRedefinirSenha")
+                        }
+                    },
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
                     modifier = Modifier

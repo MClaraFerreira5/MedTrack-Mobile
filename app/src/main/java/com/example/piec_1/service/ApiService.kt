@@ -10,10 +10,14 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
+data class LoginResponse(
+    val token: String
+)
+
 interface ApiService {
 
     @POST("auth/login")
-    suspend fun login(@Body loginRequest: LoginRequest): Response<String>
+    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
     @GET("usuario/{id}")
     suspend fun getUsuario(@Path("id") userId: Long): Usuario
