@@ -1,9 +1,8 @@
 package com.example.piec_1.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -36,9 +34,10 @@ import com.example.piec_1.viewModel.LoginViewModel
 fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) {
 
     val usuario =  loginViewModel.usuario.observeAsState().value
-    val medicamentos = loginViewModel.medicamentos.observeAsState(initial = emptyList()).value
-    val isLoading = loginViewModel.isLoading.observeAsState(initial = true).value
+    val medicamentos = loginViewModel.medicamentos.observeAsState().value
+    val isLoading = (usuario == null || medicamentos == null)
 
+    Log.d("Principal", "Carregamento: $isLoading")
     if (isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -112,14 +111,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                     .align(Alignment.TopStart)
                     .verticalScroll(rememberScrollState())
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    medicamentos.forEach { medicamento ->
-                        ListaHorarios(medicamento)
-                    }
-                }
+                ListaHorarios(medicamentos)
             }
         }
     }

@@ -23,7 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
         fun getDatabase(context: Context): AppDatabase {
-            Log.d("Database: ", "Início da criação do bando de dados")
+            Log.d("Database: ", "Início da criação do banco de dados")
             return INSTANCE ?: synchronized(this) {
                 Log.d("Database: ", "Dentro do sychronize")
                 Log.d("Database: ", "$context")
@@ -32,7 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database_db"
                 ).build()
-                Log.d("Database: ", "Criação do bando de dados finalizado")
+                Log.d("Database: ", "Criação do banco de dados finalizado")
                 INSTANCE = instance
                 instance
             }
