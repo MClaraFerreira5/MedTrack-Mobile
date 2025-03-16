@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.piec_1.database.AppDatabase
 import com.example.piec_1.model.LoginRequest
 import com.example.piec_1.service.ApiClient
 import com.example.piec_1.sharedPreferences.SharedPreferencesHelper
@@ -22,9 +23,9 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
 
     private val apiService = ApiClient().apiService
 
-//    private val database = AppDatabase.getDatabase(application)
-//    private val usuarioDao = database.usuarioDao()
-//    private val medicamentoDao = database.medicamentoDao()
+    private val database = AppDatabase.getDatabase(application)
+    private val usuarioDao = database.usuarioDao()
+    private val medicamentoDao = database.medicamentoDao()
 
     fun login(username: String, password: String, context: Context) {
         viewModelScope.launch {

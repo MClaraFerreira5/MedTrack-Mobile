@@ -1,6 +1,8 @@
 package com.example.piec_1.navigation
 
+import android.app.Application
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,12 +16,15 @@ import com.example.piec_1.ui.screen.TelaPrincipal
 import com.example.piec_1.ui.screen.TelaRedefinirSenha
 import com.example.piec_1.viewModel.CameraViewModel
 import com.example.piec_1.viewModel.LoginViewModel
+import com.example.piec_1.viewModelFactory.LoginViewModelFactory
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val cameraViewModel: CameraViewModel = viewModel()
-    val loginViewModel: LoginViewModel = viewModel()
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(LocalContext.current.applicationContext as Application)
+    )
 
 
     NavHost(
@@ -33,7 +38,7 @@ fun AppNavigation() {
             TelaCadastro(navController, loginViewModel)
         }
         composable("TelaPrincipal"){
-            TelaPrincipal(navController)
+            TelaPrincipal(navController, loginViewModel)
         }
         composable("TelaEsqueciSenha"){
             TelaEsqueciSenha(navController)

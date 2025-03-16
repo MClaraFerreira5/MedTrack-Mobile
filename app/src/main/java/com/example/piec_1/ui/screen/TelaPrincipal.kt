@@ -27,9 +27,10 @@ import com.example.piec_1.ui.components.ListaHorarios
 import com.example.piec_1.ui.theme.ButtonCamera
 import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.SecondaryColor
+import com.example.piec_1.viewModel.LoginViewModel
 
 @Composable
-fun TelaPrincipal(navController: NavController){
+fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel){
     Box(
         modifier = Modifier
             .fillMaxSize()
