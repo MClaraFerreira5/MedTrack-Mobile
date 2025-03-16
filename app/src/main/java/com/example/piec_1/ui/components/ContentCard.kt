@@ -63,7 +63,7 @@ fun ContentCard(navController: NavController) {
             }
             Button(
                 onClick = {
-                    navController.navigate("TelaCadastro")
+                    navController.navigate("TelaLogin")
                 },
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonColor),

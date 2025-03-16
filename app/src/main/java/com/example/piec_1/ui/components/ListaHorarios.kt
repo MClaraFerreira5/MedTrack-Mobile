@@ -2,7 +2,9 @@ package com.example.piec_1.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,9 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piec_1.R
+import com.example.piec_1.model.Medicamento
 
 @Composable
-fun ListaHorarios(label: String, time: String) {
+fun ListaHorarios(medicamento: Medicamento) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,19 +44,36 @@ fun ListaHorarios(label: String, time: String) {
                 .padding(end = 12.dp)
         )
 
-        Text(
-            text = label,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black,
-            modifier = Modifier.weight(1f)
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = medicamento.nome,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Dosagem: ${medicamento.dosagem}",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Composto Ativo: ${medicamento.compostoAtivo}",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+        }
 
-        Text(
-            text = time,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray
-        )
+        Column {
+            medicamento.horarios.forEach { horario ->
+                Text(
+                    text = horario,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
+                )
+            }
+        }
     }
 }
