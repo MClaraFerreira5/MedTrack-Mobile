@@ -1,7 +1,12 @@
 package com.example.piec_1.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "usuario")
 data class Usuario(
-    val id: Long,
+    @PrimaryKey val id: Long,
     val nome: String,
-    val email: String
+    val email: String,
+    val nomeUsuario: String
 )

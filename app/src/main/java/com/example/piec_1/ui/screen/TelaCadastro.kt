@@ -60,6 +60,12 @@ fun TelaCadastro(navController: NavController, loginViewModel: LoginViewModel) {
     LaunchedEffect(loginResponse) {
         if (loginResponse != null) {
             navController.navigate("TelaPrincipal")
+
+//            val token = SharedPreferencesHelper.getToken(context)
+//            if (token != null) {
+//                Log.d("Login", "Token: $token")
+//                loginViewModel.fetchData(token)
+//            }
         }
     }
 

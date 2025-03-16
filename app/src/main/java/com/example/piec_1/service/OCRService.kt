@@ -34,10 +34,11 @@ class OCRService {
         }
 
         return Medicamento(
+            id = System.currentTimeMillis(),
             nome = medicamentoNome ?: "Desconhecido",
             compostoAtivo = compostoAtivo ?: "Desconhecido",
             dosagem = dosagem ?: "Desconhecido",
-            dataRegistro = System.currentTimeMillis()
+            horarios = emptyList()
         )
     }
 
