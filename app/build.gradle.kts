@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -16,8 +16,13 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["room.schemaLocation"] = "$projectDir/schemas"
+            }
+        }
     }
 
     buildTypes {
@@ -69,14 +74,14 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.google.play.services.mlkit.text.recognition)
     implementation(libs.google.mlkit.objects.detection)
+    implementation(libs.gson)
     implementation(libs.androidx.room.runtime)
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.lifecycle.livedata)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.kotlinx.coroutine.core)
+    implementation(libs.kotlinx.coroutine.android)
     implementation(libs.squareup.retrofit2.retrofit)
     implementation(libs.squareup.retrofit2.converter.gson)
     implementation(libs.squareup.okhttp3.logging.interceptor)
-}
-
-kapt {
-    correctErrorTypes = true
 }
