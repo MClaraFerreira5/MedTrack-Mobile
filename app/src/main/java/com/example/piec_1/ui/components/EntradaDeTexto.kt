@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -51,15 +52,16 @@ fun EntradaDeTexto(
         singleLine = true,
         visualTransformation = if (isPassword) PasswordVisualTransformation()
         else VisualTransformation.None,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            containerColor = Color.White,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
             focusedBorderColor = if (isError) Color.Red else SecondaryColor,
             unfocusedBorderColor = if (isError) Color.Red else Color.Gray,
             cursorColor = SecondaryColor,
             focusedLabelColor = if (isError) Color.Red else SecondaryColor,
             unfocusedLabelColor = if (isError) Color.Red else Color(0xFF999999),
-            focusedTextColor = Color.Black
-
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
         )
     )
 }

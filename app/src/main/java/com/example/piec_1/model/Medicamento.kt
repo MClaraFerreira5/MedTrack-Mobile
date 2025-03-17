@@ -6,11 +6,11 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "medicamentos")
 data class Medicamento(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey val id: Long,
     val nome: String,
     val compostoAtivo: String,
     val dosagem: String,
-    val dataRegistro: Long,
+    val horarios: List<String>,
+    val usoContinuo: Boolean,
     val sincronizado: Boolean = false
 )

@@ -40,7 +40,7 @@ import com.example.piec_1.ui.theme.SecondaryColor
 import com.example.piec_1.viewModel.LoginViewModel
 
 @Composable
-fun TelaCadastro(navController: NavController, loginViewModel: LoginViewModel) {
+fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
 
     val loginResponse = loginViewModel.loginResponse.observeAsState().value
     val errorMessage = loginViewModel.errorMessage.observeAsState().value

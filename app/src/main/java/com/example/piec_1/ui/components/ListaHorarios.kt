@@ -2,7 +2,11 @@ package com.example.piec_1.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,13 +23,63 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piec_1.R
+import com.example.piec_1.model.Medicamento
 
 @Composable
-fun ListaHorarios(label: String, time: String) {
+fun ListaHorarios(medicamentos: List<Medicamento>) {
+    if (medicamentos.isEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
+                .border(1.dp, Color.LightGray, shape = RoundedCornerShape(8.dp))
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_empty),
+                    contentDescription = "Nenhum medicamento cadastrado",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Nenhum medicamento cadastrado.",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            }
+        }
+    } else {
+        val medicamentosOrdenados = medicamentos.flatMap { medicamento ->
+            medicamento.horarios.map { horario ->
+                Pair(medicamento.nome, horario)
+            }
+        }.sortedBy { it.second }
+
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            medicamentosOrdenados.forEach { (nomeMedicamento, horario) ->
+                BlocoHorario(nomeMedicamento, horario)
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun BlocoHorario(nomeMedicamento: String, horario: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(60.dp)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .background(Color.White, shape = RoundedCornerShape(8.dp))
             .border(1.dp, Color.LightGray, shape = RoundedCornerShape(8.dp))
@@ -34,15 +88,15 @@ fun ListaHorarios(label: String, time: String) {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.medtrack_green_icon),
-            contentDescription = "foto do remédio",
+            contentDescription = "Ícone do medicamento",
             tint = Color.Unspecified,
             modifier = Modifier
-                .size(50.dp)
+                .size(40.dp)
                 .padding(end = 12.dp)
         )
 
         Text(
-            text = label,
+            text = nomeMedicamento,
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
             color = Color.Black,
@@ -50,7 +104,7 @@ fun ListaHorarios(label: String, time: String) {
         )
 
         Text(
-            text = time,
+            text = horario,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Gray
