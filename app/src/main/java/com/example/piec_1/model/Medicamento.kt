@@ -11,5 +11,6 @@ data class Medicamento(
     val compostoAtivo: String,
     val dosagem: String,
     val horarios: List<String>,
+    val usoContinuo: Boolean,
     val sincronizado: Boolean = false
 )

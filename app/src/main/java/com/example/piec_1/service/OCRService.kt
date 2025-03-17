@@ -38,7 +38,8 @@ class OCRService {
             nome = medicamentoNome ?: "Desconhecido",
             compostoAtivo = compostoAtivo ?: "Desconhecido",
             dosagem = dosagem ?: "Desconhecido",
-            horarios = emptyList()
+            horarios = emptyList(),
+            usoContinuo = true
         )
     }
 

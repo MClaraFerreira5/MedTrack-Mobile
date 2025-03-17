@@ -52,6 +52,8 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
                         Log.d("Login", "Token: $token")
                         _loginResponse.postValue(token)
                         fetchData(token)
+                    } else {
+                        _errorMessage.postValue("Token inválido")
                     }
                 } else {
                     _errorMessage.postValue("Usuário ou senha inválidos")
@@ -76,7 +78,11 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
                         usuarioDao.insert(usuario)
                         _usuario.postValue(usuario)
                         Log.d("Room", "Usuário salvo: $usuario")
+                    } else {
+                        Log.e("Room", "Usuário não encontrado")
                     }
+                } else {
+                    Log.e("Room", "Erro ao buscar usuário: ${usuarioResponse.errorBody()?.string()}")
                 }
 
                 val medicamentosResponse = apiService.getMedicamentos("Bearer $token")
@@ -86,10 +92,15 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
                         medicamentoDao.insertAll(medicamentos)
                         _medicamentos.postValue(medicamentos)
                         Log.d("Room", "Medicamentos salvos: $medicamentos")
+                    } else {
+                        Log.e("Room", "Lista de medicamentos vazia")
                     }
+                } else {
+                    Log.e("Room", "Erro ao buscar medicamentos: ${medicamentosResponse.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
                 Log.e("FetchData", "Erro ao buscar dados: ${e.message}")
+                _errorMessage.postValue("Erro ao buscar dados. Tente novamente")
             } finally {
                 _isLoading.postValue(false)
             }
