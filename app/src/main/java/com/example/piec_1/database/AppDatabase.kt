@@ -1,17 +1,19 @@
 package com.example.piec_1.database
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.piec_1.database.daos.MedicamentoDao
+import com.example.piec_1.database.daos.UsuarioDao
+import com.example.piec_1.database.migrations.MIGRATION_1_2
 import com.example.piec_1.model.Medicamento
 import com.example.piec_1.model.Usuario
 
 @Database(
     entities = [Usuario::class, Medicamento::class],
-    version = 1
+    version = 2
 )
 
 @TypeConverters(Converters::class)
@@ -22,17 +24,17 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
+
+
         fun getDatabase(context: Context): AppDatabase {
-            Log.d("Database: ", "Início da criação do banco de dados")
             return INSTANCE ?: synchronized(this) {
-                Log.d("Database: ", "Dentro do sychronize")
-                Log.d("Database: ", "$context")
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database_db"
-                ).build()
-                Log.d("Database: ", "Criação do banco de dados finalizado")
+                )
+                    .addMigrations(MIGRATION_1_2)
+                    .build()
                 INSTANCE = instance
                 instance
             }

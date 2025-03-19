@@ -1,4 +1,4 @@
-package com.example.piec_1.database
+package com.example.piec_1.database.daos
 
 import androidx.room.Dao
 import androidx.room.Insert
