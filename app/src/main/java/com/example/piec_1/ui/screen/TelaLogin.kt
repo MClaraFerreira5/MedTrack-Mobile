@@ -116,7 +116,7 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     EntradaDeTexto(
                         label = "Usuário",
-                        text = username.value,
+                        text = username.value.trim(),
                         onTextChange = { username.value = it },
                         isError = isError
                         )
