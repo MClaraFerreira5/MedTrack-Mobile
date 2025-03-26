@@ -16,14 +16,12 @@ class NotificationReceiver : BroadcastReceiver() {
         val nome = intent.getStringExtra("nome") ?: return
         val horario = intent.getStringExtra("horario") ?: return
 
-        // Cria o deep link para o Compose
         val deepLinkIntent = Intent(context, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
             data = Uri.parse("app://telaCamera/$medicamentoId/$horario")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
-        // Mostra a notificação em tela cheia
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context,
             medicamentoId.toInt(),

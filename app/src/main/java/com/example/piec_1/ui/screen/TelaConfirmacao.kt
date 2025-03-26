@@ -111,7 +111,7 @@ fun TelaConfirmacao(
 
                 if (success) {
                     Button(
-                        onClick = { }, // Salvará no banco de dados SQLite
+                        onClick = { },
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
                         modifier = Modifier

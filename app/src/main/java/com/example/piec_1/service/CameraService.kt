@@ -167,10 +167,8 @@ class CameraService(
 
         val nv21 = ByteArray(ySize + uSize + vSize)
 
-        // Copia os valores do plano Y
         yPlane.get(nv21, 0, ySize)
 
-        // Copia os valores dos planos UV intercalados para NV21
         val uvPixelStride = image.planes[1].pixelStride
         val uvRowStride = image.planes[1].rowStride
         var pos = ySize
@@ -180,8 +178,8 @@ class CameraService(
                 val uIndex = row * uvRowStride + col * uvPixelStride
                 val vIndex = row * uvRowStride + col * uvPixelStride
 
-                nv21[pos++] = vPlane[vIndex]  // V
-                nv21[pos++] = uPlane[uIndex]  // U
+                nv21[pos++] = vPlane[vIndex]
+                nv21[pos++] = uPlane[uIndex]
             }
         }
 
