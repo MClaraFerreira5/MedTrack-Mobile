@@ -1,4 +1,4 @@
-package com.example.piec_1.service
+package com.example.piec_1.service.api
 
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.OkHttpClient
@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiClient {
 
-    private val BASE_URL = "http://192.168.18.3:8081"
+    private val BASE_URL = "http://192.168.0.138:8081"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -36,7 +35,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
 
     val usuario = loginViewModel.usuario.observeAsState().value
     val medicamentos = loginViewModel.medicamentos.observeAsState().value
-    val isLoading = loginViewModel.isLoading.observeAsState(initial = true).value
+    val isLoading = usuario == null || medicamentos == null
 
     Log.d("Principal", "Carregamento: $isLoading")
     Log.d("Principal", "Usuário: $usuario")
@@ -51,16 +50,6 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
         }
         return
     }
-
-//    if (usuario == null || medicamentos == null) {
-//        Box(
-//            modifier = Modifier.fillMaxSize(),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text("Erro ao carregar os dados. Tente novamente.")
-//        }
-//        return
-//    }
 
     Box(
         modifier = Modifier
@@ -107,7 +96,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                     .align(Alignment.BottomEnd)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.camera_icon),
+                    painter = painterResource(id = R.drawable.ic_camera),
                     contentDescription = "imagem de uma câmera",
                     tint = Color.Unspecified,
                     modifier = Modifier
@@ -125,7 +114,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                     .align(Alignment.TopStart)
                     .verticalScroll(rememberScrollState())
             ) {
-                if(medicamentos != null) ListaHorarios(medicamentos)
+                ListaHorarios(medicamentos)
             }
         }
     }

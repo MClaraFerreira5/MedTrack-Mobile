@@ -1,5 +1,10 @@
 package com.example.piec_1.ui.screen
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.util.Log
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -30,17 +35,28 @@ import com.example.piec_1.viewModel.CameraViewModel
 @Composable
 fun TelaCamera(
     navController: NavController,
+    medicamentoId: Long,
+    horario: String,
     viewModel: CameraViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
+    val vibrator = remember {
+        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
 
 
     val framePosition = viewModel.framePosition.observeAsState().value
     val isRectangleDetected = viewModel.isRectangleDetected.observeAsState(false).value
 
     LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(1000)
+        }
+
         viewModel.startCamera(previewView, lifecycleOwner)
     }
 

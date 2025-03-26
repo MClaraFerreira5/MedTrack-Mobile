@@ -4,9 +4,11 @@ import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.piec_1.ui.screen.TelaLogin
 import com.example.piec_1.ui.screen.TelaCamera
 import com.example.piec_1.ui.screen.TelaConfirmacao
@@ -50,7 +52,21 @@ fun AppNavigation() {
             TelaConfirmacao(navController, cameraViewModel)
         }
         composable("TelaCamera"){
-            TelaCamera(navController, cameraViewModel)
+            TelaCamera(navController, 0, "", cameraViewModel)
+        }
+        composable(
+            "TelaCamera/{medicamentoId}/{horario}",
+            arguments = listOf(
+                navArgument("medicamentoId") { type = NavType.LongType },
+                navArgument("horario") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            TelaCamera(
+                navController = navController,
+                medicamentoId = backStackEntry.arguments?.getLong("medicamentoId") ?: -1,
+                horario = backStackEntry.arguments?.getString("horario") ?: "",
+                viewModel = cameraViewModel
+            )
         }
     }
 }

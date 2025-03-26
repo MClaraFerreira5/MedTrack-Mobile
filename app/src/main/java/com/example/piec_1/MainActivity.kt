@@ -1,4 +1,10 @@
 package com.example.piec_1
+
+
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -9,14 +15,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
-import android.Manifest
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.example.piec_1.navigation.AppNavigation
-
-
 import com.example.piec_1.ui.theme.PIEC1Theme
 
 
@@ -24,6 +27,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        createNotificationChannel()
+
         setContent {
             PIEC1Theme {
                 val isPermissionGranted = remember { mutableStateOf(false) }
@@ -40,7 +46,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun RequestPermission(onPermissionResult: (Boolean) -> Unit) {
+    private fun RequestPermission(onPermissionResult: (Boolean) -> Unit) {
         val context = LocalContext.current
         val permissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
@@ -62,5 +68,19 @@ class MainActivity : ComponentActivity() {
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
+    }
+
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            "medicamento_channel",
+            "Lembretes de Medicamentos",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notificações urgentes para tomar medicamentos"
+            enableVibration(true)
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
     }
 }

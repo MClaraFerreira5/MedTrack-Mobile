@@ -1,4 +1,4 @@
-package com.example.piec_1.service
+package com.example.piec_1.service.api
 
 import com.example.piec_1.model.LoginRequest
 import com.example.piec_1.model.Medicamento
