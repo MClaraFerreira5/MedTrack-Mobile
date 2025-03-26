@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.example.piec_1.navigation.AppNavigation
+import com.example.piec_1.notifications.NotificationHelper
 import com.example.piec_1.ui.theme.PIEC1Theme
 
 
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        createNotificationChannel()
+        NotificationHelper.createNotificationChannel(this)
 
         setContent {
             PIEC1Theme {
@@ -70,17 +71,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            "medicamento_channel",
-            "Lembretes de Medicamentos",
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            description = "Notificações urgentes para tomar medicamentos"
-            enableVibration(true)
-            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        }
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
-    }
 }

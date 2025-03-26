@@ -5,8 +5,10 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.example.piec_1.MainActivity
 import com.example.piec_1.R
 
@@ -29,10 +31,19 @@ class NotificationReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val bigTextStyle = NotificationCompat.BigTextStyle()
+            .bigText("São $horario, está na hora de tomar $nome")
+            .setBigContentTitle("Hora do remédio!")
+            .setSummaryText("MedTrack - Lembrete")
+
         NotificationCompat.Builder(context, "medicamento_channel")
             .setContentTitle("Hora de tomar $nome")
             .setContentText("Horário: ${horario.format("HH:mm")}")
             .setSmallIcon(R.drawable.medtrack_white_icon)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.medtrack_white_icon))
+            .setStyle(bigTextStyle)
+            .setColorized(true)
+            .setColor(ContextCompat.getColor(context, R.color.notification_color))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setFullScreenIntent(fullScreenPendingIntent, true)
