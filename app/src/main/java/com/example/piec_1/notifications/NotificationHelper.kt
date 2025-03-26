@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.piec_1.MainActivity
@@ -81,7 +82,8 @@ object NotificationHelper {
         return try {
             LocalTime.parse(horario).format(DateTimeFormatter.ofPattern("HH:mm"))
         } catch (e: Exception) {
-            horario
+            Log.w("FormatarHorario", "Formato inválido: $horario")
+            if (horario.length >= 5) horario.substring(0, 5) else "--:--"
         }
     }
 }
