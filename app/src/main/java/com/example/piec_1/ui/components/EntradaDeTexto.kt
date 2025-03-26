@@ -43,7 +43,9 @@ fun EntradaDeTexto(
     )
     OutlinedTextField(
         value = text,
-        onValueChange = onTextChange,
+        onValueChange = { newText ->
+            onTextChange(newText.trimStart())
+        },
         label = { Text(label) },
         modifier = Modifier
             .fillMaxWidth()
