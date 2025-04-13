@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -81,15 +83,25 @@ fun TelaConfirmacao(
             contentAlignment = Alignment.TopCenter
         )
         {
-            Icon(
-                painter = painterResource(id = R.drawable.medtrack_green_icon),
-                contentDescription = "Icone Coração",
-                tint = Color.Unspecified,
+            Box(
                 modifier = Modifier
-                    .width(47.dp)
-                    .height(47.dp)
+                    .width(50.dp)
+                    .height(50.dp)
                     .align(Alignment.TopStart)
-            )
+                    .background(
+                        color = PrimaryColor,
+                        shape = CircleShape
+                    )
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.medtrack_white_icon),
+                    contentDescription = "Ícone MedTrack",
+                    tint = Color.White,
+                    modifier = Modifier.size(50.dp)
+                )
+            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
