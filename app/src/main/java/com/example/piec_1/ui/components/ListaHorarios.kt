@@ -31,6 +31,7 @@ import com.example.piec_1.ui.theme.ButtonColor
 import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.SecondaryColor
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -38,29 +39,26 @@ fun ListaHorarios(medicamentos: List<Medicamento>, currentDate: LocalDate = Loca
     if (medicamentos.isEmpty()) {
         EmptyState()
     } else {
-        val medicamentosAgrupados = organizeMedicationsByDay(medicamentos, currentDate)
+        val maxDaysToShow = 7
+        val medicamentosAgrupados = organizeMedicationsByDay(medicamentos, currentDate, maxDaysToShow)
 
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            medicamentosAgrupados.forEach { (dayOffset, medicamentosDoDia) ->
-                if (dayOffset == 0) {
-                    Text(
-                        text = "Hoje",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = SecondaryColor,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
-                    )
-                } else {
-                    val date = currentDate.plusDays(dayOffset.toLong())
-                    Text(
-                        text = date.format(DateTimeFormatter.ofPattern("EEEE, dd/MM")),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = SecondaryColor,
-                        modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
-                    )
+            medicamentosAgrupados.forEach { (date, medicamentosDoDia) ->
+                val dayTitle = when {
+                    date.isEqual(currentDate) -> "Hoje"
+                    date.isEqual(currentDate.plusDays(1)) -> "Amanhã"
+                    else -> date.format(DateTimeFormatter.ofPattern("EEEE, dd/MM"))
                 }
+
+                Text(
+                    text = dayTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = SecondaryColor,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+                )
 
                 medicamentosDoDia.sortedBy { it.horario }.forEach { item ->
                     BlocoHorario(item.nomeMedicamento, item.horario, item.isContinuous)
@@ -70,29 +68,61 @@ fun ListaHorarios(medicamentos: List<Medicamento>, currentDate: LocalDate = Loca
     }
 }
 
-private fun organizeMedicationsByDay(medicamentos: List<Medicamento>, currentDate: LocalDate): Map<Int, List<MedicationItem>> {
-    val result = mutableMapOf<Int, MutableList<MedicationItem>>()
+private fun organizeMedicationsByDay(
+    medicamentos: List<Medicamento>,
+    currentDate: LocalDate,
+    maxDaysToShow: Int = 7
+): Map<LocalDate, List<MedicationItem>> {
+    val result = mutableMapOf<LocalDate, MutableList<MedicationItem>>()
+
+    // Criar os dias que serão mostrados
+    val daysToShow = getDatesBetween(currentDate, currentDate.plusDays(maxDaysToShow.toLong() - 1))
 
     medicamentos.forEach { medicamento ->
         if (medicamento.usoContinuo) {
-            medicamento.horarios.forEach { horario ->
-                result.getOrPut(0) { mutableListOf() }.add(
-                    MedicationItem(medicamento.nome, horario.toFomattedTime(), true))
-            }
-        } else {
-            val horariosPorDia = medicamento.horarios.chunked(medicamento.horarios.size / medicamento.horarios.distinct().size)
-
-            horariosPorDia.forEachIndexed { dayOffset, horariosDoDia ->
-                horariosDoDia.distinct().forEach { horario ->
-                    result.getOrPut(dayOffset) { mutableListOf() }.add(
-                        MedicationItem(medicamento.nome, horario.toFomattedTime(), false)
+            // Medicamentos contínuos: todos horários em todos dias
+            daysToShow.forEach { date ->
+                medicamento.horarios.forEach { horario ->
+                    result.getOrPut(date) { mutableListOf() }.add(
+                        MedicationItem(medicamento.nome, horario.toFomattedTime(), true)
                     )
                 }
+            }
+        } else {
+            // Medicamentos temporários: agrupar horários até "reiniciar" o ciclo diário
+            var currentDayIndex = 0
+            var previousTime: LocalTime? = null
+
+            medicamento.horarios.forEach { horarioStr ->
+                val horario = LocalTime.parse(horarioStr)
+
+                // Verifica se voltou para um horário mais cedo (novo dia)
+                if (previousTime != null && horario.isBefore(previousTime)) {
+                    currentDayIndex++
+                }
+
+                // Só adiciona se estiver dentro do período de exibição
+                if (currentDayIndex < daysToShow.size) {
+                    val targetDate = daysToShow[currentDayIndex]
+                    result.getOrPut(targetDate) { mutableListOf() }.add(
+                        MedicationItem(medicamento.nome, horarioStr.toFomattedTime(), false)
+                    )
+                }
+
+                previousTime = horario
             }
         }
     }
 
     return result.toSortedMap()
+}
+
+private fun String.toLocalTime(): LocalTime {
+    return if (this.length == 8) { // Formato HH:mm:ss
+        LocalTime.parse(this)
+    } else { // Formato HH:mm
+        LocalTime.parse(this + ":00")
+    }
 }
 
 private fun String.toFomattedTime(): String {
@@ -103,6 +133,18 @@ data class MedicationItem(
     val horario: String,
     val isContinuous: Boolean
 )
+
+private fun getDatesBetween(startDate: LocalDate, endDate: LocalDate): List<LocalDate> {
+    val dates = mutableListOf<LocalDate>()
+    var currentDate = startDate
+
+    while (!currentDate.isAfter(endDate)) {
+        dates.add(currentDate)
+        currentDate = currentDate.plusDays(1)
+    }
+
+    return dates
+}
 
 @Composable
 private fun EmptyState() {
@@ -179,6 +221,5 @@ private fun BlocoHorario(nomeMedicamento: String, horario: String, isContinuous:
             color = if (isContinuous) PrimaryColor else ButtonColor,
         )
     }
-
 
 }
