@@ -110,7 +110,7 @@ fun TelaEsqueciSenha(navController: NavController) {
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     EntradaDeTexto(
                         label = "Email",
-                        text = email.value.trim(),
+                        text = email.value,
                         onTextChange = { email.value = it },
                         isError = errorMessage.value != null
                     )

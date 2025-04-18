@@ -114,7 +114,7 @@ fun TelaRedefinirSenha(navController: NavController) {
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     EntradaDeTexto(
                         label = "Código",
-                        text = codigo.value.trim(),
+                        text = codigo.value,
                         onTextChange = { codigo.value = it },
                         isError = errorMessage.value != null
                     )

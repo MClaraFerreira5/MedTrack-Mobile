@@ -79,18 +79,15 @@ fun ListaHorarios(medicamentos: List<Medicamento>, currentDate: LocalDate = Loca
     }
 }
 
-private fun organizeMedicationsByDay(
+fun organizeMedicationsByDay(
     medicamentos: List<Medicamento>,
     currentDate: LocalDate,
     maxDaysToShow: Int = 7
 ): Map<LocalDate, List<MedicationItem>> {
     val result = mutableMapOf<LocalDate, MutableList<MedicationItem>>()
-
-    // Criar os dias que serão mostrados
     val daysToShow = getDatesBetween(currentDate, currentDate.plusDays(maxDaysToShow.toLong() - 1))
 
     medicamentos.forEach { medicamento ->
-        // Determina o nome a ser exibido
         val nomeExibicao = if (medicamento.nome.equals("MEDICAMENTO GENÉRICO", ignoreCase = true)) {
             medicamento.compostoAtivo ?: medicamento.nome
         } else {
@@ -101,45 +98,42 @@ private fun organizeMedicationsByDay(
             daysToShow.forEach { date ->
                 medicamento.horarios.forEach { horario ->
                     result.getOrPut(date) { mutableListOf() }.add(
-                        MedicationItem(nomeExibicao, horario.toFomattedTime(), true)
+                        MedicationItem(nomeExibicao, horario.toFormattedTime(), true)
                     )
                 }
             }
         } else {
             var currentDayIndex = 0
-            var previousTime: LocalTime? = null
+            var horariosPorDia = mutableListOf<LocalTime>()
 
             medicamento.horarios.forEach { horarioStr ->
                 val horario = LocalTime.parse(horarioStr)
 
-                if (previousTime != null && horario.isBefore(previousTime)) {
+                if (horariosPorDia.isNotEmpty() && horario <= horariosPorDia.last()) {
                     currentDayIndex++
+                    horariosPorDia.clear()
                 }
 
                 if (currentDayIndex < daysToShow.size) {
                     val targetDate = daysToShow[currentDayIndex]
                     result.getOrPut(targetDate) { mutableListOf() }.add(
-                        MedicationItem(nomeExibicao, horarioStr.toFomattedTime(), false)
+                        MedicationItem(nomeExibicao, horarioStr.toFormattedTime(), false)
                     )
+                    horariosPorDia.add(horario)
                 }
-
-                previousTime = horario
             }
         }
+    }
+
+    // Ordena os horários dentro de cada dia
+    result.forEach { (_, items) ->
+        items.sortBy { LocalTime.parse(it.horario) }
     }
 
     return result.toSortedMap()
 }
 
-private fun String.toLocalTime(): LocalTime {
-    return if (this.length == 8) { // Formato HH:mm:ss
-        LocalTime.parse(this)
-    } else { // Formato HH:mm
-        LocalTime.parse(this + ":00")
-    }
-}
-
-private fun String.toFomattedTime(): String {
+private fun String.toFormattedTime(): String {
     return formatarHorario(this)}
 
 data class MedicationItem(
@@ -227,7 +221,6 @@ private fun BlocoHorario(
                 overflow = TextOverflow.Ellipsis
             )
 
-            // Linha para os indicadores (genérico e temporário)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (isGenerico) {
                     Text(
