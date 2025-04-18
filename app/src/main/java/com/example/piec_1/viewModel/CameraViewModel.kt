@@ -56,4 +56,8 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
             medicamentoExtraido(medicamento)
         })
     }
+
+    fun atualizarMedicamento(novoMedicamento: Medicamento) {
+        _medicamento.value = novoMedicamento
+    }
 }

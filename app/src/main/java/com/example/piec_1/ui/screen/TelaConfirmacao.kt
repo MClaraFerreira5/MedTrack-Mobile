@@ -1,9 +1,12 @@
 package com.example.piec_1.ui.screen
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,18 +20,26 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.model.Medicamento
@@ -45,7 +56,14 @@ fun TelaConfirmacao(
     navController: NavController,
     viewModel: CameraViewModel
 ) {
-    val medicamento = viewModel.medicamento.observeAsState().value
+    val medicamentoState = viewModel.medicamento.observeAsState()
+    val medicamento = medicamentoState.value
+    val MedicamentoDesconhecido = Medicamento(id = 0, nome = "Desconhecido", compostoAtivo = "Desconhecido", dosagem = "Desconhecido", usoContinuo = false , horarios = listOf<String>())
+
+
+    var medicamentoEditavel = remember { mutableStateOf(medicamento?.copy() ?: MedicamentoDesconhecido) }
+    var showEditDialogState = remember { mutableStateOf(false) }
+    val showEditDialog = showEditDialogState.value
 
     if (medicamento == null) {
         Box(
@@ -61,6 +79,118 @@ fun TelaConfirmacao(
 
     val success = verificarMedicamento(medicamento!!)
     val message = getMessage(success, medicamento!!)
+
+    if (showEditDialog) {
+        Dialog(
+            onDismissRequest = { showEditDialogState.value = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(300.dp)
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Editar Medicamento",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(PrimaryColor, SecondaryColor)
+                            )
+                        ),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Campos de edição
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = medicamentoEditavel.value.nome,
+                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(nome = it) },
+                            label = { Text("Nome") },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PrimaryColor,
+                                unfocusedBorderColor = Color.Gray
+                            )
+                        )
+
+                        OutlinedTextField(
+                            value = medicamentoEditavel.value.compostoAtivo,
+                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(compostoAtivo = it) },
+                            label = { Text("Composto Ativo") },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PrimaryColor,
+                                unfocusedBorderColor = Color.Gray
+                            )
+                        )
+
+                        OutlinedTextField(
+                            value = medicamentoEditavel.value.dosagem,
+                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(dosagem = it) },
+                            label = { Text("Dosagem") },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PrimaryColor,
+                                unfocusedBorderColor = Color.Gray
+                            )
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Botão Cancelar (transparente)
+                        Button(
+                            onClick = { showEditDialogState.value = false },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = PrimaryColor
+                            ),
+                            border = BorderStroke(1.dp, PrimaryColor),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Cancelar")
+                        }
+
+                        Button(
+                            onClick = {
+                                viewModel.atualizarMedicamento(medicamentoEditavel.value)
+                                showEditDialogState.value = false
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = PrimaryColor
+                            ),
+                            border = BorderStroke(1.dp, PrimaryColor),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Confirmar")
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -159,8 +289,28 @@ fun TelaConfirmacao(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
+                }
+                Spacer(modifier = Modifier.height(24.dp))
 
-
+                Button(
+                    onClick = { showEditDialogState.value = true },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = PrimaryColor
+                    ),
+                    border = BorderStroke(1.dp, PrimaryColor),
+                    modifier = Modifier
+                        .width(260.dp)
+                        .height(50.dp)
+                        .padding(top = 0.dp)
+                ) {
+                    Text(
+                        text = "Editar",
+                        fontFamily = RobotoFont,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
