@@ -13,4 +13,12 @@ interface MedicamentoDao {
 
     @Query("SELECT * FROM medicamentos")
     suspend fun getMedicamentos(): List<Medicamento>
+
+    @Query("""
+        SELECT * FROM medicamentos 
+        WHERE nome LIKE '%' || :nome || '%' 
+        OR compostoAtivo LIKE '%' || :compostoAtivo || '%'
+        LIMIT 1
+    """)
+    suspend fun getMedicamentoPorNomeOuComposto(nome: String, compostoAtivo: String): Medicamento?
 }
