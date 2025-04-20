@@ -21,7 +21,7 @@ interface ApiService {
     @GET("medicamento/mobile/lista")
     suspend fun getMedicamentos(@Header("Authorization") token: String): Response<List<Medicamento>>
 
-    @POST("confirmacao")
+    @POST("/api/confirmacao")
     suspend fun confirmarMedicamento(
         @Header("Authorization") token: String,
         @Body request: DadosConfirmacaoRequest
