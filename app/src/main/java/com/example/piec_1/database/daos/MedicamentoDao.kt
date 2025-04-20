@@ -21,4 +21,19 @@ interface MedicamentoDao {
         LIMIT 1
     """)
     suspend fun getMedicamentoPorNomeOuComposto(nome: String, compostoAtivo: String): Medicamento?
+
+    @Query("""
+        SELECT * FROM medicamentos
+        WHERE LOWER(nome) LIKE LOWER(:nome) 
+        OR LOWER(compostoAtivo) LIKE LOWER(:compostoAtivo)
+        OR LOWER(nome) LIKE '%' || LOWER(:termoBusca) || '%'
+        OR LOWER(compostoAtivo) LIKE '%' || LOWER(:termoBusca) || '%'
+        LIMIT 1
+    """)
+    suspend fun buscarMedicamentoFlexivel(
+        nome: String,
+        compostoAtivo: String,
+        termoBusca: String = nome
+    ): Medicamento?
+
 }

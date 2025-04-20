@@ -1,6 +1,7 @@
 package com.example.piec_1.database.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -19,4 +20,7 @@ interface ConfirmacaoDao {
 
     @Update
     suspend fun update(confirmacao: Confirmacao)
+
+    @Query("DELETE FROM confirmacoes")
+    suspend fun deleteAll()
 }

@@ -56,7 +56,7 @@ fun SuccessDialog(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Sucesso",
-                    tint = Color.Green,
+                    tint = PrimaryColor,
                     modifier = Modifier.size(48.dp)
                 )
 

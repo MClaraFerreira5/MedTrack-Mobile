@@ -2,10 +2,9 @@ package com.example.piec_1
 
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -31,6 +30,16 @@ class MainActivity : ComponentActivity() {
 
         NotificationHelper.createNotificationChannel(this)
 
+        if (!areNotificationsEnabled()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Toast.makeText(
+                    this,
+                    "Por favor, habilite as notificações nas configurações do aplicativo",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
         setContent {
             PIEC1Theme {
                 val isPermissionGranted = remember { mutableStateOf(false) }
@@ -49,26 +58,52 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun RequestPermission(onPermissionResult: (Boolean) -> Unit) {
         val context = LocalContext.current
+        val permissions = remember {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+            } else {
+                arrayOf(Manifest.permission.CAMERA)
+            }
+        }
+
         val permissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            onPermissionResult(isGranted)
-            if (!isGranted) {
-                Toast.makeText(context, "Permissão da câmera negada!", Toast.LENGTH_LONG).show()
+            contract = ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissionsMap ->
+            val allGranted = permissionsMap.values.all { it }
+            onPermissionResult(allGranted)
+            if (!allGranted) {
+                Toast.makeText(
+                    context,
+                    "Algumas permissões necessárias foram negadas!",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
         LaunchedEffect(Unit) {
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.CAMERA
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
+            val allGranted = permissions.all {
+                ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+            }
+
+            if (allGranted) {
                 onPermissionResult(true)
             } else {
-                permissionLauncher.launch(Manifest.permission.CAMERA)
+                permissionLauncher.launch(permissions)
             }
         }
     }
 
+    fun Context.areNotificationsEnabled(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
 }
