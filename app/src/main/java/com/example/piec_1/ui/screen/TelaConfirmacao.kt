@@ -275,9 +275,7 @@ fun TelaConfirmacao(
                         onClick = {
                             loadingState.value = true
                             medicamentoViewModel.confirmarMedicamento(
-                                nomeMedicamento = medicamento.nome,
-                                compostoAtivo = medicamento.compostoAtivo,
-                                dosagem = medicamento.dosagem,
+                                medicamentoCapturado = medicamento,
                                 onSuccess = {
                                     loadingState.value = false
                                     showSuccessDialog.value = true
