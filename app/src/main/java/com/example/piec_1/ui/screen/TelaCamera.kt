@@ -42,21 +42,12 @@ fun TelaCamera(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
-    val vibrator = remember {
-        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    }
 
 
     val framePosition = viewModel.framePosition.observeAsState().value
     val isRectangleDetected = viewModel.isRectangleDetected.observeAsState(false).value
 
     LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= 26) {
-            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            vibrator.vibrate(1000)
-        }
-
         viewModel.startCamera(previewView, lifecycleOwner)
     }
 

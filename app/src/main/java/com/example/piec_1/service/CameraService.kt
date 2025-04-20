@@ -103,6 +103,8 @@ class CameraService(
                 val ocrService = OCRService()
                 val medicamentoExtraido = ocrService.extrairMedicamentoInfo(extractedText)
 
+                Log.d("OCR", "$medicamentoExtraido")
+
                 medicamento(medicamentoExtraido)
 
             }

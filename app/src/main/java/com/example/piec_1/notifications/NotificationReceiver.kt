@@ -11,12 +11,18 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.piec_1.MainActivity
 import com.example.piec_1.R
+import com.example.piec_1.notifications.NotificationHelper.formatarHorario
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val medicamentoId = intent.getLongExtra("medicamentoId", -1)
-        val nome = intent.getStringExtra("nome") ?: return
-        val horario = intent.getStringExtra("horario") ?: return
+        var nome = intent.getStringExtra("nome") ?: return
+        val horario = formatarHorario(intent.getStringExtra("horario").toString())
+        val compostoAtivo = intent.getStringExtra("compostoAtivo") ?: return
+
+        if (nome == "MEDICAMENTO GENÉRICO") {
+            nome = compostoAtivo
+        }
 
         val deepLinkIntent = Intent(context, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
@@ -38,7 +44,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         NotificationCompat.Builder(context, "medicamento_channel")
             .setContentTitle("Hora de tomar $nome")
-            .setContentText("Horário: ${horario.format("HH:mm")}")
+            .setContentText("Horário: $horario")
             .setSmallIcon(R.drawable.medtrack_white_icon)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.medtrack_white_icon))
             .setStyle(bigTextStyle)

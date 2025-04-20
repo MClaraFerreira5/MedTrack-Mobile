@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,15 +67,26 @@ fun TelaRedefinirSenha(navController: NavController) {
 
 
         {
-            Icon(
-                painter = painterResource(id = R.drawable.medtrack_green_icon),
-                contentDescription = "Icone Coração",
-                tint = Color.Unspecified,
+            Box(
                 modifier = Modifier
-                    .width(47.dp)
-                    .height(47.dp)
+                    .width(50.dp)
+                    .height(50.dp)
                     .align(Alignment.TopStart)
-            )
+                    .background(
+                        color = PrimaryColor,
+                        shape = CircleShape
+                    )
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.medtrack_white_icon),
+                    contentDescription = "Ícone MedTrack",
+                    tint = Color.White,
+                    modifier = Modifier.size(50.dp)
+                )
+            }
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -101,7 +114,7 @@ fun TelaRedefinirSenha(navController: NavController) {
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     EntradaDeTexto(
                         label = "Código",
-                        text = codigo.value.trim(),
+                        text = codigo.value,
                         onTextChange = { codigo.value = it },
                         isError = errorMessage.value != null
                     )
