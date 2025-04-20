@@ -18,6 +18,7 @@ import com.example.piec_1.ui.screen.TelaPrincipal
 import com.example.piec_1.ui.screen.TelaRedefinirSenha
 import com.example.piec_1.viewModel.CameraViewModel
 import com.example.piec_1.viewModel.LoginViewModel
+import com.example.piec_1.viewModel.MedicamentoViewModel
 import com.example.piec_1.viewModelFactory.LoginViewModelFactory
 
 @Composable
@@ -27,7 +28,7 @@ fun AppNavigation() {
     val loginViewModel: LoginViewModel = viewModel(
         factory = LoginViewModelFactory(LocalContext.current.applicationContext as Application)
     )
-
+    val medicamentoViewModel: MedicamentoViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -49,7 +50,7 @@ fun AppNavigation() {
             TelaRedefinirSenha(navController)
         }
         composable("TelaConfirmacao"){
-            TelaConfirmacao(navController, cameraViewModel)
+            TelaConfirmacao(navController, cameraViewModel, medicamentoViewModel)
         }
         composable("TelaCamera"){
             TelaCamera(navController, 0, "", cameraViewModel)

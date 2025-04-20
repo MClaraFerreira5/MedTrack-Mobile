@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -43,27 +43,43 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.model.Medicamento
+import com.example.piec_1.ui.components.ErrorDialog
 import com.example.piec_1.ui.components.InfoBoxError
 import com.example.piec_1.ui.components.InfoBoxSuccess
+import com.example.piec_1.ui.components.SuccessDialog
 import com.example.piec_1.ui.theme.ErrorColor
 import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.RobotoFont
 import com.example.piec_1.ui.theme.SecondaryColor
 import com.example.piec_1.viewModel.CameraViewModel
+import com.example.piec_1.viewModel.MedicamentoViewModel
 
 @Composable
 fun TelaConfirmacao(
     navController: NavController,
-    viewModel: CameraViewModel
+    CameraViewModel: CameraViewModel,
+    medicamentoViewModel: MedicamentoViewModel
 ) {
-    val medicamentoState = viewModel.medicamento.observeAsState()
+    val medicamentoState = CameraViewModel.medicamento.observeAsState()
     val medicamento = medicamentoState.value
-    val MedicamentoDesconhecido = Medicamento(id = 0, nome = "Desconhecido", compostoAtivo = "Desconhecido", dosagem = "Desconhecido", usoContinuo = false , horarios = listOf<String>())
+    val MedicamentoDesconhecido = Medicamento(
+        id = 0,
+        nome = "Desconhecido",
+        compostoAtivo = "Desconhecido",
+        dosagem = "Desconhecido",
+        usoContinuo = false ,
+        horarios = listOf<String>()
+    )
 
-
-    var medicamentoEditavel = remember { mutableStateOf(medicamento?.copy() ?: MedicamentoDesconhecido) }
+    val medicamentoEditavel = remember(medicamento) {
+        mutableStateOf(medicamento ?: MedicamentoDesconhecido)
+    }
     var showEditDialogState = remember { mutableStateOf(false) }
     val showEditDialog = showEditDialogState.value
+    val loadingState = remember { mutableStateOf(false) }
+    val showSuccessDialog = remember { mutableStateOf(false) }
+    val showErrorDialog = remember { mutableStateOf(false) }
+    val errorMessage = remember { mutableStateOf("") }
 
     if (medicamento == null) {
         Box(
@@ -109,7 +125,6 @@ fun TelaConfirmacao(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // Campos de edição
                     Column(
                         modifier = Modifier.padding(vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -122,7 +137,9 @@ fun TelaConfirmacao(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = PrimaryColor,
-                                unfocusedBorderColor = Color.Gray
+                                unfocusedBorderColor = Color.Gray,
+                                focusedTextColor = Color.Black,
+                                unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
                             )
                         )
 
@@ -134,7 +151,9 @@ fun TelaConfirmacao(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = PrimaryColor,
-                                unfocusedBorderColor = Color.Gray
+                                unfocusedBorderColor = Color.Gray,
+                                focusedTextColor = Color.Black,
+                                unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
                             )
                         )
 
@@ -146,7 +165,9 @@ fun TelaConfirmacao(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = PrimaryColor,
-                                unfocusedBorderColor = Color.Gray
+                                unfocusedBorderColor = Color.Gray,
+                                focusedTextColor = Color.Black,
+                                unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
                             )
                         )
                     }
@@ -157,7 +178,6 @@ fun TelaConfirmacao(
                             .padding(top = 24.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // Botão Cancelar (transparente)
                         Button(
                             onClick = { showEditDialogState.value = false },
                             shape = RoundedCornerShape(12.dp),
@@ -170,10 +190,9 @@ fun TelaConfirmacao(
                         ) {
                             Text("Cancelar")
                         }
-
                         Button(
                             onClick = {
-                                viewModel.atualizarMedicamento(medicamentoEditavel.value)
+                                CameraViewModel.atualizarMedicamento(medicamentoEditavel.value)
                                 showEditDialogState.value = false
                             },
                             shape = RoundedCornerShape(12.dp),
@@ -253,7 +272,23 @@ fun TelaConfirmacao(
 
                 if (success) {
                     Button(
-                        onClick = { },
+                        onClick = {
+                            loadingState.value = true
+                            medicamentoViewModel.confirmarMedicamento(
+                                nomeMedicamento = medicamento.nome,
+                                compostoAtivo = medicamento.compostoAtivo,
+                                dosagem = medicamento.dosagem,
+                                onSuccess = {
+                                    loadingState.value = false
+                                    showSuccessDialog.value = true
+                                },
+                                onError = { error ->
+                                    loadingState.value = false
+                                    errorMessage.value = error
+                                    showErrorDialog.value = true
+                                }
+                            )
+                        },
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
                         modifier = Modifier
@@ -261,18 +296,43 @@ fun TelaConfirmacao(
                             .height(50.dp)
                             .padding(top = 0.dp)
                     ) {
-                        Text(
-                            text = "Confirmar",
-                            color = Color.White,
-                            fontFamily = RobotoFont,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                        if (loadingState.value) {
+                            CircularProgressIndicator(color = Color.White)
+                        } else {
+                            Text(
+                                text = "Confirmar",
+                                color = Color.White,
+                                fontFamily = RobotoFont,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    if (showSuccessDialog.value) {
+                        SuccessDialog(
+                            onDismiss = { showSuccessDialog.value = false },
+                            onConfirm = {
+                                showSuccessDialog.value = false
+                                navController.navigate("TelaPrincipal") {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        )
+                    }
+
+                    if (showErrorDialog.value) {
+                        ErrorDialog(
+                            errorMessage = errorMessage.value,
+                            onDismiss = { showErrorDialog.value = false }
                         )
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-
                 }
+
                 Button(
                     onClick = { navController.popBackStack() },
                     shape = RoundedCornerShape(20.dp),
@@ -329,4 +389,3 @@ private fun verificarMedicamento(medicamento: Medicamento): Boolean {
     return medicamento.nome != "Desconhecido" && medicamento.compostoAtivo != "Desconhecido" &&
             medicamento.dosagem != "Desconhecido"
 }
-
