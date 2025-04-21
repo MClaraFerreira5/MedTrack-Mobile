@@ -4,10 +4,7 @@
     <img width="30%" src="assets/logo-medtrack.png" alt="Logo do MedTrack" >
 </div>
 
-
 > Aplicativo Android para controle inteligente de medicação via OCR e notificações
-
----
 
 ## Visão Geral
 
@@ -24,7 +21,6 @@ O **MedTrack Mobile** é um app Android desenvolvido para auxiliar no acompanham
 **Público-alvo:**
 - 👴 Idosos e pacientes com muitos rémedios que dificulte a organização
 - 🧑‍⚕️ Cuidadores e familiares para monitoramento
----
 
 ## ✨ Destaques Técnicos
 
@@ -43,13 +39,17 @@ Desenvolvida inteiramente com **Jetpack Compose**, a interface prioriza:
 - Design moderno e intuitivo
 - Acessibilidade
 
-> Lista com os horários dos remédios, diferenciando de remédio com uso Contínuo e Temporário
+> ⏰ **Lista inteligente de horários**  
+> - 💊 Contínuo (emoji de infinito 🔄)  
+> - ⏳ Temporário (emoji de calendário 📅)
+
 <div align="center">
   <img src="assets/screen-3.jpg" width="30%" alt="Lista de horários vazia">
   <img src="assets/screen-4.jpg" width="30%" alt="Lista de horários completa">
 </div>
 
-> Pop-ups informativos
+> 💡 **Pop-ups intuitivos**
+
 <div align="center">
   <img src="assets/screen-2.jpg" width="30%" alt="Pop-up Editar">
   <img src="assets/screen-1.jpg" width="30%" alt="Pop-up Erro">
@@ -119,8 +119,6 @@ interface ApiService {
 - AlarmManager para agendamento de notificações
 - Material3 para componentes UI modernos
 
----
-
 ## 🚀 Como Executar
 
 1. **Pré-requisitos**:
@@ -139,7 +137,6 @@ git clone https://github.com/seu-usuario/medtrack-mobile.git
     private val BASE_URL = "http://seu-endpoint:8081"
   }
 ````
----
 
 ## 🌐 MedTrack: Versão Web
 
@@ -165,69 +162,55 @@ O **MedTrack Web** é a interface administrativa do sistema, desenvolvida para:
 - 🔐 Autenticação unificada JWT
 - 📩 Notificações complementares via email
 
----
-
 ## 🌟 Time de Contribuidores
 
-<div align="center" style="margin: 40px 0;">
+<div align="center">
 
-<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 30px;">
-
-<!-- Yann Leão -->
-<div style="text-align: center; width: 150px;">
-  <a href="https://github.com/YannLeao" target="_blank">
-    <img src="https://github.com/YannLeao.png" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #4285F4;">
-  </a>
-  <h3 style="margin: 10px 0 5px;">Yann Leão</h3>
-  <div style="display: flex; justify-content: center; gap: 10px;">
-    <a href="https://github.com/YannLeao" target="_blank">
-      <img src="https://img.shields.io/badge/-GitHub-181717?logo=github&style=flat" alt="GitHub">
-    </a>
-    <a href="https://www.linkedin.com/in/yannleao-dev" target="_blank">
-      <img src="https://img.shields.io/badge/-LinkedIn-0077B5?logo=linkedin&style=flat" alt="LinkedIn">
-    </a>
-  </div>
-  <p style="font-size: 14px; color: #666;">Backend & Mobile</p>
-</div>
-
-<!-- Ellen Rocha -->
-<div style="text-align: center; width: 150px;">
-  <a href="https://github.com/EllenRocha1" target="_blank">
-    <img src="https://github.com/EllenRocha1.png" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #EA4335;">
-  </a>
-  <h3 style="margin: 10px 0 5px;">Ellen Rocha</h3>
-  <div style="display: flex; justify-content: center; gap: 10px;">
-    <a href="https://github.com/EllenRocha1" target="_blank">
-      <img src="https://img.shields.io/badge/-GitHub-181717?logo=github&style=flat" alt="GitHub">
-    </a>
-    <a href="https://www.linkedin.com/in/ellen-rocha-dev/" target="_blank">
-      <img src="https://img.shields.io/badge/-LinkedIn-0077B5?logo=linkedin&style=flat" alt="LinkedIn">
-    </a>
-  </div>
-  <p style="font-size: 14px; color: #666;">Backend & Frontend</p>
-</div>
-
-<!-- Maria Clara -->
-<div style="text-align: center; width: 150px;">
-  <a href="https://github.com/MClaraFerreira5" target="_blank">
-    <img src="https://github.com/MClaraFerreira5.png" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #FBBC05;">
-  </a>
-  <h3 style="margin: 10px 0 5px;">Maria Clara</h3>
-  <div style="display: flex; justify-content: center; gap: 10px;">
-    <a href="https://github.com/MClaraFerreira5" target="_blank">
-      <img src="https://img.shields.io/badge/-GitHub-181717?logo=github&style=flat" alt="GitHub">
-    </a>
-    <a href="https://www.linkedin.com/in/clara-ferreira-dev/" target="_blank">
-      <img src="https://img.shields.io/badge/-LinkedIn-0077B5?logo=linkedin&style=flat" alt="LinkedIn">
-    </a>
-  </div>
-  <p style="font-size: 14px; color: #666;">Frontend & Mobile</p>
-</div>
+<table>
+  <tr>
+    <td align="center">
+        <img src="https://github.com/YannLeao.png" width="100px;" alt="Yann Leão"/><br />
+        <sub><b>Yann Leão</b></sub>
+      <br />
+      <a href="https://github.com/YannLeao">
+        <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github" />
+      </a>
+      <a href="https://www.linkedin.com/in/yannleao-dev">
+        <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin" />
+      </a>
+      <br />
+      <code>Backend & Mobile</code>
+    </td>
+    <td align="center">
+        <img src="https://github.com/EllenRocha1.png" width="100px;" alt="Ellen Rocha"/><br />
+        <sub><b>Ellen Rocha</b></sub>
+      <br />
+      <a href="https://github.com/EllenRocha1">
+        <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github" />
+      </a>
+      <a href="https://www.linkedin.com/in/ellen-rocha-dev/">
+        <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin" />
+      </a>
+      <br />
+      <code>Backend & Frontend</code>
+    </td>
+    <td align="center">
+        <img src="https://github.com/MClaraFerreira5.png" width="100px;" alt="Maria Clara"/><br />
+        <sub><b>Maria Clara</b></sub>
+      <br />
+      <a href="https://github.com/MClaraFerreira5">
+        <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github" />
+      </a>
+      <a href="https://www.linkedin.com/in/clara-ferreira-dev/">
+        <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin" />
+      </a>
+      <br />
+      <code>Frontend & Mobile</code>
+    </td>
+  </tr>
+</table>
 
 </div>
-</div>
-
----
 
 ## 📄 Licença
 
