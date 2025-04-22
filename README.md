@@ -1,7 +1,6 @@
-# MedTrack Mobile: Mobile 📱
-
-<div align="center">
-    <img width="30%" src="assets/logo-medtrack.png" alt="Logo do MedTrack" >
+<div align="center" justify="center">
+    <img width="15%" src="assets/logo-medtrack.png" alt="Logo do MedTrack"> 
+    <h1>MedTrack: Aplicação Mobile </h1>
 </div>
 
 > Aplicativo Android para controle inteligente de medicação via OCR e notificações
