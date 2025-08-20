@@ -168,19 +168,6 @@ O **MedTrack Web** é a interface administrativa do sistema, desenvolvida para:
 <table>
   <tr>
     <td align="center">
-        <img src="https://github.com/YannLeao.png" width="100px;" alt="Yann Leão"/><br />
-        <sub><b>Yann Leão</b></sub>
-      <br />
-      <a href="https://github.com/YannLeao">
-        <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github" />
-      </a>
-      <a href="https://www.linkedin.com/in/yannleao-dev">
-        <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin" />
-      </a>
-      <br />
-      <code>Backend & Mobile</code>
-    </td>
-    <td align="center">
         <img src="https://github.com/EllenRocha1.png" width="100px;" alt="Ellen Rocha"/><br />
         <sub><b>Ellen Rocha</b></sub>
       <br />
@@ -191,7 +178,6 @@ O **MedTrack Web** é a interface administrativa do sistema, desenvolvida para:
         <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin" />
       </a>
       <br />
-      <code>Backend & Frontend</code>
     </td>
     <td align="center">
         <img src="https://github.com/MClaraFerreira5.png" width="100px;" alt="Maria Clara"/><br />
@@ -204,7 +190,39 @@ O **MedTrack Web** é a interface administrativa do sistema, desenvolvida para:
         <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin" />
       </a>
       <br />
-      <code>Frontend & Mobile</code>
+    </td>
+    <td align="center">
+        <img src="https://github.com/YannLeao.png" width="100px;" alt="Yann Leão"/><br />
+        <sub><b>Yann Leão</b></sub>
+      <br />
+      <a href="https://github.com/YannLeao">
+        <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github" />
+      </a>
+      <a href="https://www.linkedin.com/in/yannleao-dev">
+        <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin" />
+      </a>
+      <br />
+    </td>
+  </tr>
+</table>
+
+</div>
+
+## 🎓 Orientação
+
+<div align="center">
+
+<table>
+  <tr>
+    <td align="center">
+        <img src="https://github.com/ygoramaral.png" width="100px;" alt="Prof. Igor Amaral"/><br />
+        <sub><b>Prof. Igor Amaral</b></sub>
+      <br />
+      <a href="https://github.com/ygoramaral">
+        <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github" />
+      </a>
+      <br />
+      <code>Orientador</code>
     </td>
   </tr>
 </table>
