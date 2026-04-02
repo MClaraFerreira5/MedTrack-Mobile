@@ -5,16 +5,16 @@ agp = "8.13.2"
 kotlin = "2.1.0"
 
 # --- Core Android ---
-core-ktx = "1.15.0"
-lifecycle = "2.8.7"
-activity-compose = "1.10.1"
-livedata-compose = "1.7.8"
+core-ktx = "1.18.0"
+lifecycle = "2.10.0"
+activity-compose = "1.13.0"
+livedata-compose = "1.10.6"
 
 # --- Compose ---
 compose-bom = "2026.03.01"
 
 # --- Navigation ---
-navigation = "2.8.9"
+navigation = "2.9.7"
 
 # --- Camera ---
 cameraX = "1.4.1"
@@ -29,18 +29,18 @@ okhttp = "4.9.3"
 gson = "2.12.1"
 
 # --- Database ---
-room = "2.6.1"
+room = "2.8.4"
 
 # --- Concurrency ---
 coroutines = "1.7.3"
 
 # --- Background ---
-work = "2.10.0"
+work = "2.11.2"
 
 # --- Testing ---
 junit = "4.13.2"
-androidx-junit = "1.2.1"
-espresso = "3.6.1"
+androidx-junit = "1.3.0"
+espresso = "3.7.0"
 
 
 [libraries]
