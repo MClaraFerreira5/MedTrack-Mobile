@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PIEC-1"
+rootProject.name = "MedTrack"
 include(":app")
  

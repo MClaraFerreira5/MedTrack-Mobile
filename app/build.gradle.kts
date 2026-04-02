@@ -7,13 +7,13 @@ plugins {
 
 android {
     namespace = "com.example.piec_1"
-    compileSdk = 35
+    compileSdk = 36
 
 
     defaultConfig {
         applicationId = "com.example.piec_1"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -49,40 +49,65 @@ android {
 
 dependencies {
 
+    // --- Core ---
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
+    // --- Compose ---
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // --- Navigation ---
     implementation(libs.androidx.navigation.compose)
+
+    // --- Camera ---
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.video)
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
-    implementation(libs.androidx.runtime.livedata)
-    implementation(libs.google.play.services.mlkit.text.recognition)
+
+    // --- ML Kit ---
+    implementation(libs.google.mlkit.text.recognition)
     implementation(libs.google.mlkit.objects.detection)
-    implementation(libs.gson)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.lifecycle.livedata)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.kotlinx.coroutine.core)
-    implementation(libs.kotlinx.coroutine.android)
+
+    // --- Networking ---
     implementation(libs.squareup.retrofit2.retrofit)
     implementation(libs.squareup.retrofit2.converter.gson)
     implementation(libs.squareup.okhttp3.logging.interceptor)
+    implementation(libs.gson)
+
+    // --- Concurrency ---
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // --- Database ---
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // --- Lifecycle ---
+    implementation(libs.androidx.lifecycle.livedata)
+    implementation(libs.androidx.runtime.livedata)
+
+    // --- Background ---
     implementation(libs.androidx.work.runtime.ktx)
+
+    // --- Testing ---
+    testImplementation(libs.junit)
+
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 }
