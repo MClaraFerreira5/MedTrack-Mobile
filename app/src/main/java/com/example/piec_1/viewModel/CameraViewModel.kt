@@ -9,18 +9,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.piec_1.model.Medicamento
 import com.example.piec_1.service.CameraService
-import com.example.piec_1.service.DetectionService
 
 class CameraViewModel(application: Application) : AndroidViewModel(application) {
-    private val context = application.applicationContext
-    private val cameraService = CameraService(context)
-    private val detectionService = DetectionService(context)
+    private val cameraService = CameraService(getApplication())
 
     private val _photoPath = MutableLiveData<String?>()
-    val photoPath: LiveData<String?> = _photoPath
-
-    private val _recognizedText = MutableLiveData<String>()
-    val recognizedText: LiveData<String> get() = _recognizedText
 
     private val _medicamento = MutableLiveData<Medicamento?>()
     val medicamento: LiveData<Medicamento?> = _medicamento
@@ -28,7 +21,7 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
     private val _framePosition = MutableLiveData<Rect?>()
     val framePosition: LiveData<Rect?> get() = _framePosition
 
-    private val _isRectangleDetected = MutableLiveData<Boolean>(false)
+    private val _isRectangleDetected = MutableLiveData(false)
     val isRectangleDetected: LiveData<Boolean> get() = _isRectangleDetected
 
     private var previewWidth: Int = 0

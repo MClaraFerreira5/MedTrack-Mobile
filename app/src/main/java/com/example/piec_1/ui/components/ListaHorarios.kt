@@ -89,7 +89,7 @@ fun organizeMedicationsByDay(
 
     medicamentos.forEach { medicamento ->
         val nomeExibicao = if (medicamento.nome.equals("MEDICAMENTO GENÉRICO", ignoreCase = true)) {
-            medicamento.compostoAtivo ?: medicamento.nome
+            medicamento.compostoAtivo
         } else {
             medicamento.nome
         }
@@ -104,7 +104,7 @@ fun organizeMedicationsByDay(
             }
         } else {
             var currentDayIndex = 0
-            var horariosPorDia = mutableListOf<LocalTime>()
+            val horariosPorDia = mutableListOf<LocalTime>()
 
             medicamento.horarios.forEach { horarioStr ->
                 val horario = LocalTime.parse(horarioStr)

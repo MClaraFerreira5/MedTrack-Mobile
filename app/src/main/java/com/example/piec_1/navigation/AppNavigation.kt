@@ -53,7 +53,7 @@ fun AppNavigation() {
             TelaConfirmacao(navController, cameraViewModel, medicamentoViewModel)
         }
         composable("TelaCamera"){
-            TelaCamera(navController, 0, "", cameraViewModel)
+            TelaCamera(navController, cameraViewModel)
         }
         composable(
             "TelaCamera/{medicamentoId}/{horario}",
@@ -64,8 +64,6 @@ fun AppNavigation() {
         ) { backStackEntry ->
             TelaCamera(
                 navController = navController,
-                medicamentoId = backStackEntry.arguments?.getLong("medicamentoId") ?: -1,
-                horario = backStackEntry.arguments?.getString("horario") ?: "",
                 viewModel = cameraViewModel
             )
         }

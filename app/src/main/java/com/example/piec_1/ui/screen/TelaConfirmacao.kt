@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,24 +56,24 @@ import com.example.piec_1.viewModel.MedicamentoViewModel
 @Composable
 fun TelaConfirmacao(
     navController: NavController,
-    CameraViewModel: CameraViewModel,
+    cameraViewModel: CameraViewModel,
     medicamentoViewModel: MedicamentoViewModel
 ) {
-    val medicamentoState = CameraViewModel.medicamento.observeAsState()
+    val medicamentoState = cameraViewModel.medicamento.observeAsState()
     val medicamento = medicamentoState.value
-    val MedicamentoDesconhecido = Medicamento(
+    val medicamentoDesconhecido = Medicamento(
         id = 0,
         nome = "Desconhecido",
         compostoAtivo = "Desconhecido",
         dosagem = "Desconhecido",
         usoContinuo = false ,
-        horarios = listOf<String>()
+        horarios = listOf()
     )
 
     val medicamentoEditavel = remember(medicamento) {
-        mutableStateOf(medicamento ?: MedicamentoDesconhecido)
+        mutableStateOf(medicamento ?: medicamentoDesconhecido)
     }
-    var showEditDialogState = remember { mutableStateOf(false) }
+    val showEditDialogState = remember { mutableStateOf(false) }
     val showEditDialog = showEditDialogState.value
     val loadingState = remember { mutableStateOf(false) }
     val showSuccessDialog = remember { mutableStateOf(false) }
@@ -93,8 +92,8 @@ fun TelaConfirmacao(
 
     Log.d("Medicamento","$medicamento")
 
-    val success = verificarMedicamento(medicamento!!)
-    val message = getMessage(success, medicamento!!)
+    val success = verificarMedicamento(medicamento)
+    val message = getMessage(success, medicamento)
 
     if (showEditDialog) {
         Dialog(
@@ -192,7 +191,7 @@ fun TelaConfirmacao(
                         }
                         Button(
                             onClick = {
-                                CameraViewModel.atualizarMedicamento(medicamentoEditavel.value)
+                                cameraViewModel.atualizarMedicamento(medicamentoEditavel.value)
                                 showEditDialogState.value = false
                             },
                             shape = RoundedCornerShape(12.dp),

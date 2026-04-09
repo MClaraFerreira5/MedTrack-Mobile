@@ -1,10 +1,5 @@
 package com.example.piec_1.ui.screen
 
-import android.content.Context
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.util.Log
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -35,8 +30,6 @@ import com.example.piec_1.viewModel.CameraViewModel
 @Composable
 fun TelaCamera(
     navController: NavController,
-    medicamentoId: Long,
-    horario: String,
     viewModel: CameraViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -70,7 +63,7 @@ fun TelaCamera(
                 .offset(y = (-40).dp)
                 .clickable {
                     viewModel.capturePhoto(
-                        onImageCaptured = { imagePath ->
+                        onImageCaptured = { _ ->
                             navController.navigate("TelaConfirmacao")
                         },
                         medicamentoExtraido = { }

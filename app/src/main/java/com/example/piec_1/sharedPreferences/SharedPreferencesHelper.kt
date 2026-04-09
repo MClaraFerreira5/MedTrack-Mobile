@@ -1,6 +1,7 @@
 package com.example.piec_1.sharedPreferences
 
 import android.content.Context
+import androidx.core.content.edit
 
 object SharedPreferencesHelper {
     private const val PREFS_NAME = "MyAppPrefs"
@@ -8,11 +9,11 @@ object SharedPreferencesHelper {
 
     fun saveToken(context: Context, token: String) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY_TOKEN, token).apply()
+        prefs.edit { putString(KEY_TOKEN, token) }
     }
 
-    fun getToken(context: Context): String? {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getString(KEY_TOKEN, null)
-    }
+//    fun getToken(context: Context): String? {
+//        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+//        return prefs.getString(KEY_TOKEN, null)
+//    }
 }

@@ -6,9 +6,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.example.piec_1.MainActivity
 import com.example.piec_1.R
 import com.example.piec_1.notifications.NotificationHelper.formatarHorario
@@ -26,7 +26,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val deepLinkIntent = Intent(context, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
-            data = Uri.parse("app://telaCamera/$medicamentoId/$horario")
+            data = "app://telaCamera/$medicamentoId/$horario".toUri()
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 

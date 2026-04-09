@@ -100,8 +100,7 @@ fun TelaRedefinirSenha(navController: NavController) {
                 )
                 InfoBox(
                     message = "Um email foi enviado para você com o código para a alteração da senha",
-                    success = true,
-                    modifier = Modifier.fillMaxWidth()
+                    success = true
                 )
                 Text(
                     text = stringResource(id = R.string.redefinir_senha),
