@@ -29,9 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.example.piec_1.R
 import com.example.piec_1.model.Medicamento
 import com.example.piec_1.notifications.NotificationHelper.formatarHorario
-import com.example.piec_1.ui.theme.ButtonColor
-import com.example.piec_1.ui.theme.PrimaryColor
-import com.example.piec_1.ui.theme.SecondaryColor
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -58,7 +55,7 @@ fun ListaHorarios(medicamentos: List<Medicamento>, currentDate: LocalDate = Loca
                 Text(
                     text = dayTitle,
                     style = MaterialTheme.typography.titleMedium,
-                    color = SecondaryColor,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
                 )
 
@@ -89,7 +86,7 @@ fun organizeMedicationsByDay(
 
     medicamentos.forEach { medicamento ->
         val nomeExibicao = if (medicamento.nome.equals("MEDICAMENTO GENÉRICO", ignoreCase = true)) {
-            medicamento.compostoAtivo ?: medicamento.nome
+            medicamento.compostoAtivo
         } else {
             medicamento.nome
         }
@@ -104,7 +101,7 @@ fun organizeMedicationsByDay(
             }
         } else {
             var currentDayIndex = 0
-            var horariosPorDia = mutableListOf<LocalTime>()
+            val horariosPorDia = mutableListOf<LocalTime>()
 
             medicamento.horarios.forEach { horarioStr ->
                 val horario = LocalTime.parse(horarioStr)
@@ -205,7 +202,7 @@ private fun BlocoHorario(
         Icon(
             painter = painterResource(id = if (isContinuous) R.drawable.ic_continuous else R.drawable.ic_temporary),
             contentDescription = "Tipo de medicamento",
-            tint = if (isContinuous) PrimaryColor else ButtonColor,
+            tint = if (isContinuous) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
             modifier = Modifier
                 .size(36.dp)
                 .padding(end = 12.dp)
@@ -244,7 +241,7 @@ private fun BlocoHorario(
             text = horario,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = if (isContinuous) PrimaryColor else ButtonColor,
+            color= if (isContinuous) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
         )
     }
 }

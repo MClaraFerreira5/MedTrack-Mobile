@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,9 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
-import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.RobotoFont
-import com.example.piec_1.ui.theme.SecondaryColor
 import com.example.piec_1.viewModel.LoginViewModel
 
 @Composable
@@ -70,7 +69,10 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(PrimaryColor, SecondaryColor)
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.secondary
+                    )
                 )
             ),
         contentAlignment = Alignment.Center
@@ -93,7 +95,7 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
                     .height(50.dp)
                     .align(Alignment.TopStart)
                     .background(
-                        color = PrimaryColor,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     )
                     .padding(8.dp),
@@ -151,7 +153,8 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
                 Button(
                     onClick = { onLoginClick() },
                     shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
+                    colors = ButtonDefaults
+                        .buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .width(260.dp)
                         .height(50.dp)

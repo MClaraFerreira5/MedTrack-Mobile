@@ -27,8 +27,7 @@ import androidx.compose.ui.unit.dp
 fun InfoBox(
     message: String,
     success: Boolean,
-    size: TextStyle = MaterialTheme.typography.bodyMedium,
-    modifier: Modifier = Modifier
+    size: TextStyle = MaterialTheme.typography.bodyMedium
 ) {
     val icon = if (success) Icons.Filled.Check else Icons.Filled.Close
     val color = if (success) Color.Green else Color.Red

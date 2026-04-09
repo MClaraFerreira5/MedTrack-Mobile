@@ -1,6 +1,5 @@
 package com.example.piec_1.service
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.util.Log
@@ -9,7 +8,7 @@ import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.ObjectDetector
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 
-class DetectionService(private val context: Context) {
+class DetectionService {
 
     private val objectDetector: ObjectDetector
 

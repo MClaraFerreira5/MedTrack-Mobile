@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piec_1.R
-import com.example.piec_1.ui.theme.ButtonColor
 import com.example.piec_1.ui.theme.MontserratFont
 
 @Composable
@@ -66,7 +66,8 @@ fun ContentCard(navController: NavController) {
                     navController.navigate("TelaLogin")
                 },
                 shape = RoundedCornerShape(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ButtonColor),
+                colors = ButtonDefaults
+                    .buttonColors(containerColor = MaterialTheme.colorScheme.background),
                 modifier = Modifier
                     .padding(top = 50.dp)
                     .width(260.dp)
@@ -75,7 +76,7 @@ fun ContentCard(navController: NavController) {
                 Text(
                     text = "Iniciar",
                     fontSize = 36.sp,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontFamily = MontserratFont
                 )

@@ -3,7 +3,6 @@ package com.example.piec_1.viewModel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.piec_1.database.AppDatabase
@@ -29,7 +28,6 @@ class MedicamentoViewModel(application: Application) : AndroidViewModel(applicat
     private val authService = AuthService(application)
 
     private val _uiState = MutableLiveData<MedicamentoUIState>(MedicamentoUIState.Idle)
-    val uiState: LiveData<MedicamentoUIState> = _uiState
 
     sealed class MedicamentoUIState {
         object Idle : MedicamentoUIState()
@@ -80,15 +78,15 @@ class MedicamentoViewModel(application: Application) : AndroidViewModel(applicat
                 _uiState.value = MedicamentoUIState.Success("Medicamento confirmado!")
                 onSuccess()
 
-            } catch (e: TokenNaoEncontradoException) {
+            } catch (_: TokenNaoEncontradoException) {
                 _uiState.value = MedicamentoUIState.Error("Sessão expirada")
                 onError("Sessão expirada. Faça login novamente.")
 
-            } catch (e: MedicamentoNaoEncontradoException) {
+            } catch (_: MedicamentoNaoEncontradoException) {
                 _uiState.value = MedicamentoUIState.Error("Medicamento não cadastrado")
                 onError("Medicamento não cadastrado. Cadastre-o primeiro.")
 
-            } catch (e: ConfirmacaoExistenteException) {
+            } catch (_: ConfirmacaoExistenteException) {
                 _uiState.value = MedicamentoUIState.Error("Confirmação duplicada")
                 onError("Já existe uma confirmação para este horário.")
 
@@ -172,7 +170,7 @@ class MedicamentoViewModel(application: Application) : AndroidViewModel(applicat
         confirmacaoDao.update(confirmacao.copy(sincronizado = true))
     }
 
-    private suspend fun encontrarHorarioMaisProximo(horarios: List<String>): Pair<String, List<String>> {
+    private fun encontrarHorarioMaisProximo(horarios: List<String>): Pair<String, List<String>> {
         val horaAtual = LocalTime.now()
         val horariosOrdenados = horarios.sortedBy { LocalTime.parse(it) }
 
@@ -182,35 +180,6 @@ class MedicamentoViewModel(application: Application) : AndroidViewModel(applicat
         } ?: horariosOrdenados.lastOrNull() ?: "00:00"
 
         return Pair(horarioSelecionado, horariosOrdenados)
-    }
-
-    private fun sincronizarConfirmacoesPendentes() {
-        viewModelScope.launch {
-            try {
-                val token = authService.getToken() ?: return@launch
-                val confirmacoes = confirmacaoDao.getConfirmacoesNaoSincronizadas()
-
-                for (confirmacao in confirmacoes) {
-                    val response = apiService.confirmarMedicamento(
-                        "Bearer $token",
-                        DadosConfirmacaoRequest(
-                            usuarioId = getUsuarioId(),
-                            medicamentoId = confirmacao.medicamentoId,
-                            horario = confirmacao.horario,
-                            data = confirmacao.data,
-                            foiTomado = confirmacao.foiTomado,
-                            observacao = confirmacao.observacao
-                        )
-                    )
-
-                    if (response.isSuccessful) {
-                        confirmacaoDao.update(confirmacao.copy(sincronizado = true))
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("MedicamentoViewModel", "Erro ao sincronizar confirmações", e)
-            }
-        }
     }
 
     private suspend fun getUsuarioId(): Long {

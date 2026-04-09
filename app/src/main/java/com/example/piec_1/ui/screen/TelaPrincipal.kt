@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -27,9 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.ListaHorarios
-import com.example.piec_1.ui.theme.ButtonCamera
-import com.example.piec_1.ui.theme.PrimaryColor
-import com.example.piec_1.ui.theme.SecondaryColor
 import com.example.piec_1.viewModel.LoginViewModel
 
 @Composable
@@ -57,7 +55,12 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(colors = listOf(PrimaryColor, SecondaryColor))
+                Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.secondary
+                    )
+                )
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -76,7 +79,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                     .height(50.dp)
                     .align(Alignment.TopStart)
                     .background(
-                        color = PrimaryColor,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     )
                     .padding(8.dp),
@@ -123,7 +126,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                     .width(363.dp)
                     .height(590.dp)
                     .padding(top = 60.dp)
-                    .background(ButtonCamera)
+                    .background(MaterialTheme.colorScheme.background)
                     .align(Alignment.TopStart)
                     .verticalScroll(rememberScrollState())
             ) {

@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
 import android.net.Uri
+import android.os.Environment
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -32,7 +33,7 @@ import java.util.concurrent.Executors
 class CameraService(
     private val context: Context
 ) {
-    private val detectionService: DetectionService = DetectionService(context)
+    private val detectionService: DetectionService = DetectionService()
     private var imageCapture: ImageCapture? = null
 
     fun startCamera(
@@ -46,7 +47,7 @@ class CameraService(
 
             val preview = Preview.Builder()
                 .build()
-                .also { it.setSurfaceProvider(previewView.surfaceProvider) }
+                .also { it.surfaceProvider = previewView.surfaceProvider }
 
             val imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -73,7 +74,10 @@ class CameraService(
     }
 
     fun capturePhoto(onImageCaptured: (String) -> Unit, medicamento: (Medicamento) -> Unit){
-        val file = File(context.externalMediaDirs.first(), "${System.currentTimeMillis()}.jpg")
+        val file = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            "${System.currentTimeMillis()}.jpg"
+        )
         val outputFileOptions = ImageCapture.OutputFileOptions.Builder(file).build()
 
         imageCapture?.takePicture(outputFileOptions,
