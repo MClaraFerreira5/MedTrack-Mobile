@@ -2,15 +2,13 @@ package com.example.piec_1.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val PrimaryColor = Color(0xFF88E6D0)
-val SecondaryColor = Color(0xFF59D0AC)
-val ButtonColor = Color(0xFF7E57C2)
-val ButtonCamera = Color(0xFFEDE9E9)
-val ErrorColor = Color(0xFFD05959)
+val Primary = Color(0xFF08B6D4)
+val Secondary = Color(0xFF5BC7D7)
+val Background = Color(0xFFDEFEFE)
+val Surface = Color(0xFFFFFFFF)
+val OnPrimary = Color.White
+val OnSecondary = Color.Black
+val OnBackground = Color(0xFF1A1A1A)
+val OnSurface = Color(0xFF1A1A1A)
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Error = Color(0xFFD05959)

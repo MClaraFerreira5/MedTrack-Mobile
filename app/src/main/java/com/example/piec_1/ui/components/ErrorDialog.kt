@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.piec_1.ui.theme.ErrorColor
 
 @Composable
 fun ErrorDialog(
@@ -53,7 +53,7 @@ fun ErrorDialog(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Erro",
-                    tint = ErrorColor,
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(48.dp)
                 )
 
@@ -64,7 +64,7 @@ fun ErrorDialog(
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = ErrorColor
+                        color = MaterialTheme.colorScheme.error
                     ),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -83,7 +83,7 @@ fun ErrorDialog(
                     onClick = { onDismiss() },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ErrorColor,
+                        containerColor = MaterialTheme.colorScheme.error,
                         contentColor = Color.White
                     ),
                     modifier = Modifier.fillMaxWidth()

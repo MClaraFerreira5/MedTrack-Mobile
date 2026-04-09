@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -46,10 +47,7 @@ import com.example.piec_1.ui.components.ErrorDialog
 import com.example.piec_1.ui.components.InfoBoxError
 import com.example.piec_1.ui.components.InfoBoxSuccess
 import com.example.piec_1.ui.components.SuccessDialog
-import com.example.piec_1.ui.theme.ErrorColor
-import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.RobotoFont
-import com.example.piec_1.ui.theme.SecondaryColor
 import com.example.piec_1.viewModel.CameraViewModel
 import com.example.piec_1.viewModel.MedicamentoViewModel
 
@@ -118,7 +116,10 @@ fun TelaConfirmacao(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             brush = Brush.horizontalGradient(
-                                colors = listOf(PrimaryColor, SecondaryColor)
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary
+                                )
                             )
                         ),
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -135,7 +136,7 @@ fun TelaConfirmacao(
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PrimaryColor,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 unfocusedBorderColor = Color.Gray,
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
@@ -149,7 +150,7 @@ fun TelaConfirmacao(
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PrimaryColor,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 unfocusedBorderColor = Color.Gray,
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
@@ -158,12 +159,13 @@ fun TelaConfirmacao(
 
                         OutlinedTextField(
                             value = medicamentoEditavel.value.dosagem,
-                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(dosagem = it) },
+                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel
+                                .value.copy(dosagem = it) },
                             label = { Text("Dosagem") },
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PrimaryColor,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 unfocusedBorderColor = Color.Gray,
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
@@ -182,24 +184,29 @@ fun TelaConfirmacao(
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent,
-                                contentColor = PrimaryColor
+                                contentColor = MaterialTheme.colorScheme.primary
                             ),
-                            border = BorderStroke(1.dp, PrimaryColor),
+                            border = BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.primary),
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Cancelar")
                         }
                         Button(
                             onClick = {
-                                cameraViewModel.atualizarMedicamento(medicamentoEditavel.value)
+                                cameraViewModel
+                                    .atualizarMedicamento(medicamentoEditavel.value)
                                 showEditDialogState.value = false
                             },
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent,
-                                contentColor = PrimaryColor
+                                contentColor = MaterialTheme.colorScheme.primary
                             ),
-                            border = BorderStroke(1.dp, PrimaryColor),
+                            border = BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.primary),
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Confirmar")
@@ -215,7 +222,10 @@ fun TelaConfirmacao(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(PrimaryColor, SecondaryColor)
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.secondary
+                    )
                 )
             ),
         contentAlignment = Alignment.Center
@@ -237,7 +247,7 @@ fun TelaConfirmacao(
                     .height(50.dp)
                     .align(Alignment.TopStart)
                     .background(
-                        color = PrimaryColor,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     )
                     .padding(8.dp),
@@ -287,7 +297,9 @@ fun TelaConfirmacao(
                             )
                         },
                         shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
                         modifier = Modifier
                             .width(260.dp)
                             .height(50.dp)
@@ -333,7 +345,8 @@ fun TelaConfirmacao(
                 Button(
                     onClick = { navController.popBackStack() },
                     shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ErrorColor),
+                    colors = ButtonDefaults
+                        .buttonColors(containerColor = MaterialTheme.colorScheme.error),
                     modifier = Modifier
                         .width(260.dp)
                         .height(50.dp)
@@ -354,9 +367,9 @@ fun TelaConfirmacao(
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
-                        contentColor = PrimaryColor
+                        contentColor = MaterialTheme.colorScheme.primary
                     ),
-                    border = BorderStroke(1.dp, PrimaryColor),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     modifier = Modifier
                         .width(260.dp)
                         .height(50.dp)

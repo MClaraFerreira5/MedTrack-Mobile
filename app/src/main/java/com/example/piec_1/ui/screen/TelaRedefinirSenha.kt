@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -33,9 +34,7 @@ import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
 import com.example.piec_1.ui.components.InfoBox
-import com.example.piec_1.ui.theme.PrimaryColor
 import com.example.piec_1.ui.theme.RobotoFont
-import com.example.piec_1.ui.theme.SecondaryColor
 
 @Composable
 fun TelaRedefinirSenha(navController: NavController) {
@@ -50,7 +49,10 @@ fun TelaRedefinirSenha(navController: NavController) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(PrimaryColor, SecondaryColor)
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.secondary
+                    )
                 )
             ),
         contentAlignment = Alignment.Center
@@ -73,7 +75,7 @@ fun TelaRedefinirSenha(navController: NavController) {
                     .height(50.dp)
                     .align(Alignment.TopStart)
                     .background(
-                        color = PrimaryColor,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     )
                     .padding(8.dp),
@@ -145,7 +147,8 @@ fun TelaRedefinirSenha(navController: NavController) {
                         navController.navigate("TelaPrincipal")
                     }},
                     shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SecondaryColor),
+                    colors = ButtonDefaults
+                        .buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
                         .width(260.dp)
                         .height(50.dp)

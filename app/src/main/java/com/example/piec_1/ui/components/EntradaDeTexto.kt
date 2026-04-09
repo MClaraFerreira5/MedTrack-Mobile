@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -16,7 +17,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piec_1.ui.theme.RobotoFont
-import com.example.piec_1.ui.theme.SecondaryColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,10 +51,10 @@ fun EntradaDeTexto(
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
-            focusedBorderColor = if (isError) Color.Red else SecondaryColor,
+            focusedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.background,
             unfocusedBorderColor = if (isError) Color.Red else Color.Gray,
-            cursorColor = SecondaryColor,
-            focusedLabelColor = if (isError) Color.Red else SecondaryColor,
+            cursorColor = MaterialTheme.colorScheme.background,
+            focusedLabelColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.background,
             unfocusedLabelColor = if (isError) Color.Red else Color(0xFF999999),
             focusedTextColor = Color.Black,
             unfocusedTextColor = Color.Black,
