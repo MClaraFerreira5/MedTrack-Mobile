@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.piec_1.MainActivity
 import com.example.piec_1.R
+import com.example.piec_1.utils.formatarHorario
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -75,15 +76,6 @@ object NotificationHelper {
 
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    fun formatarHorario(horario: String): String {
-        return try {
-            LocalTime.parse(horario).format(DateTimeFormatter.ofPattern("HH:mm"))
-        } catch (e: Exception) {
-            Log.w("FormatarHorario", "Formato inválido: $horario")
-            if (horario.length >= 5) horario.substring(0, 5) else "--:--"
         }
     }
 }

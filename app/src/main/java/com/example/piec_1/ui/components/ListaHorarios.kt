@@ -1,4 +1,4 @@
-package com.example.piec_1.ui.screen
+package com.example.piec_1.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.domain.usecase.organizeMedicationsByDay
-import com.example.piec_1.ui.components.EmptyCard
-import com.example.piec_1.ui.components.HorarioCard
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

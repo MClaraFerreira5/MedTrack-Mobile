@@ -1,53 +1,43 @@
 package com.example.piec_1.ui.screen
 
-import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
-import com.example.piec_1.R
 import com.example.piec_1.domain.model.Medicamento
-import com.example.piec_1.ui.components.ErrorDialog
-import com.example.piec_1.ui.components.InfoBoxError
-import com.example.piec_1.ui.components.InfoBoxSuccess
-import com.example.piec_1.ui.components.SuccessDialog
-import com.example.piec_1.ui.theme.RobotoFont
+import com.example.piec_1.ui.components.EntradaDeTexto
+import com.example.piec_1.ui.components.MedTrackDialog
+import com.example.piec_1.ui.components.StatusCard
 import com.example.piec_1.ui.screen.viewModel.CameraViewModel
 import com.example.piec_1.ui.screen.viewModel.MedicamentoViewModel
 
@@ -57,345 +47,134 @@ fun TelaConfirmacao(
     cameraViewModel: CameraViewModel,
     medicamentoViewModel: MedicamentoViewModel
 ) {
-    val medicamentoState = cameraViewModel.medicamento.observeAsState()
-    val medicamento = medicamentoState.value
-    val medicamentoDesconhecido = Medicamento(
-        id = 0,
-        nome = "Desconhecido",
-        compostoAtivo = "Desconhecido",
-        dosagem = "Desconhecido",
-        usoContinuo = false ,
-        horarios = listOf()
-    )
-
+    val medicamento by cameraViewModel.medicamento.observeAsState()
+    var showEditDialog by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
     val medicamentoEditavel = remember(medicamento) {
         mutableStateOf(medicamento ?: medicamentoDesconhecido)
     }
-    val showEditDialogState = remember { mutableStateOf(false) }
-    val showEditDialog = showEditDialogState.value
-    val loadingState = remember { mutableStateOf(false) }
-    val showSuccessDialog = remember { mutableStateOf(false) }
-    val showErrorDialog = remember { mutableStateOf(false) }
-    val errorMessage = remember { mutableStateOf("") }
+
 
     if (medicamento == null) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
         return
     }
 
-    Log.d("Medicamento","$medicamento")
-
-    val success = verificarMedicamento(medicamento)
-    val message = getMessage(success, medicamento)
-
-    if (showEditDialog) {
-        Dialog(
-            onDismissRequest = { showEditDialogState.value = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(300.dp)
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Editar Medicamento",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.secondary
-                                )
-                            )
-                        ),
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    Column(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = medicamentoEditavel.value.nome,
-                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(nome = it) },
-                            label = { Text("Nome") },
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = Color.Gray,
-                                focusedTextColor = Color.Black,
-                                unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
-                            )
-                        )
-
-                        OutlinedTextField(
-                            value = medicamentoEditavel.value.compostoAtivo,
-                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(compostoAtivo = it) },
-                            label = { Text("Composto Ativo") },
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = Color.Gray,
-                                focusedTextColor = Color.Black,
-                                unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
-                            )
-                        )
-
-                        OutlinedTextField(
-                            value = medicamentoEditavel.value.dosagem,
-                            onValueChange = { medicamentoEditavel.value = medicamentoEditavel
-                                .value.copy(dosagem = it) },
-                            label = { Text("Dosagem") },
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = Color.Gray,
-                                focusedTextColor = Color.Black,
-                                unfocusedTextColor = Color.Black.copy(alpha = 0.8f)
-                            )
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Button(
-                            onClick = { showEditDialogState.value = false },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            border = BorderStroke(
-                                1.dp,
-                                MaterialTheme.colorScheme.primary),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Cancelar")
-                        }
-                        Button(
-                            onClick = {
-                                cameraViewModel
-                                    .atualizarMedicamento(medicamentoEditavel.value)
-                                showEditDialogState.value = false
-                            },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            border = BorderStroke(
-                                1.dp,
-                                MaterialTheme.colorScheme.primary),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Confirmar")
-                        }
-                    }
-                }
-            }
-        }
-    }
+    val isSuccess = verificarMedicamento(medicamento!!)
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.secondary
-                    )
-                )
-            ),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(
+            listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
+        )),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(750.dp)
-                .background(
-                    color = Color.White,
-                )
-                .padding(18.dp),
-            contentAlignment = Alignment.TopCenter
-        )
-        {
-            Box(
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    )
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.medtrack_white_icon),
-                    contentDescription = "Ícone MedTrack",
-                    tint = Color.White,
-                    modifier = Modifier.size(50.dp)
-                )
-            }
-
+        Surface(
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(top = 100.dp)
-            ){
-                Spacer(modifier = Modifier.height(16.dp))
+                modifier = Modifier.padding(24.dp).verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                StatusCard(medicamento!!, isSuccess)
 
-                if (success) {
-                    InfoBoxSuccess(
-                        medicamento = medicamento
-                    )
+                Spacer(modifier = Modifier.height(32.dp))
 
-                } else {
-                    InfoBoxError(message = message)
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                if (success) {
+                if (isSuccess) {
                     Button(
                         onClick = {
-                            loadingState.value = true
+                            loading = true
                             medicamentoViewModel.confirmarMedicamento(
-                                medicamentoCapturado = medicamento,
+                                medicamentoCapturado = medicamento!!,
                                 onSuccess = {
-                                    loadingState.value = false
-                                    showSuccessDialog.value = true
+                                    loading = false
+                                    navController.navigate("TelaPrincipal") {
+                                        popUpTo("TelaPrincipal") { inclusive = true }
+                                    }
                                 },
                                 onError = { error ->
-                                    loadingState.value = false
-                                    errorMessage.value = error
-                                    showErrorDialog.value = true
+                                    loading = false
+                                    println("Erro ao confirmar: $error")
                                 }
                             )
                         },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        ),
-                        modifier = Modifier
-                            .width(260.dp)
-                            .height(50.dp)
-                            .padding(top = 0.dp)
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        enabled = !loading
                     ) {
-                        if (loadingState.value) {
-                            CircularProgressIndicator(color = Color.White)
-                        } else {
-                            Text(
-                                text = "Confirmar",
-                                color = Color.White,
-                                fontFamily = RobotoFont,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
+                        if (loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White
                             )
+                        } else {
+                            Text("Tudo Certo, Confirmar", fontWeight = FontWeight.Bold)
                         }
                     }
-
-                    if (showSuccessDialog.value) {
-                        SuccessDialog(
-                            onDismiss = { showSuccessDialog.value = false },
-                            onConfirm = {
-                                showSuccessDialog.value = false
-                                navController.navigate("TelaPrincipal") {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        inclusive = true
-                                    }
-                                }
-                            }
-                        )
-                    }
-
-                    if (showErrorDialog.value) {
-                        ErrorDialog(
-                            errorMessage = errorMessage.value,
-                            onDismiss = { showErrorDialog.value = false }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                Button(
-                    onClick = { navController.popBackStack() },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults
-                        .buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                    modifier = Modifier
-                        .width(260.dp)
-                        .height(50.dp)
-                        .padding(top = 0.dp)
+                OutlinedButton(
+                    onClick = { showEditDialog = true },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(
-                        text = "Refazer Captura",
-                        color = Color.White,
-                        fontFamily = RobotoFont,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("Editar Informações")
                 }
-                Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
-                    onClick = { showEditDialogState.value = true },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                    modifier = Modifier
-                        .width(260.dp)
-                        .height(50.dp)
-                        .padding(top = 0.dp)
-                ) {
-                    Text(
-                        text = "Editar",
-                        fontFamily = RobotoFont,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextButton(onClick = { navController.popBackStack() }) {
+                    Text("Tirar outra foto", color = MaterialTheme.colorScheme.error)
                 }
             }
         }
     }
-}
 
-@Composable
-fun getMessage(sucess: Boolean, medicamento: Medicamento): String {
-    if (sucess) {
-        return "Medicamento identificado: ${medicamento.nome}, ${medicamento.compostoAtivo}, ${medicamento.dosagem}"
+    if (showEditDialog) {
+        MedTrackDialog(
+            titulo = "Editar Medicamento",
+            onDismiss = { showEditDialog = false },
+            onConfirm = {
+                cameraViewModel.atualizarMedicamento(medicamentoEditavel.value)
+                showEditDialog = false
+            }
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                EntradaDeTexto(
+                    label = "Nome do Medicamento",
+                    text = medicamentoEditavel.value.nome,
+                    onTextChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(nome = it) }
+                )
+                EntradaDeTexto(
+                    label = "Composto Ativo",
+                    text = medicamentoEditavel.value.compostoAtivo,
+                    onTextChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(compostoAtivo = it) }
+                )
+                EntradaDeTexto(
+                    label = "Dosagem",
+                    text = medicamentoEditavel.value.dosagem,
+                    onTextChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(dosagem = it) }
+                )
+            }
+        }
     }
-    return stringResource(id = R.string.confirmacao_falha)
 }
 
 private fun verificarMedicamento(medicamento: Medicamento): Boolean {
     return medicamento.nome != "Desconhecido" && medicamento.compostoAtivo != "Desconhecido" &&
             medicamento.dosagem != "Desconhecido"
 }
+
+private val medicamentoDesconhecido = Medicamento(
+    nome = "Desconhecido",
+    compostoAtivo = "Desconhecido",
+    dosagem = "Desconhecido",
+    id = 0,
+    horarios = emptyList(),
+    usoContinuo = false,
+    sincronizado = false
+)

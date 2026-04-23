@@ -1,23 +1,29 @@
 package com.example.piec_1.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,20 +39,13 @@ import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 @Composable
 fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) {
 
-    val usuario = loginViewModel.usuario.observeAsState().value
-    val medicamentos = loginViewModel.medicamentos.observeAsState().value
+    val usuario by loginViewModel.usuario.observeAsState()
+    val medicamentos by loginViewModel.medicamentos.observeAsState()
     val isLoading = usuario == null || medicamentos == null
 
-    Log.d("Principal", "Carregamento: $isLoading")
-    Log.d("Principal", "Usuário: $usuario")
-    Log.d("Principal", "Medicamentos: $medicamentos")
-
     if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color.White)
         }
         return
     }
@@ -61,76 +60,87 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                         MaterialTheme.colorScheme.secondary
                     )
                 )
-            ),
-        contentAlignment = Alignment.Center
+            )
     ) {
-        Box(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(750.dp)
-                .background(
-                    color = Color.White,
-                )
-                .padding(16.dp)
+                .fillMaxHeight(0.9f)
+                .align(Alignment.BottomCenter),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
         ) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(45.dp)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.medtrack_white_icon),
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.user_icon),
+                        contentDescription = "Perfil",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(45.dp)
                     )
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.medtrack_white_icon),
-                    contentDescription = "Ícone MedTrack",
-                    tint = Color.White,
-                    modifier = Modifier.size(50.dp)
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Olá, ${usuario?.nome ?: "Usuário"}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-            }
 
-            Icon(
-                painter = painterResource(id = R.drawable.user_icon),
-                contentDescription = "Perfil",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .align(Alignment.TopEnd)
-            )
+                Text(
+                    text = "Seus horários de hoje",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
-            Button(
-                onClick = { navController.navigate("TelaCamera") },
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .align(Alignment.BottomEnd)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_camera),
-                    contentDescription = "imagem de uma câmera",
-                    tint = Color.Unspecified,
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(modifier = Modifier.weight(1f)) {
+                    ListaHorarios(medicamentos = medicamentos ?: emptyList())
+                }
+
+                Button(
+                    onClick = { navController.navigate("TelaCamera") },
+                    shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
-                        .width(150.dp)
-                        .height(150.dp)
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .width(363.dp)
-                    .height(590.dp)
-                    .padding(top = 60.dp)
-                    .background(MaterialTheme.colorScheme.background)
-                    .align(Alignment.TopStart)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                ListaHorarios(medicamentos)
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_camera),
+                        contentDescription = "Abrir Câmera",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text("Escanear Medicamento", style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
     }

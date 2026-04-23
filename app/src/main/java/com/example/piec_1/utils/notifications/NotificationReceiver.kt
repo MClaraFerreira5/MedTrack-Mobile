@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.example.piec_1.MainActivity
 import com.example.piec_1.R
-import com.example.piec_1.utils.notifications.NotificationHelper.formatarHorario
+import com.example.piec_1.utils.formatarHorario
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
