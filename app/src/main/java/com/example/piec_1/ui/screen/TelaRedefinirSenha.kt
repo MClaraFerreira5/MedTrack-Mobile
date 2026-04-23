@@ -4,19 +4,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -26,25 +33,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
-import com.example.piec_1.ui.components.InfoBox
-import com.example.piec_1.ui.theme.RobotoFont
 
 @Composable
 fun TelaRedefinirSenha(navController: NavController) {
-
     val codigo = remember { mutableStateOf("") }
     val novaSenha = remember { mutableStateOf("") }
     val repetirNovaSenha = remember { mutableStateOf("") }
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
-        Box(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -55,66 +58,71 @@ fun TelaRedefinirSenha(navController: NavController) {
                     )
                 )
             ),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(750.dp)
-                .background(
-                    color = Color.White,
-                )
-                .padding(18.dp),
-            contentAlignment = Alignment.TopCenter)
-
-
-        {
-            Box(
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    )
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.medtrack_white_icon),
-                    contentDescription = "Ícone MedTrack",
-                    tint = Color.White,
-                    modifier = Modifier.size(50.dp)
-                )
-            }
-
+                .fillMaxHeight(0.85f),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(top = 100.dp)
-            ){
-                Text(
-                    text = "Redinição de senha",
-                    fontFamily = RobotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 23.sp
-                )
-                InfoBox(
-                    message = "Um email foi enviado para você com o código para a alteração da senha",
-                    success = true
-                )
-                Text(
-                    text = stringResource(id = R.string.redefinir_senha),
-                    fontFamily = RobotoFont,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(top = 10.dp)
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                        .padding(12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.medtrack_white_icon),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
 
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Nova Senha",
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 28.sp)
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+
+                Surface(
+                    color = Color(0xFFE8F5E9),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Color(0xFF2E7D32),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Código enviado para o seu e-mail.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF2E7D32)
+                        )
+                    }
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     EntradaDeTexto(
-                        label = "Código",
+                        label = "Código de 6 dígitos",
                         text = codigo.value,
                         onTextChange = { codigo.value = it },
                         isError = errorMessage.value != null
@@ -134,36 +142,43 @@ fun TelaRedefinirSenha(navController: NavController) {
                         isError = errorMessage.value != null
                     )
                 }
-                Spacer(modifier = Modifier.height(40.dp))
+
+                if (errorMessage.value != null) {
+                    Text(
+                        text = errorMessage.value!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
                 Button(
                     onClick = {
                         if (codigo.value.isBlank() || novaSenha.value.isBlank() ||
                             repetirNovaSenha.value.isBlank()) {
-                        errorMessage.value = "Por favor, preencha todos os campos."
-                    } else if (novaSenha.value != repetirNovaSenha.value) {
-                        errorMessage.value = "As senhas não coincidem."
-                    } else {
-                        errorMessage.value = null
-                        navController.navigate("TelaPrincipal")
-                    }},
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults
-                        .buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                            errorMessage.value = "Preencha todos os campos."
+                        } else if (novaSenha.value != repetirNovaSenha.value) {
+                            errorMessage.value = "As senhas não coincidem."
+                        } else {
+                            errorMessage.value = null
+                            navController.navigate("TelaPrincipal")
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
                     modifier = Modifier
-                        .width(260.dp)
-                        .height(50.dp)
-                        .padding(top = 0.dp)
+                        .fillMaxWidth()
+                        .height(56.dp)
                 ) {
-                    Text(
-                        text = "Redefinir",
-                        color = Color.White,
-                        fontFamily = RobotoFont,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("Salvar Nova Senha", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
-
 }

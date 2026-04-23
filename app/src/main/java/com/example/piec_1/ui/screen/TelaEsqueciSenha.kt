@@ -1,22 +1,24 @@
 package com.example.piec_1.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,11 +37,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
-import com.example.piec_1.ui.theme.RobotoFont
 
 @Composable
 fun TelaEsqueciSenha(navController: NavController) {
-
     val email = remember { mutableStateOf("") }
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
@@ -54,104 +54,101 @@ fun TelaEsqueciSenha(navController: NavController) {
                     )
                 )
             ),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(750.dp)
-                .background(
-                    color = Color.White,
-                )
-                .padding(18.dp),
-            contentAlignment = Alignment.TopCenter)
-
-
-        {
-            Box(
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    )
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.medtrack_white_icon),
-                    contentDescription = "Ícone MedTrack",
-                    tint = Color.White,
-                    modifier = Modifier.size(50.dp)
-                )
-            }
-
+                .fillMaxHeight(0.85f),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(top = 100.dp)
-            ){
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                        .padding(12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.medtrack_white_icon),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 Text(
-                    text = "Redefinição de senha",
-                    fontFamily = RobotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 46.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    text = "Recuperar Acesso",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 32.sp,
+                        textAlign = TextAlign.Center
+                    )
                 )
+
                 Text(
                     text = stringResource(id = R.string.esqueci_senha),
-                    fontFamily = RobotoFont,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(top = 10.dp)
-
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    EntradaDeTexto(
-                        label = "Email",
-                        text = email.value,
-                        onTextChange = { email.value = it },
-                        isError = errorMessage.value != null
-                    )
 
+                EntradaDeTexto(
+                    label = "Email para recuperação",
+                    text = email.value,
+                    onTextChange = {
+                        email.value = it
+                        errorMessage.value = null
+                    },
+                    isError = errorMessage.value != null
+                )
+
+                errorMessage.value?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
+                    )
                 }
-                Spacer(modifier = Modifier.height(40.dp))
+
+                Spacer(modifier = Modifier.height(48.dp))
+
                 Button(
                     onClick = {
                         if (email.value.isBlank()) {
                             errorMessage.value = "Por favor, insira um email válido."
                         } else {
-                            errorMessage.value = null
                             navController.navigate("TelaRedefinirSenha")
                         }
                     },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults
-                        .buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
                     modifier = Modifier
-                        .width(260.dp)
-                        .height(50.dp)
-                        .padding(top = 0.dp)
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text("Enviar e-mail", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                }
+
+                TextButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text(
-                        text = "Redefinir senha",
-                        color = Color.White,
-                        fontFamily = RobotoFont,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                TextButton(onClick = {navController.popBackStack()}) {
-                    Text(
-                        modifier = Modifier.padding(top = 0.dp),
                         text = "Voltar ao login",
-                        fontSize = 14.sp,
-                        fontFamily = RobotoFont,
-
-                        )
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
         }

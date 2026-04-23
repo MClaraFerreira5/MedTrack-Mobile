@@ -1,23 +1,29 @@
 package com.example.piec_1.ui.screen
 
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -25,7 +31,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.piec_1.ui.components.OverlayCamera
-import com.example.piec_1.viewModel.CameraViewModel
+import com.example.piec_1.ui.screen.viewModel.CameraViewModel
 
 @Composable
 fun TelaCamera(
@@ -36,66 +42,59 @@ fun TelaCamera(
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
 
-
-    val framePosition = viewModel.framePosition.observeAsState().value
-    val isRectangleDetected = viewModel.isRectangleDetected.observeAsState(false).value
+    val framePosition by viewModel.framePosition.observeAsState()
+    val isRectangleDetected by viewModel.isRectangleDetected.observeAsState(false)
 
     LaunchedEffect(Unit) {
         viewModel.startCamera(previewView, lifecycleOwner)
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 48.dp)
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
             factory = { previewView },
             modifier = Modifier.fillMaxSize()
         )
 
-        OverlayCamera(isRectangleDetected)
+        OverlayCamera(
+            isRectangleDetected = isRectangleDetected,
+            framePosition = framePosition
+        )
+
+        IconButton(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier
+                .padding(top = 40.dp, start = 16.dp)
+                .background(Color.Black.copy(alpha = 0.3f), CircleShape)
+        ) { Icon(
+            Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "Voltar",
+            tint = Color.White
+        ) }
 
         Box(
             modifier = Modifier
-                .size(80.dp)
                 .align(Alignment.BottomCenter)
-                .offset(y = (-40).dp)
-                .clickable {
+                .padding(bottom = 60.dp)
+                .size(80.dp)
+                .background(
+                    color = if (isRectangleDetected) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                    else Color.White.copy(alpha = 0.2f),
+                    shape = CircleShape
+                )
+                .clickable(enabled = isRectangleDetected) {
                     viewModel.capturePhoto(
-                        onImageCaptured = { _ ->
-                            navController.navigate("TelaConfirmacao")
-                        },
+                        onImageCaptured = { navController.navigate("TelaConfirmacao") },
                         medicamentoExtraido = { }
                     )
-                }
+                },
+            contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val outerRadius = size.maxDimension / 2
-                val innerRadius = outerRadius * 0.7f
-
-                drawCircle(
-                    color = Color.White,
-                    radius = outerRadius,
-                    style = Stroke(width = 8.dp.toPx())
-                )
-
-                drawCircle(
-                    color = Color.White,
-                    radius = innerRadius,
-                )
-            }
-        }
-
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            framePosition?.let { rect ->
-                drawRect(
-                    color = Color.White,
-                    topLeft = Offset(rect.left.toFloat(), rect.top.toFloat()),
-                    size = Size(rect.width().toFloat(), rect.height().toFloat()),
-                    style = Stroke(width = 4.dp.toPx())
-                )
-            }
+            Surface(
+                modifier = Modifier.size(60.dp),
+                shape = CircleShape,
+                color = if (isRectangleDetected) MaterialTheme.colorScheme.primary else Color.White,
+                border = BorderStroke(4.dp, Color.Black.copy(alpha = 0.1f))
+            ) {}
         }
     }
 }

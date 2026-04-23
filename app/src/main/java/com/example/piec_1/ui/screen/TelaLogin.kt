@@ -6,18 +6,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,8 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
-import com.example.piec_1.ui.theme.RobotoFont
-import com.example.piec_1.viewModel.LoginViewModel
+import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 
 @Composable
 fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
@@ -75,66 +77,58 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
                     )
                 )
             ),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(750.dp)
-                .background(
-                    color = Color.White,
-                )
-                .padding(18.dp),
-            contentAlignment = Alignment.TopCenter)
-
-
-        {
-            Box(
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    )
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.medtrack_white_icon),
-                    contentDescription = "Ícone MedTrack",
-                    tint = Color.White,
-                    modifier = Modifier.size(50.dp)
-                )
-            }
-
+                .fillMaxHeight(0.85f),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(top = 100.dp)
-            ){
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                        .padding(12.dp),
+                    contentAlignment = Alignment.Center
+                ){
+                    Icon(
+                        painter = painterResource(id = R.drawable.medtrack_white_icon),
+                        contentDescription = "Ícone MedTrack",
+                        tint = Color.White,
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 Text(
                     text = "Entrar",
-                    fontFamily = RobotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 46.sp
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 32.sp)
                 )
                 Text(
                     text = "Preencha os campos abaixo.",
-                    fontFamily = RobotoFont,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(top = 10.dp)
-
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     EntradaDeTexto(
                         label = "Usuário",
                         text = username.value,
                         onTextChange = { username.value = it },
                         isError = isError
-                        )
+                    )
                     EntradaDeTexto(
                         label = "Senha",
                         text = password.value,
@@ -144,40 +138,39 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
                     )
 
                 }
-                Spacer(modifier = Modifier.height(40.dp))
 
-                errorMessage?.let {
-                    Text(text = it, color = Color.Red, fontSize = 14.sp)
-                }
-
-                Button(
-                    onClick = { onLoginClick() },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults
-                        .buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                    modifier = Modifier
-                        .width(260.dp)
-                        .height(50.dp)
-                        .padding(top = 0.dp)
-                ) {
+                if (isError) {
                     Text(
-                        text = "Entrar",
-                        color = Color.White,
-                        fontFamily = RobotoFont,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
 
-                TextButton(onClick = {navController.navigate("TelaEsqueciSenha")}) {
+                Spacer(modifier = Modifier.height(40.dp))
 
+                Button(
+                    onClick = { onLoginClick() },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text("Entrar", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                }
+
+                TextButton(
+                    onClick = { navController.navigate("TelaEsqueciSenha") },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
                     Text(
-                        modifier = Modifier.padding(top = 0.dp),
                         text = "Esqueceu sua senha?",
-                        fontSize = 14.sp,
-                        fontFamily = RobotoFont,
-
-                        )
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
         }

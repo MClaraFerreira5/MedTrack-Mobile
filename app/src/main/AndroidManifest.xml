@@ -39,7 +39,7 @@
         </activity>
 
         <receiver
-            android:name="com.example.piec_1.notifications.NotificationReceiver"
+            android:name="com.example.piec_1.utils.notifications.NotificationReceiver"
             android:exported="false"
             tools:ignore="MissingClass"/>
 
