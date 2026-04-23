@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
 import com.example.piec_1.ui.theme.RobotoFont
-import com.example.piec_1.viewModel.LoginViewModel
+import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 
 @Composable
 fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {

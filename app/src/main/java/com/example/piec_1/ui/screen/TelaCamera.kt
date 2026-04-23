@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.piec_1.ui.components.OverlayCamera
-import com.example.piec_1.viewModel.CameraViewModel
+import com.example.piec_1.ui.screen.viewModel.CameraViewModel
 
 @Composable
 fun TelaCamera(

@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.ListaHorarios
-import com.example.piec_1.viewModel.LoginViewModel
+import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 
 @Composable
 fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) {

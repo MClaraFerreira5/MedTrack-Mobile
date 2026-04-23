@@ -18,8 +18,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import com.example.piec_1.navigation.AppNavigation
-import com.example.piec_1.notifications.NotificationHelper
+import com.example.piec_1.ui.navigation.AppNavigation
+import com.example.piec_1.utils.notifications.NotificationHelper
 import com.example.piec_1.ui.theme.PIEC1Theme
 
 

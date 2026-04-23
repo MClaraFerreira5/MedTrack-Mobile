@@ -42,14 +42,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.piec_1.R
-import com.example.piec_1.model.Medicamento
+import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.ui.components.ErrorDialog
 import com.example.piec_1.ui.components.InfoBoxError
 import com.example.piec_1.ui.components.InfoBoxSuccess
 import com.example.piec_1.ui.components.SuccessDialog
 import com.example.piec_1.ui.theme.RobotoFont
-import com.example.piec_1.viewModel.CameraViewModel
-import com.example.piec_1.viewModel.MedicamentoViewModel
+import com.example.piec_1.ui.screen.viewModel.CameraViewModel
+import com.example.piec_1.ui.screen.viewModel.MedicamentoViewModel
 
 @Composable
 fun TelaConfirmacao(
