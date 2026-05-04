@@ -21,8 +21,10 @@ import androidx.core.content.ContextCompat
 import com.example.piec_1.ui.navigation.AppNavigation
 import com.example.piec_1.utils.notifications.NotificationHelper
 import com.example.piec_1.ui.theme.PIEC1Theme
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

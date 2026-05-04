@@ -29,7 +29,7 @@ fun OverlayCamera(
     framePosition: Rect? = null
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
-    val overlayAlpha = if (isRectangleDetected) 0.2f else 0.6f
+    val overlayAlpha = if (isRectangleDetected) 0.0f else 0.6f
 
     Box(modifier = Modifier.fillMaxSize()) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -40,32 +40,36 @@ fun OverlayCamera(
             val cornerSize = 24.dp.toPx()
             val strokeWidth = 4.dp.toPx()
 
-            with(drawContext.canvas.nativeCanvas) {
-                val checkpoint = saveLayer(null, null)
-                drawRect(Color.Black.copy(alpha = overlayAlpha))
+            if (!isRectangleDetected) {
+                with(drawContext.canvas.nativeCanvas) {
+                    val checkpoint = saveLayer(null, null)
+                    drawRect(Color.Black.copy(alpha = overlayAlpha))
+
+                    // Desenha o "buraco" transparente no meio
+                    drawRoundRect(
+                        color = Color.Transparent,
+                        topLeft = Offset(
+                            (canvasWidth - rectWidth) / 2,
+                            (canvasHeight - rectHeight) / 2
+                        ),
+                        size = Size(rectWidth, rectHeight),
+                        cornerRadius = CornerRadius(16.dp.toPx()),
+                        blendMode = BlendMode.Clear
+                    )
+                    restoreToCount(checkpoint)
+                }
+
                 drawRoundRect(
-                    color = Color.Transparent,
+                    color = Color.White.copy(alpha = 0.3f),
                     topLeft = Offset(
                         (canvasWidth - rectWidth) / 2,
                         (canvasHeight - rectHeight) / 2
                     ),
                     size = Size(rectWidth, rectHeight),
                     cornerRadius = CornerRadius(16.dp.toPx()),
-                    blendMode = BlendMode.Clear
+                    style = Stroke(width = 1.dp.toPx())
                 )
-                restoreToCount(checkpoint)
             }
-
-            drawRoundRect(
-                color = Color.White.copy(alpha = 0.3f),
-                topLeft = Offset(
-                    (canvasWidth - rectWidth) / 2,
-                    (canvasHeight - rectHeight) / 2
-                ),
-                size = Size(rectWidth, rectHeight),
-                cornerRadius = CornerRadius(16.dp.toPx()),
-                style = Stroke(width = 1.dp.toPx())
-            )
 
             framePosition?.let { rect ->
                 val box = RectF(

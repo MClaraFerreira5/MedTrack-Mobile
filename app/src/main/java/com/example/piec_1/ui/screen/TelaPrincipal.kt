@@ -111,7 +111,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                 )
 
                 Text(
-                    text = "Seus horários de hoje",
+                    text = "Seus medicamentos da semana",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
