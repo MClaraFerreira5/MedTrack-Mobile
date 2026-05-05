@@ -36,24 +36,6 @@ class MedicamentoViewModel(application: Application) : AndroidViewModel(applicat
         data class Error(val message: String) : MedicamentoUIState()
     }
 
-//    suspend fun encontrarMedicamento(nome: String, compostoAtivo: String): Medicamento? {
-//        val termoNormalizado = nome
-//            .trim()
-//            .replace(Regex("[^a-zA-Z0-9]"), "")
-//            .lowercase()
-//
-//        val compostoNormalizado = compostoAtivo
-//            .trim()
-//            .replace(Regex("[^a-zA-Z0-9]"), "")
-//            .lowercase()
-//
-//        return medicamentoDao.buscarMedicamentoFlexivel(
-//            nome = "%$termoNormalizado%",
-//            compostoAtivo = "%$compostoNormalizado%",
-//            termoBusca = termoNormalizado
-//        ) ?: throw MedicamentoNaoEncontradoException()
-//    }
-
     fun confirmarMedicamento(
         medicamentoCapturado: Medicamento,
         onSuccess: () -> Unit,

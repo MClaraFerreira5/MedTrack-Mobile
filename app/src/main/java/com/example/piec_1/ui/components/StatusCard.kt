@@ -48,9 +48,9 @@ fun StatusCard(medicamento: Medicamento, isSuccess: Boolean) {
             if (isSuccess) {
                 // Detalhes do Medicamento
                 Column(Modifier.fillMaxWidth()) {
-                    Text("💊 Nome: ${medicamento.nome}")
-                    Text("🧪 Composto: ${medicamento.compostoAtivo}")
-                    Text("⚖️ Dosagem: ${medicamento.dosagem}")
+                    Text("Nome: ${medicamento.nome}")
+                    Text("Composto: ${medicamento.compostoAtivo}")
+                    Text("Dosagem: ${medicamento.dosagem}")
                 }
             } else {
                 Text("Dica: Tente focar melhor o texto e evite reflexos.", textAlign = TextAlign.Center)
