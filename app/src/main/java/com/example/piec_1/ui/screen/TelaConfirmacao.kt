@@ -159,6 +159,16 @@ fun TelaConfirmacao(
                     text = medicamentoEditavel.value.dosagem,
                     onTextChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(dosagem = it) }
                 )
+                EntradaDeTexto(
+                    label = "Quantidade",
+                    text = medicamentoEditavel.value.quantidade,
+                    onTextChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(quantidade = it) }
+                )
+                EntradaDeTexto(
+                    label = "Validade",
+                    text = medicamentoEditavel.value.validade ?: "",
+                    onTextChange = { medicamentoEditavel.value = medicamentoEditavel.value.copy(validade = it) }
+                )
             }
         }
     }
@@ -176,5 +186,7 @@ private val medicamentoDesconhecido = Medicamento(
     id = 0,
     horarios = emptyList(),
     usoContinuo = false,
-    sincronizado = false
+    sincronizado = false,
+    quantidade = "",
+    validade = ""
 )

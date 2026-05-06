@@ -16,7 +16,7 @@ import com.example.piec_1.domain.model.Usuario
 
 @Database(
     entities = [Usuario::class, Medicamento::class, Notificacao::class, Confirmacao::class],
-    version = 4
+    version = 5
 )
 
 @TypeConverters(Converters::class)
