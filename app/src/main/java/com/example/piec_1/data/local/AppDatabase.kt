@@ -8,15 +8,16 @@ import androidx.room.TypeConverters
 import com.example.piec_1.data.local.daos.ConfirmacaoDao
 import com.example.piec_1.data.local.daos.MedicamentoDao
 import com.example.piec_1.data.local.daos.NotificacaoDao
+import com.example.piec_1.data.local.daos.ScanQueueDao
 import com.example.piec_1.data.local.daos.UsuarioDao
 import com.example.piec_1.domain.model.Confirmacao
 import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.domain.model.Notificacao
 import com.example.piec_1.domain.model.Usuario
-
+import com.example.piec_1.data.local.entity.ScanQueueItem
 @Database(
-    entities = [Usuario::class, Medicamento::class, Notificacao::class, Confirmacao::class],
-    version = 5
+    entities = [Usuario::class, Medicamento::class, Notificacao::class, Confirmacao::class, ScanQueueItem::class],
+    version = 6
 )
 
 @TypeConverters(Converters::class)
@@ -26,6 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun notificacaoDao(): NotificacaoDao
     abstract fun confirmacaoDao(): ConfirmacaoDao
 
+    abstract fun scanQueueDao(): ScanQueueDao
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
