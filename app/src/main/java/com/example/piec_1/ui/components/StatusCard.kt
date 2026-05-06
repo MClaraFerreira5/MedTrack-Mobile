@@ -51,6 +51,8 @@ fun StatusCard(medicamento: Medicamento, isSuccess: Boolean) {
                     Text("Nome: ${medicamento.nome}")
                     Text("Composto: ${medicamento.compostoAtivo}")
                     Text("Dosagem: ${medicamento.dosagem}")
+                    Text("Quantidade: ${medicamento.quantidade}")
+                    Text("Validade: ${medicamento.validade}")
                 }
             } else {
                 Text("Dica: Tente focar melhor o texto e evite reflexos.", textAlign = TextAlign.Center)

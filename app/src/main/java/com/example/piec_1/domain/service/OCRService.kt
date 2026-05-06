@@ -39,7 +39,9 @@ class OCRService {
             compostoAtivo = compostoAtivo ?: "Desconhecido",
             dosagem = dosagem ?: "Desconhecido",
             horarios = emptyList(),
-            usoContinuo = true
+            usoContinuo = true,
+            validade = "",
+            quantidade = ""
         )
     }
 

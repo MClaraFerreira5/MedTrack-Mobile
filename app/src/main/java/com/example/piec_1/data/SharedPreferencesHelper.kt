@@ -12,8 +12,8 @@ object SharedPreferencesHelper {
         prefs.edit { putString(KEY_TOKEN, token) }
     }
 
-//    fun getToken(context: Context): String? {
-//        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-//        return prefs.getString(KEY_TOKEN, null)
-//    }
+    fun getToken(context: Context): String? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(KEY_TOKEN, null)
+    }
 }

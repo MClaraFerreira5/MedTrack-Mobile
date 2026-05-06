@@ -8,7 +8,8 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
-import android.net.Uri
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Environment
 import android.util.Log
 import androidx.annotation.OptIn
@@ -23,24 +24,31 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.example.piec_1.domain.model.Medicamento
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.example.piec_1.data.SharedPreferencesHelper
+import com.example.piec_1.data.remote.ApiService
+import com.example.piec_1.data.remote.ScanResponse
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.Executors
 
 class CameraService(
-    private val context: Context
+    private val context: Context,
+    private val apiService: ApiService
 ) {
+
     private val detectionService: DetectionService = DetectionService()
     private var imageCapture: ImageCapture? = null
 
     fun startCamera(
         previewView: PreviewView,
         lifecycleOwner: LifecycleOwner,
-        onObjectDetected: (Boolean, Rect?) -> Unit){
+        onObjectDetected: (Boolean, Rect?) -> Unit
+    ) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener({
@@ -74,7 +82,7 @@ class CameraService(
         }, ContextCompat.getMainExecutor(context))
     }
 
-    fun capturePhoto(onImageCaptured: (String) -> Unit, medicamento: (Medicamento) -> Unit){
+    fun capturePhoto(onScanResult: (ScanResponse?) -> Unit) {
         val file = File(
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
             "${System.currentTimeMillis()}.jpg"
@@ -85,37 +93,51 @@ class CameraService(
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    onImageCaptured(file.absolutePath)
-                    processImage(file, medicamento)
+                    if (!isWifiConnected()) {
+                        Log.w("CameraX", "Sem Wi-Fi. Abortando scan online.")
+                        onScanResult(null)
+                        return
+                    }
+
+                    MainScope().launch {
+                        val resultado = enviarParaScan(file)
+                        onScanResult(resultado)
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
                     Log.e("CameraX", "Erro ao capturar foto: ${exception.message}")
+                    onScanResult(null)
                 }
             })
     }
 
-    fun processImage(file: File, medicamento: (Medicamento) -> Unit) {
-        val image = InputImage.fromFilePath(context, Uri.fromFile(file))
+    suspend fun enviarParaScan(file: File): ScanResponse? {
+        val token = SharedPreferencesHelper.getToken(context) ?: return null
 
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                val extractedText = visionText.text
-                Log.d("MLKit", "Texto extraído: $extractedText")
-
-                val ocrService = OCRService()
-                val medicamentoExtraido = ocrService.extrairMedicamentoInfo(extractedText)
-
-                Log.d("OCR", "$medicamentoExtraido")
-
-                medicamento(medicamentoExtraido)
-
+        return try {
+            val response = apiService.scanMedicamento("Bearer $token", body)
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                Log.e("Scan", "Erro na API: ${response.code()}")
+                null
             }
-            .addOnFailureListener { e ->
-                Log.e("MLKit", "Erro ao reconhecer texto", e)
-            }
+        } catch (e: Exception) {
+            Log.e("Scan", "Erro detalhado: ${e.message}") // Isso vai te dizer se é erro de JSON!
+            Log.e("Scan", "Falha na conexão: ${e.message}")
+            null
+        }
+    }
+
+    private fun isWifiConnected(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
     }
 
     @OptIn(ExperimentalGetImage::class)
@@ -134,30 +156,16 @@ class CameraService(
                 onObjectDetected(detected, objectBounds)
             }
         }
-
         imageProxy.close()
     }
 
     private fun Image.toBitmap(rotationDegrees: Int): Bitmap {
         val yuvBytes = yuv420ToNv21(this)
         val yuvImage = YuvImage(yuvBytes, ImageFormat.NV21, width, height, null)
-
         val out = ByteArrayOutputStream()
-        val success = yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
-
-        if (!success) {
-            Log.e("CameraX", "Erro ao comprimir YUV para JPEG")
-            throw IllegalStateException("Erro ao comprimir imagem")
-        }
-
+        yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
         val imageBytes = out.toByteArray()
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
-        if (bitmap == null) {
-            Log.e("CameraX", "Falha ao converter a imagem para Bitmap")
-            throw IllegalStateException("Falha na conversão para Bitmap")
-        }
-
         val matrix = Matrix()
         matrix.postRotate(rotationDegrees.toFloat())
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
@@ -167,32 +175,22 @@ class CameraService(
         val yPlane = image.planes[0].buffer
         val uPlane = image.planes[1].buffer
         val vPlane = image.planes[2].buffer
-
         val ySize = yPlane.remaining()
         val uSize = uPlane.remaining()
         val vSize = vPlane.remaining()
-
         val nv21 = ByteArray(ySize + uSize + vSize)
-
         yPlane.get(nv21, 0, ySize)
-
         val uvPixelStride = image.planes[1].pixelStride
         val uvRowStride = image.planes[1].rowStride
         var pos = ySize
-
         for (row in 0 until image.height / 2) {
             for (col in 0 until image.width / 2) {
-                val uIndex = row * uvRowStride + col * uvPixelStride
                 val vIndex = row * uvRowStride + col * uvPixelStride
-
+                val uIndex = row * uvRowStride + col * uvPixelStride
                 nv21[pos++] = vPlane[vIndex]
                 nv21[pos++] = uPlane[uIndex]
             }
         }
-
         return nv21
     }
-
-
 }
-
