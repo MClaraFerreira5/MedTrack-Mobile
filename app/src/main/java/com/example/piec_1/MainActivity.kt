@@ -34,6 +34,11 @@ class MainActivity : ComponentActivity() {
     companion object {
         var pendingMedicamentoFromNotification: Medicamento? = null
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        NavigationManager.clearController()
+        NavigationManager.reset()
+    }
 
     private var navController: NavController? = null
 
@@ -55,7 +60,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // MainActivity.kt (apenas a parte relevante)
         setContent {
             PIEC1Theme {
                 val isPermissionGranted = remember { mutableStateOf(false) }
@@ -63,17 +67,9 @@ class MainActivity : ComponentActivity() {
                 if (isPermissionGranted.value) {
                     AppNavigation(
                         onNavControllerReady = { controller ->
-                            NavigationManager.init(controller) // ← Usa init em vez de setNavController
+                            NavigationManager.init(controller)
                         }
                     )
-
-                    // Processar medicamento pendente após a UI estar pronta
-                    LaunchedEffect(Unit) {
-                        pendingMedicamentoFromNotification?.let { medicamento ->
-                            NavigationManager.setMedicamento(medicamento)
-                            pendingMedicamentoFromNotification = null
-                        }
-                    }
                 } else {
                     RequestPermission { isGranted ->
                         isPermissionGranted.value = isGranted
@@ -86,13 +82,12 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         processIntent(intent)
 
-        // Pequeno delay para garantir que a UI está pronta
         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
             pendingMedicamentoFromNotification?.let { medicamento ->
                 NavigationManager.setMedicamento(medicamento)
                 pendingMedicamentoFromNotification = null
             }
-        }, 300)
+        }, 500)
     }
 
     private fun processIntent(intent: Intent) {
