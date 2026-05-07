@@ -3,6 +3,7 @@ package com.example.piec_1.ui.navigation
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,6 +26,7 @@ import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 import com.example.piec_1.ui.screen.viewModel.MedicamentoViewModel
 import com.example.piec_1.ui.screen.viewModel.LoginViewModelFactory
 import com.example.piec_1.utils.connection.ConnectivityObserver
+import kotlinx.coroutines.delay
 
 @Composable
 fun AppNavigation(
@@ -36,13 +38,25 @@ fun AppNavigation(
         factory = LoginViewModelFactory(LocalContext.current.applicationContext as Application)
     )
     val context = LocalContext.current
-
     val connectivityObserver = remember { ConnectivityObserver(context) }
-
     val medicamentoViewModel: MedicamentoViewModel = viewModel()
+
+    val shouldNavigate = NavigationManager.shouldNavigate.collectAsState()
 
     LaunchedEffect(Unit) {
         onNavControllerReady(navController)
+    }
+
+    LaunchedEffect(shouldNavigate.value) {
+        if (shouldNavigate.value != null) {
+            delay(300) // Pequeno delay para garantir que a UI está pronta
+            val medicamento = shouldNavigate.value
+            cameraViewModel.atualizarMedicamento(medicamento!!)
+            navController.navigate("TelaConfirmacao") {
+                popUpTo("TelaInicial") { inclusive = true }
+                launchSingleTop = true
+            }
+        }
     }
 
     NavHost(
