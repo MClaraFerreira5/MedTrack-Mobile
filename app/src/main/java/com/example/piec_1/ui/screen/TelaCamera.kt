@@ -1,5 +1,5 @@
 package com.example.piec_1.ui.screen
-
+import androidx.compose.ui.unit.sp
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -12,15 +12,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,24 +43,39 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.piec_1.ui.components.OverlayCamera
 import com.example.piec_1.ui.screen.viewModel.CameraViewModel
+import com.example.piec_1.utils.connection.ConnectivityObserver
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.example.piec_1.MainActivity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.widget.Toast
 
 @Composable
 fun TelaCamera(
     navController: NavController,
-    viewModel: CameraViewModel = viewModel()
+    viewModel: CameraViewModel = viewModel(),
+    connectivityObserver: ConnectivityObserver
 ) {
+    var showOfflineDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
     val isLoading by viewModel.isLoading.observeAsState(false)
     val framePosition by viewModel.framePosition.observeAsState()
     val isRectangleDetected by viewModel.isRectangleDetected.observeAsState(false)
+    val isWifi by connectivityObserver.isWifiAvailable.collectAsState(initial = false)
 
     LaunchedEffect(Unit) {
         viewModel.startCamera(previewView, lifecycleOwner)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+
         AndroidView(
             factory = { previewView },
             modifier = Modifier.fillMaxSize()
@@ -85,9 +110,13 @@ fun TelaCamera(
                     shape = CircleShape
                 )
                 .clickable(enabled = isRectangleDetected) {
-                    viewModel.capturePhoto(
-                        navController
-                    )
+                    if (isWifi) {
+                        // Online - captura e envia
+                        viewModel.capturePhoto(navController, true)
+                    } else {
+                        // Offline - mostra diálogo de confirmação
+                        showOfflineDialog = true
+                    }
                 },
             contentAlignment = Alignment.Center
         ) {
@@ -98,29 +127,73 @@ fun TelaCamera(
                 border = BorderStroke(4.dp, Color.Black.copy(alpha = 0.1f))
             ) {}
         }
+
+
         if (isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.6f))
-                    .clickable(enabled = false) { }, // Bloqueia cliques atrás
+                    .clickable(enabled = false) { },
                 contentAlignment = Alignment.Center
             ) {
                 androidx.compose.foundation.layout.Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    androidx.compose.material3.CircularProgressIndicator(
+                    CircularProgressIndicator(
                         color = Color.White,
                         strokeWidth = 4.dp
                     )
                     androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
-                    androidx.compose.material3.Text(
-                        text = "IA analisando medicamento...",
+                    Text(
+                        text = "Processando...",
                         color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
         }
+
+        if (showOfflineDialog) {
+            AlertDialog(
+                onDismissRequest = { showOfflineDialog = false },
+                title = {
+                    Text(
+                        text = "Você está offline 📶",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = {
+                    Text(
+                        text = "Deseja salvar a foto do medicamento para processar automaticamente quando o Wi-Fi voltar?"
+                    )
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.CloudOff,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(40.dp)
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showOfflineDialog = false
+                            viewModel.processOfflinePhoto()
+                        }
+                    ) {
+                        Text("Salvar para depois", color = MaterialTheme.colorScheme.primary)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showOfflineDialog = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+
+
     }
 }

@@ -2,13 +2,17 @@ package com.example.piec_1.ui.navigation
 
 import android.app.Application
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.ui.screen.TelaLogin
 import com.example.piec_1.ui.screen.TelaCamera
 import com.example.piec_1.ui.screen.TelaConfirmacao
@@ -20,15 +24,26 @@ import com.example.piec_1.ui.screen.viewModel.CameraViewModel
 import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 import com.example.piec_1.ui.screen.viewModel.MedicamentoViewModel
 import com.example.piec_1.ui.screen.viewModel.LoginViewModelFactory
+import com.example.piec_1.utils.connection.ConnectivityObserver
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    onNavControllerReady: (NavController) -> Unit = {}
+) {
     val navController = rememberNavController()
     val cameraViewModel: CameraViewModel = viewModel()
     val loginViewModel: LoginViewModel = viewModel(
         factory = LoginViewModelFactory(LocalContext.current.applicationContext as Application)
     )
+    val context = LocalContext.current
+
+    val connectivityObserver = remember { ConnectivityObserver(context) }
+
     val medicamentoViewModel: MedicamentoViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        onNavControllerReady(navController)
+    }
 
     NavHost(
         navController = navController,
@@ -53,7 +68,7 @@ fun AppNavigation() {
             TelaConfirmacao(navController, cameraViewModel, medicamentoViewModel)
         }
         composable("TelaCamera"){
-            TelaCamera(navController, cameraViewModel)
+            TelaCamera(navController, cameraViewModel, connectivityObserver)
         }
         composable(
             "TelaCamera/{medicamentoId}/{horario}",
@@ -64,7 +79,8 @@ fun AppNavigation() {
         ) { backStackEntry ->
             TelaCamera(
                 navController = navController,
-                viewModel = cameraViewModel
+                viewModel = cameraViewModel,
+                connectivityObserver = connectivityObserver
             )
         }
     }

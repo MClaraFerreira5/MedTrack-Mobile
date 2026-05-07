@@ -37,6 +37,7 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Response<ScanResponse>
 
+
 }
 
 data class LoginResponse(

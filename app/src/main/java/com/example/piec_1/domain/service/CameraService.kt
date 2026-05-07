@@ -8,8 +8,7 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.annotation.OptIn
@@ -82,62 +81,50 @@ class CameraService(
         }, ContextCompat.getMainExecutor(context))
     }
 
-    fun capturePhoto(onScanResult: (ScanResponse?) -> Unit) {
-        val file = File(
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-            "${System.currentTimeMillis()}.jpg"
+    // Método UNIFICADO que apenas captura e salva a foto, sem lógica de rede
+    fun capturePhotoOnly(onImageCaptured: (Uri?) -> Unit) {
+        val photoFile = File(
+            context.filesDir,
+            "scan_${System.currentTimeMillis()}.jpg"
         )
-        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(file).build()
 
-        imageCapture?.takePicture(outputFileOptions,
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+        imageCapture?.takePicture(
+            outputOptions,
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    if (!isWifiConnected()) {
-                        Log.w("CameraX", "Sem Wi-Fi. Abortando scan online.")
-                        onScanResult(null)
-                        return
-                    }
-
-                    MainScope().launch {
-                        val resultado = enviarParaScan(file)
-                        onScanResult(resultado)
-                    }
+                    Log.d("CameraService", "Foto salva com sucesso em: ${photoFile.absolutePath}")
+                    onImageCaptured(Uri.fromFile(photoFile))
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    Log.e("CameraX", "Erro ao capturar foto: ${exception.message}")
-                    onScanResult(null)
+                    Log.e("CameraService", "Erro ao salvar foto: ${exception.message}")
+                    onImageCaptured(null)
                 }
-            })
+            }
+        )
     }
 
-    suspend fun enviarParaScan(file: File): ScanResponse? {
-        val token = SharedPreferencesHelper.getToken(context) ?: return null
-
-        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-
+    // Método para upload online (usado apenas quando há Wi-Fi)
+    suspend fun uploadPhotoForScan(file: File, token: String): ScanResponse? {
         return try {
+            val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
             val response = apiService.scanMedicamento("Bearer $token", body)
+
             if (response.isSuccessful) {
                 response.body()
             } else {
-                Log.e("Scan", "Erro na API: ${response.code()}")
+                Log.e("Scan", "Erro na API: ${response.code()} - ${response.message()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e("Scan", "Erro detalhado: ${e.message}") // Isso vai te dizer se é erro de JSON!
-            Log.e("Scan", "Falha na conexão: ${e.message}")
+            Log.e("Scan", "Falha no upload: ${e.message}")
             null
         }
-    }
-
-    private fun isWifiConnected(): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
     }
 
     @OptIn(ExperimentalGetImage::class)
