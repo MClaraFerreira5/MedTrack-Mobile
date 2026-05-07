@@ -1,4 +1,3 @@
-// NavigationManager.kt
 package com.example.piec_1.ui.navigation
 
 import android.util.Log
@@ -36,7 +35,6 @@ object NavigationManager {
 
             Log.d("NavigationManager", "🚀 Navegando para confirmação: ${medicamento.nome}")
 
-            // Usar postDelayed para garantir que a UI está pronta
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                 try {
                     navController?.navigate("TelaConfirmacao") {

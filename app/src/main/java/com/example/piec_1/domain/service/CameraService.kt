@@ -1,4 +1,3 @@
-// CameraService.kt - Versão corrigida
 package com.example.piec_1.domain.service
 
 import android.content.Context

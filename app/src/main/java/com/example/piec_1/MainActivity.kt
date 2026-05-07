@@ -1,4 +1,3 @@
-// MainActivity.kt
 package com.example.piec_1
 
 import android.Manifest

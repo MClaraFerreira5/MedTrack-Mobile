@@ -99,7 +99,6 @@ fun TelaCamera(
             )
         }
 
-        // Botão de captura
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -129,7 +128,7 @@ fun TelaCamera(
             ) {}
         }
 
-        // Loading overlay
+
         if (isLoading) {
             Box(
                 modifier = Modifier
@@ -155,7 +154,6 @@ fun TelaCamera(
             }
         }
 
-        // Diálogo OFFLINE - com ação de salvar!
         if (showOfflineDialog) {
             AlertDialog(
                 onDismissRequest = { showOfflineDialog = false },
@@ -182,7 +180,6 @@ fun TelaCamera(
                     TextButton(
                         onClick = {
                             showOfflineDialog = false
-                            // SALVAR PARA DEPOIS
                             viewModel.processOfflinePhoto()
                         }
                     ) {
@@ -197,81 +194,6 @@ fun TelaCamera(
             )
         }
 
-        // Botão de teste de notificação
-        Button(
-            onClick = {
-                testarNotificacao(context)
-            },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-                .size(100.dp, 50.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Magenta
-            )
-        ) {
-            Text("🔔 Teste")
-        }
+
     }
-}
-
-// Função para testar notificação
-// Substitua a função testarNotificacao por esta versão com verificação de permissão:
-fun testarNotificacao(context: Context) {
-    // Verificar permissão para Android 13+
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        if (androidx.core.content.ContextCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.POST_NOTIFICATIONS
-            ) != android.content.pm.PackageManager.PERMISSION_GRANTED
-        ) {
-            Toast.makeText(context, "Permissão de notificação não concedida!", Toast.LENGTH_LONG).show()
-            return
-        }
-    }
-
-    val channelId = "teste_channel"
-    val notificationId = 999
-
-    // Criar canal para Android 8+
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val channel = NotificationChannel(
-            channelId,
-            "Canal de Teste",
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            description = "Canal para testar notificações"
-        }
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
-    }
-
-    // Intent para abrir o app
-    val intent = Intent(context, MainActivity::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-    }
-
-    val pendingIntent = PendingIntent.getActivity(
-        context,
-        0,
-        intent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
-
-    // Criar notificação
-    val notification = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(android.R.drawable.ic_dialog_info)
-        .setContentTitle("✅ NOTIFICAÇÃO FUNCIONOU!")
-        .setContentText("Se você está vendo isso, as notificações estão configuradas corretamente")
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setAutoCancel(true)
-        .setContentIntent(pendingIntent)
-        .build()
-
-    // Enviar notificação
-    with(NotificationManagerCompat.from(context)) {
-        notify(notificationId, notification)
-    }
-
-    Toast.makeText(context, "Notificação de teste enviada! 🔔", Toast.LENGTH_LONG).show()
 }

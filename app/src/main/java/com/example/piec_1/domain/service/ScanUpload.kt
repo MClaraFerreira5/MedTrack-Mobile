@@ -1,4 +1,3 @@
-// ScanUpload.kt - Corrigir o nome do campo da imagem
 package com.example.piec_1.domain.service
 
 import android.app.NotificationChannel
@@ -16,12 +15,10 @@ import com.example.piec_1.MainActivity
 import com.example.piec_1.data.SharedPreferencesHelper
 import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.repository.ScanRepository
-import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
@@ -57,7 +54,6 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
                 Log.d(TAG, "📸 Arquivo: ${file.absolutePath}, existe: ${file.exists()}, tamanho: ${file.length()} bytes")
 
                 if (file.exists()) {
-                    // Tenta diferentes nomes de campo que a API pode esperar
                     val response = enviarImagemParaApi(file)
 
                     if (response != null) {
@@ -84,10 +80,8 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private suspend fun enviarImagemParaApi(file: File): MedicamentoData? {
-        // Criar o corpo da requisição com o arquivo
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
 
-        // TENTATIVA 1: Campo "file" (como está no seu código original)
         var body = MultipartBody.Part.createFormData("file", file.name, requestFile)
         var response = repository.apiService.scanMedicamento("Bearer $token", body)
 
@@ -97,7 +91,6 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
 
         Log.e(TAG, "Tentativa com 'file' falhou: ${response.code()}")
 
-        // TENTATIVA 2: Campo "image"
         body = MultipartBody.Part.createFormData("image", file.name, requestFile)
         response = repository.apiService.scanMedicamento("Bearer $token", body)
 
@@ -107,7 +100,6 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
 
         Log.e(TAG, "Tentativa com 'image' falhou: ${response.code()}")
 
-        // TENTATIVA 3: Campo "photo"
         body = MultipartBody.Part.createFormData("photo", file.name, requestFile)
         response = repository.apiService.scanMedicamento("Bearer $token", body)
 
@@ -117,10 +109,8 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
 
         Log.e(TAG, "Tentativa com 'photo' falhou: ${response.code()}")
 
-        // TENTATIVA 4: Sem Multipart, enviar como body direto (se a API espera o arquivo raw)
         try {
             val imageBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            // Você precisaria criar um método na API que aceita @Body RequestBody
         } catch (e: Exception) {
             Log.e(TAG, "Tentativa raw falhou: ${e.message}")
         }
@@ -128,7 +118,6 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
         return null
     }
 
-    // ScanUpload.kt - Atualize a função enviarNotificacaoComDados
     private fun enviarNotificacaoComDados(medicamentoData: MedicamentoData) {
         val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "offline_scan_channel"
@@ -142,14 +131,12 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Converte para JSON para passar todos os dados
         val medicamentoJson = Gson().toJson(medicamentoData)
 
-        // Intent para abrir DIRECTAMENTE na TelaConfirmacao
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             action = "OPEN_CONFIRMATION"
             putExtra("medicamento_json", medicamentoJson)
-            putExtra("navigate_to_confirmation", true) // Flag para navegar direto
+            putExtra("navigate_to_confirmation", true)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 

@@ -1,4 +1,3 @@
-// AppNavigation.kt - Versão CORRETA (sem shouldNavigateToConfirmation)
 package com.example.piec_1.ui.navigation
 
 import android.app.Application
@@ -42,7 +41,6 @@ fun AppNavigation(
 
     val medicamentoViewModel: MedicamentoViewModel = viewModel()
 
-    // Notifica que o NavController está pronto
     LaunchedEffect(Unit) {
         onNavControllerReady(navController)
     }
