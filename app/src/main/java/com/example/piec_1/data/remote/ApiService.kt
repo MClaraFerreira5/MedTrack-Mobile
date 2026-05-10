@@ -2,7 +2,7 @@ package com.example.piec_1.data.remote
 
 import com.example.piec_1.domain.model.DadosConfirmacaoRequest
 import com.example.piec_1.domain.model.LoginRequest
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.Usuario
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -22,7 +22,8 @@ interface ApiService {
     suspend fun getUsuario(@Header("Authorization") token: String): Response<Usuario>
 
     @GET("medicamento/mobile/lista")
-    suspend fun getMedicamentos(@Header("Authorization") token: String): Response<List<Medicamento>>
+    suspend fun getMedicamentos(@Header("Authorization") token: String)
+    : Response<List<MedicamentoDomain>>
 
     @POST("/api/confirmacao")
     suspend fun confirmarMedicamento(

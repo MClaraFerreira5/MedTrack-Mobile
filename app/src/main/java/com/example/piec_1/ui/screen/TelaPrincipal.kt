@@ -44,8 +44,20 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
     val isLoading = usuario == null || medicamentos == null
 
     if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color.White)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Buscando dados do usuário...",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
         return
     }

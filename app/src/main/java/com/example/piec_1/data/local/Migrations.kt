@@ -40,3 +40,23 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         """.trimIndent())
     }
 }
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS medicamentos_v2 (
+                id INTEGER NOT NULL PRIMARY KEY,
+                nome TEXT NOT NULL,
+                compostoAtivo TEXT NOT NULL,
+                dosagem TEXT NOT NULL,
+                freq_frequenciaUsoTipo TEXT NOT NULL,
+                freq_usoContinuo INTEGER NOT NULL,
+                freq_horariosEspecificos TEXT NOT NULL,
+                freq_intervaloHoras INTEGER,
+                freq_primeiroHorario TEXT,
+                freq_dataInicio TEXT,
+                freq_dataTermino TEXT
+            )
+        """.trimIndent())
+    }
+}
