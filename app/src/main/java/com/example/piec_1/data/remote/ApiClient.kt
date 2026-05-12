@@ -1,14 +1,13 @@
 package com.example.piec_1.data.remote
 
-import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 class ApiClient {
 
-    private val url = "http://192.168.1.107:8081"
+    private val url = "http://192.168.1.123:8081"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

@@ -16,7 +16,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.piec_1.data.SharedPreferencesHelper
+import com.example.piec_1.data.PreferencesManager
 import com.example.piec_1.data.local.entity.ScanQueueItem
 import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.data.repository.ScanRepository
@@ -103,7 +103,7 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
     private fun processOnlinePhoto(uri: Uri, navController: NavController) {
         viewModelScope.launch {
             try {
-                val token = SharedPreferencesHelper.getToken(getApplication())
+                val token = PreferencesManager.getToken(getApplication())
                 if (token == null) {
                     _isLoading.postValue(false)
                     Log.e("CameraVM", "❌ Token não encontrado")

@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.piec_1.MainActivity
-import com.example.piec_1.data.SharedPreferencesHelper
+import com.example.piec_1.data.PreferencesManager
 import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.repository.ScanRepository
 import com.google.gson.Gson
@@ -28,7 +28,7 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
         private const val TAG = "ScanUpload"
     }
 
-    private val token = SharedPreferencesHelper.getToken(appContext)
+    private val token = PreferencesManager.getToken(appContext)
     private val repository = ScanRepository(appContext)
 
     override suspend fun doWork(): Result {

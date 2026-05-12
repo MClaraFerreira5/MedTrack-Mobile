@@ -4,11 +4,13 @@ import com.example.piec_1.data.local.entity.FrequenciaUsoEntity
 import com.example.piec_1.data.local.entity.MedicamentoEntity
 import com.example.piec_1.domain.model.FrequenciaUsoDomain
 import com.example.piec_1.domain.model.FrequenciaUsoTipo
+import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.domain.model.MedicamentoDomain
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 fun FrequenciaUsoEntity.toDomain() = FrequenciaUsoDomain(
     frequenciaUsoTipo = FrequenciaUsoTipo.valueOf(frequenciaUsoTipo),
@@ -47,3 +49,31 @@ fun MedicamentoDomain.toEntity() = MedicamentoEntity(
     dosagem = dosagem,
     frequenciaUso = frequenciaUso.toEntity()
 )
+
+fun MedicamentoDomain.toLegacyMedicamento() = Medicamento(
+    id = id,
+    nome = nome,
+    compostoAtivo = compostoAtivo,
+    dosagem = dosagem,
+    horarios = frequenciaUso.toLegacyHorarios(),
+    usoContinuo = frequenciaUso.usoContinuo,
+    quantidade = "",
+    validade = null,
+    sincronizado = true
+)
+
+private fun FrequenciaUsoDomain.toLegacyHorarios(): List<String> {
+    if (horariosEspecificos.isNotEmpty()) {
+        return horariosEspecificos.map { it.format(DateTimeFormatter.ofPattern("HH:mm")) }
+    }
+
+    val inicio = primeiroHorario ?: return emptyList()
+    val intervalo = intervaloHoras?.takeIf { it > 0 } ?: return emptyList()
+    val totalHorarios = (24 / intervalo).coerceAtLeast(1)
+
+    return generateSequence(inicio) { it.plusHours(intervalo.toLong()) }
+        .take(totalHorarios)
+        .map { it.format(DateTimeFormatter.ofPattern("HH:mm")) }
+        .distinct()
+        .toList()
+}

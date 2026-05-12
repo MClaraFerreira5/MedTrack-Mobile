@@ -9,7 +9,6 @@ import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
 import android.net.Uri
-import android.os.Environment
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
@@ -23,11 +22,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.example.piec_1.data.SharedPreferencesHelper
 import com.example.piec_1.data.remote.ApiService
 import com.example.piec_1.data.remote.ScanResponse
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody

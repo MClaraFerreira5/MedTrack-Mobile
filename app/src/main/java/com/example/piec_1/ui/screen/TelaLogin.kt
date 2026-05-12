@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,11 +50,9 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
-    val context = LocalContext.current
-
     val onLoginClick = {
         Log.d("Login", "Username: ${username.value}, Password: ${password.value}")
-        loginViewModel.login(username.value, password.value, context)
+        loginViewModel.login(username.value, password.value)
     }
 
     val isError = errorMessage != null

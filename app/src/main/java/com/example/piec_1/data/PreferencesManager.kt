@@ -3,7 +3,7 @@ package com.example.piec_1.data
 import android.content.Context
 import androidx.core.content.edit
 
-object SharedPreferencesHelper {
+object PreferencesManager {
     private const val PREFS_NAME = "MyAppPrefs"
     private const val KEY_TOKEN = "jwt_token"
 
