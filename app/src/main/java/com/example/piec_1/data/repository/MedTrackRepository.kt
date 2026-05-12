@@ -11,6 +11,7 @@ import com.example.piec_1.data.local.AppDatabase
 import com.example.piec_1.data.local.entity.ScanQueueItem
 import com.example.piec_1.data.remote.ApiClient
 import com.example.piec_1.data.remote.ApiService
+import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.domain.model.Confirmacao
 import com.example.piec_1.domain.model.DadosConfirmacaoRequest
@@ -197,6 +198,28 @@ class MedTrackRepository(
         }
     }
 
+    suspend fun getPendingScans(): List<ScanQueueItem> = withContext(Dispatchers.IO) {
+        scanQueueDao.getPendingScans()
+    }
+
+    suspend fun updateScanStatus(id: Int, status: String) = withContext(Dispatchers.IO) {
+        scanQueueDao.updateStatus(id, status)
+    }
+
+    suspend fun uploadScanPendente(file: File): MedicamentoData? = withContext(Dispatchers.IO) {
+        val token = PreferencesManager.getToken(appContext) ?: throw TokenNaoEncontradoException()
+        val partNames = listOf("file", "image", "photo")
+
+        for (partName in partNames) {
+            val response = enviarImagemParaScan(file, token, partName)
+            if (response?.data != null) {
+                return@withContext response.data
+            }
+        }
+
+        null
+    }
+
     suspend fun salvarScanOffline(uri: Uri) = withContext(Dispatchers.IO) {
         scanQueueDao.insert(
             ScanQueueItem(
@@ -219,6 +242,18 @@ class MedTrackRepository(
             .build()
 
         WorkManager.getInstance(appContext).enqueue(scanWorkRequest)
+    }
+
+    private suspend fun enviarImagemParaScan(
+        file: File,
+        token: String,
+        partName: String
+    ): ScanResponse? {
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val body = MultipartBody.Part.createFormData(partName, file.name, requestFile)
+        val response = apiService.scanMedicamento("Bearer $token", body)
+
+        return if (response.isSuccessful) response.body() else null
     }
 }
 
