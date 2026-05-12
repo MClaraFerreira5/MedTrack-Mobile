@@ -5,16 +5,24 @@ import com.example.piec_1.data.PreferencesManager
 import com.example.piec_1.data.local.AppDatabase
 import com.example.piec_1.data.remote.ApiClient
 import com.example.piec_1.data.remote.ApiService
+import com.example.piec_1.domain.model.Confirmacao
+import com.example.piec_1.domain.model.DadosConfirmacaoRequest
 import com.example.piec_1.domain.model.LoginRequest
 import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.Usuario
 import com.example.piec_1.domain.model.mappers.toEntity
 import com.example.piec_1.domain.model.mappers.toLegacyMedicamento
+import com.example.piec_1.utils.exceptions.ConfirmacaoExistenteException
+import com.example.piec_1.utils.exceptions.MedicamentoNaoEncontradoException
+import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
 import com.example.piec_1.utils.notifications.NotificationScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class MedTrackRepository(
     context: Context,
@@ -25,6 +33,7 @@ class MedTrackRepository(
     private val usuarioDao = database.usuarioDao()
     private val medicamentoDao = database.medicamentoDao()
     private val medicamentoV2Dao = database.medicamentoV2Dao()
+    private val confirmacaoDao = database.confirmacaoDao()
     private val notificationScheduler = NotificationScheduler(appContext)
 
     suspend fun login(username: String, password: String): LoginData = withContext(Dispatchers.IO) {
@@ -84,6 +93,82 @@ class MedTrackRepository(
         medicamentos.forEach { medicamento ->
             notificationScheduler.agendarNotificacao(medicamento)
         }
+    }
+
+    suspend fun confirmarMedicamento(medicamentoCapturado: Medicamento) = withContext(Dispatchers.IO) {
+        val token = PreferencesManager.getToken(appContext) ?: throw TokenNaoEncontradoException()
+        val medicamentoCorrespondente = encontrarMedicamentoCorrespondente(medicamentoCapturado)
+            ?: throw MedicamentoNaoEncontradoException()
+
+        processarConfirmacao(medicamentoCorrespondente, token)
+    }
+
+    private suspend fun encontrarMedicamentoCorrespondente(
+        medicamentoCapturado: Medicamento
+    ): Medicamento? {
+        return medicamentoDao.getMedicamentos().firstOrNull { medicamentoSalvo ->
+            normalizarString(medicamentoSalvo.nome) == normalizarString(medicamentoCapturado.nome) &&
+                normalizarString(medicamentoSalvo.compostoAtivo) == normalizarString(medicamentoCapturado.compostoAtivo) &&
+                normalizarDosagem(medicamentoSalvo.dosagem) == normalizarDosagem(medicamentoCapturado.dosagem)
+        }
+    }
+
+    private suspend fun processarConfirmacao(medicamento: Medicamento, token: String) {
+        val horarioSelecionado = encontrarHorarioMaisProximo(medicamento.horarios)
+        val dataAtual = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+        val confirmacaoExistente = confirmacaoDao.getConfirmacao(
+            medicamentoId = medicamento.id,
+            data = dataAtual,
+            horario = horarioSelecionado
+        )
+
+        if (confirmacaoExistente != null) {
+            throw ConfirmacaoExistenteException()
+        }
+
+        val confirmacao = Confirmacao(
+            medicamentoId = medicamento.id,
+            horario = horarioSelecionado,
+            data = dataAtual,
+            foiTomado = true
+        )
+        val confirmacaoId = confirmacaoDao.insert(confirmacao)
+
+        val request = DadosConfirmacaoRequest(
+            usuarioId = usuarioDao.getUsuario().id,
+            medicamentoId = medicamento.id,
+            horario = horarioSelecionado,
+            data = dataAtual,
+            foiTomado = true,
+            observacao = null
+        )
+
+        val response = apiService.confirmarMedicamento("Bearer $token", request)
+
+        if (!response.isSuccessful) {
+            throw IOException(response.errorBody()?.string() ?: "Erro na API")
+        }
+
+        confirmacaoDao.update(confirmacao.copy(id = confirmacaoId, sincronizado = true))
+    }
+
+    private fun encontrarHorarioMaisProximo(horarios: List<String>): String {
+        val horaAtual = LocalTime.now()
+        val horariosOrdenados = horarios.sortedBy { LocalTime.parse(it) }
+
+        return horariosOrdenados.firstOrNull {
+            LocalTime.parse(it).isAfter(horaAtual.minusMinutes(30))
+        } ?: horariosOrdenados.lastOrNull() ?: "00:00"
+    }
+
+    private fun normalizarDosagem(dosagem: String): String {
+        return dosagem.replace(" ", "").lowercase()
+    }
+
+    private fun normalizarString(texto: String): String {
+        return texto.trim()
+            .replace(Regex("[^a-zA-Z0-9]"), "")
+            .lowercase()
     }
 }
 

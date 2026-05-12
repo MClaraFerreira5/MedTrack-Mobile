@@ -9,7 +9,7 @@ import com.example.piec_1.domain.model.Confirmacao
 @Dao
 interface ConfirmacaoDao {
     @Insert
-    suspend fun insert(confirmacao: Confirmacao)
+    suspend fun insert(confirmacao: Confirmacao): Long
 
     @Query("SELECT * FROM confirmacoes WHERE medicamentoId = :medicamentoId AND data = :data AND horario = :horario")
     suspend fun getConfirmacao(medicamentoId: Long, data: String, horario: String): Confirmacao?
