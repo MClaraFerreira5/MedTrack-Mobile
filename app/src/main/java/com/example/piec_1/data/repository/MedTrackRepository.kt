@@ -1,10 +1,17 @@
 package com.example.piec_1.data.repository
 
 import android.content.Context
+import android.net.Uri
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.piec_1.data.PreferencesManager
 import com.example.piec_1.data.local.AppDatabase
+import com.example.piec_1.data.local.entity.ScanQueueItem
 import com.example.piec_1.data.remote.ApiClient
 import com.example.piec_1.data.remote.ApiService
+import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.domain.model.Confirmacao
 import com.example.piec_1.domain.model.DadosConfirmacaoRequest
 import com.example.piec_1.domain.model.LoginRequest
@@ -16,9 +23,14 @@ import com.example.piec_1.domain.model.mappers.toLegacyMedicamento
 import com.example.piec_1.utils.exceptions.ConfirmacaoExistenteException
 import com.example.piec_1.utils.exceptions.MedicamentoNaoEncontradoException
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
+import com.example.piec_1.domain.service.ScanUpload
 import com.example.piec_1.utils.notifications.NotificationScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
@@ -34,6 +46,7 @@ class MedTrackRepository(
     private val medicamentoDao = database.medicamentoDao()
     private val medicamentoV2Dao = database.medicamentoV2Dao()
     private val confirmacaoDao = database.confirmacaoDao()
+    private val scanQueueDao = database.scanQueueDao()
     private val notificationScheduler = NotificationScheduler(appContext)
 
     suspend fun login(username: String, password: String): LoginData = withContext(Dispatchers.IO) {
@@ -169,6 +182,43 @@ class MedTrackRepository(
         return texto.trim()
             .replace(Regex("[^a-zA-Z0-9]"), "")
             .lowercase()
+    }
+
+    suspend fun scanMedicamento(file: File): ScanResponse? = withContext(Dispatchers.IO) {
+        val token = PreferencesManager.getToken(appContext) ?: throw TokenNaoEncontradoException()
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+        val response = apiService.scanMedicamento("Bearer $token", body)
+
+        if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    suspend fun salvarScanOffline(uri: Uri) = withContext(Dispatchers.IO) {
+        scanQueueDao.insert(
+            ScanQueueItem(
+                imagePath = uri.toString(),
+                status = "PENDENTE",
+                timestamp = System.currentTimeMillis()
+            )
+        )
+        agendarProcessamentoDeScansOffline()
+    }
+
+    private fun agendarProcessamentoDeScansOffline() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+
+        val scanWorkRequest = OneTimeWorkRequestBuilder<ScanUpload>()
+            .setConstraints(constraints)
+            .addTag("offline_scan_job")
+            .build()
+
+        WorkManager.getInstance(appContext).enqueue(scanWorkRequest)
     }
 }
 

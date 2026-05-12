@@ -1,4 +1,3 @@
-// CameraViewModel.kt - Versão corrigida
 package com.example.piec_1.ui.screen.viewModel
 
 import android.app.Application
@@ -12,26 +11,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.piec_1.data.PreferencesManager
-import com.example.piec_1.data.local.entity.ScanQueueItem
+import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.remote.ScanResponse
-import com.example.piec_1.data.repository.ScanRepository
+import com.example.piec_1.data.repository.MedTrackRepository
 import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.domain.service.CameraService
-import com.example.piec_1.domain.service.ScanUpload
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 class CameraViewModel(application: Application) : AndroidViewModel(application) {
-    private val apiService = com.example.piec_1.data.remote.ApiClient().apiService
-    private val repository = ScanRepository(application)
-    private val cameraService = CameraService(getApplication(), apiService)
+    private val repository = MedTrackRepository(application)
+    private val cameraService = CameraService(getApplication())
 
     private val _scanResult = MutableLiveData<ScanResponse?>()
     val scanResult: LiveData<ScanResponse?> = _scanResult
@@ -58,44 +48,31 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // Método principal - quando o usuário clica no botão de capturar
     fun capturePhoto(navController: NavController, isOnline: Boolean) {
-        Log.d("CameraVM", "📸 Capturando foto. Online: $isOnline")
-
-        // Se estiver offline, mostra diálogo e NÃO captura foto ainda
         if (!isOnline) {
-            Log.d("CameraVM", "📱 Offline - mostrando diálogo")
             _showOfflineDialog.postValue(true)
             return
         }
 
-        // Se estiver online, captura e processa
         _isLoading.postValue(true)
-
         cameraService.capturePhotoOnly { uri ->
             if (uri != null) {
-                Log.d("CameraVM", "✅ Foto capturada com sucesso: $uri")
                 processOnlinePhoto(uri, navController)
             } else {
                 _isLoading.postValue(false)
-                Log.e("CameraVM", "❌ Erro ao capturar imagem")
+                Log.e("CameraVM", "Erro ao capturar imagem")
             }
         }
     }
 
-    // Método chamado quando o usuário confirma o diálogo offline
     fun processOfflinePhoto() {
-        Log.d("CameraVM", "📱 Processando foto offline")
-
         _isLoading.postValue(true)
-
         cameraService.capturePhotoOnly { uri ->
             if (uri != null) {
-                Log.d("CameraVM", "✅ Foto capturada offline: $uri")
                 saveForLater(uri)
             } else {
                 _isLoading.postValue(false)
-                Log.e("CameraVM", "❌ Erro ao capturar imagem offline")
+                Log.e("CameraVM", "Erro ao capturar imagem offline")
             }
         }
     }
@@ -103,80 +80,33 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
     private fun processOnlinePhoto(uri: Uri, navController: NavController) {
         viewModelScope.launch {
             try {
-                val token = PreferencesManager.getToken(getApplication())
-                if (token == null) {
-                    _isLoading.postValue(false)
-                    Log.e("CameraVM", "❌ Token não encontrado")
-                    return@launch
-                }
-
-                val file = File(uri.path ?: "")
-                val response = withContext(Dispatchers.IO) {
-                    cameraService.uploadPhotoForScan(file, token)
-                }
+                val file = File(uri.path.orEmpty())
+                val response = repository.scanMedicamento(file)
 
                 _isLoading.postValue(false)
 
                 if (response?.data != null) {
-                    Log.d("CameraVM", "✅ Scan online bem sucedido: ${response.data.nome}")
                     _scanResult.postValue(response)
-                    val novoMedicamento = Medicamento(
-                        id = 0,
-                        nome = response.data.nome ?: "Não identificado",
-                        compostoAtivo = response.data.agente_ativo ?: "Não identificado",
-                        dosagem = response.data.dosagem ?: "N/A",
-                        quantidade = response.data.quantidade ?: "0",
-                        validade = response.data.validade ?: "",
-                        horarios = emptyList(),
-                        usoContinuo = false,
-                        sincronizado = false
-                    )
-                    _medicamento.postValue(novoMedicamento)
+                    _medicamento.postValue(response.data.toMedicamento())
                     navController.navigate("TelaConfirmacao")
                 } else {
-                    Log.e("CameraVM", "❌ Erro na análise da IA")
+                    Log.e("CameraVM", "Erro na analise da IA")
                 }
             } catch (e: Exception) {
                 _isLoading.postValue(false)
-                Log.e("CameraVM", "❌ Erro no processamento online: ${e.message}", e)
+                Log.e("CameraVM", "Erro no processamento online: ${e.message}", e)
             }
         }
     }
 
     fun saveForLater(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
-                Log.d("CameraVM", "💾 Salvando scan offline: $uri")
-
-                val item = ScanQueueItem(
-                    imagePath = uri.toString(),
-                    status = "PENDENTE",
-                    timestamp = System.currentTimeMillis()
-                )
-                repository.insertScanQueue(item)
-
-                Log.d("CameraVM", "✅ Item salvo no queue com ID: ${item.id}")
-
-                // Agenda o WorkManager para quando tiver Wi-Fi
-                val constraints = Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.UNMETERED) // Apenas Wi-Fi
-                    .build()
-
-                val scanWorkRequest = OneTimeWorkRequestBuilder<ScanUpload>()
-                    .setConstraints(constraints)
-                    .addTag("offline_scan_job")
-                    .build()
-
-                WorkManager.getInstance(getApplication()).enqueue(scanWorkRequest)
-
-                Log.d("CameraVM", "⏰ WorkManager agendado com sucesso!")
-
-                // Fecha o diálogo e o loading
+                repository.salvarScanOffline(uri)
                 _showOfflineDialog.postValue(false)
                 _isLoading.postValue(false)
-
             } catch (e: Exception) {
-                Log.e("CameraVM", "❌ Erro ao salvar scan offline: ${e.message}", e)
+                Log.e("CameraVM", "Erro ao salvar scan offline: ${e.message}", e)
                 _isLoading.postValue(false)
             }
         }
@@ -189,4 +119,16 @@ class CameraViewModel(application: Application) : AndroidViewModel(application) 
     fun atualizarMedicamento(novoMedicamento: Medicamento) {
         _medicamento.value = novoMedicamento
     }
+
+    private fun MedicamentoData.toMedicamento() = Medicamento(
+        id = 0,
+        nome = nome ?: "Nao identificado",
+        compostoAtivo = agente_ativo ?: "Nao identificado",
+        dosagem = dosagem ?: "N/A",
+        quantidade = quantidade ?: "0",
+        validade = validade ?: "",
+        horarios = emptyList(),
+        usoContinuo = false,
+        sincronizado = false
+    )
 }

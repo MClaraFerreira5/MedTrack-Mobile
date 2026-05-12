@@ -22,20 +22,13 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.example.piec_1.data.remote.ApiService
-import com.example.piec_1.data.remote.ScanResponse
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.Executors
 
 class CameraService(
-    private val context: Context,
-    private val apiService: ApiService
+    private val context: Context
 ) {
-
     private val detectionService: DetectionService = DetectionService()
     private var imageCapture: ImageCapture? = null
 
@@ -66,18 +59,21 @@ class CameraService(
 
             imageCapture = ImageCapture.Builder().build()
 
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalysis, imageCapture)
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    preview,
+                    imageAnalysis,
+                    imageCapture
+                )
             } catch (e: Exception) {
-                Log.e("CameraX", "Erro ao iniciar câmera", e)
+                Log.e("CameraX", "Erro ao iniciar camera", e)
             }
         }, ContextCompat.getMainExecutor(context))
     }
 
-    // Método UNIFICADO que apenas captura e salva a foto, sem lógica de rede
     fun capturePhotoOnly(onImageCaptured: (Uri?) -> Unit) {
         val photoFile = File(
             context.filesDir,
@@ -103,26 +99,6 @@ class CameraService(
         )
     }
 
-    // Método para upload online (usado apenas quando há Wi-Fi)
-    suspend fun uploadPhotoForScan(file: File, token: String): ScanResponse? {
-        return try {
-            val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-
-            val response = apiService.scanMedicamento("Bearer $token", body)
-
-            if (response.isSuccessful) {
-                response.body()
-            } else {
-                Log.e("Scan", "Erro na API: ${response.code()} - ${response.message()}")
-                null
-            }
-        } catch (e: Exception) {
-            Log.e("Scan", "Falha no upload: ${e.message}")
-            null
-        }
-    }
-
     @OptIn(ExperimentalGetImage::class)
     private fun processFrame(
         imageProxy: ImageProxy,
@@ -135,7 +111,7 @@ class CameraService(
             val rotationDegrees = imageProxy.imageInfo.rotationDegrees
             val bitmap = mediaImage.toBitmap(rotationDegrees)
 
-            detectionService.detectObjects(bitmap, previewWidth, previewHeight) { detected, objectBounds: Rect? ->
+            detectionService.detectObjects(bitmap, previewWidth, previewHeight) { detected, objectBounds ->
                 onObjectDetected(detected, objectBounds)
             }
         }
@@ -163,13 +139,12 @@ class CameraService(
         val vSize = vPlane.remaining()
         val nv21 = ByteArray(ySize + uSize + vSize)
         yPlane.get(nv21, 0, ySize)
-        val uvPixelStride = image.planes[1].pixelStride
-        val uvRowStride = image.planes[1].rowStride
         var pos = ySize
+
         for (row in 0 until image.height / 2) {
             for (col in 0 until image.width / 2) {
-                val vIndex = row * uvRowStride + col * uvPixelStride
-                val uIndex = row * uvRowStride + col * uvPixelStride
+                val vIndex = row * image.planes[1].rowStride + col * image.planes[1].pixelStride
+                val uIndex = row * image.planes[1].rowStride + col * image.planes[1].pixelStride
                 nv21[pos++] = vPlane[vIndex]
                 nv21[pos++] = uPlane[uIndex]
             }
