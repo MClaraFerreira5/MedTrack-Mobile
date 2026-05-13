@@ -5,8 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.piec_1.data.repository.AuthRepository
 import com.example.piec_1.data.repository.LoginException
-import com.example.piec_1.data.repository.MedTrackRepository
+import com.example.piec_1.data.repository.MedicamentoRepository
 import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.Usuario
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: MedTrackRepository
+    private val authRepository: AuthRepository,
+    private val medicamentoRepository: MedicamentoRepository
 ) : ViewModel() {
 
     private val _loginResponse = MutableLiveData<String>()
@@ -33,7 +35,8 @@ class LoginViewModel @Inject constructor(
     fun login(username: String, password: String) {
         viewModelScope.launch {
             try {
-                val loginData = repository.login(username, password)
+                val token = authRepository.login(username, password)
+                val loginData = medicamentoRepository.sincronizarDadosDoUsuario(token)
                 Log.d("Login", "Token: ${loginData.token}")
                 _usuario.postValue(loginData.usuario)
                 _medicamentos.postValue(loginData.medicamentos)

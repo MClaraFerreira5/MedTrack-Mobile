@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.piec_1.data.repository.MedTrackRepository
+import com.example.piec_1.data.repository.MedicamentoRepository
 import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.utils.exceptions.ConfirmacaoExistenteException
 import com.example.piec_1.utils.exceptions.MedicamentoNaoEncontradoException
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MedicamentoViewModel @Inject constructor(
-    private val repository: MedTrackRepository
+    private val medicamentoRepository: MedicamentoRepository
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData<MedicamentoUIState>(MedicamentoUIState.Idle)
@@ -37,7 +37,7 @@ class MedicamentoViewModel @Inject constructor(
             _uiState.value = MedicamentoUIState.Loading
 
             try {
-                repository.confirmarMedicamento(medicamentoCapturado)
+                medicamentoRepository.confirmarMedicamento(medicamentoCapturado)
                 _uiState.value = MedicamentoUIState.Success("Medicamento confirmado!")
                 onSuccess()
             } catch (_: TokenNaoEncontradoException) {

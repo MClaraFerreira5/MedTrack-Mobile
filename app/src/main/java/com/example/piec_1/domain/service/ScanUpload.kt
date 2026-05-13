@@ -12,7 +12,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.piec_1.MainActivity
 import com.example.piec_1.data.remote.MedicamentoData
-import com.example.piec_1.data.repository.MedTrackRepository
+import com.example.piec_1.data.repository.ScanRepository
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
 import com.google.gson.Gson
 import dagger.hilt.EntryPoint
@@ -29,11 +29,11 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
         private const val STATUS_CONCLUIDO = "CONCLUIDO"
     }
 
-    private val repository: MedTrackRepository by lazy {
+    private val repository: ScanRepository by lazy {
         EntryPointAccessors.fromApplication(
             applicationContext,
             ScanUploadEntryPoint::class.java
-        ).medTrackRepository()
+        ).scanRepository()
     }
 
     override suspend fun doWork(): Result {
@@ -131,6 +131,6 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface ScanUploadEntryPoint {
-        fun medTrackRepository(): MedTrackRepository
+        fun scanRepository(): ScanRepository
     }
 }

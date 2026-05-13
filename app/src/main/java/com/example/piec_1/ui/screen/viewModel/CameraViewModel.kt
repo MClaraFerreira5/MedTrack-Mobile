@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.piec_1.data.remote.ScanResponse
-import com.example.piec_1.data.repository.MedTrackRepository
+import com.example.piec_1.data.repository.ScanRepository
 import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.domain.model.mappers.toCapturadoDomain
 import com.example.piec_1.domain.service.CameraService
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
-    private val repository: MedTrackRepository,
+    private val scanRepository: ScanRepository,
     private val cameraService: CameraService
 ) : ViewModel() {
 
@@ -84,7 +84,7 @@ class CameraViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val file = File(uri.path.orEmpty())
-                val response = repository.scanMedicamento(file)
+                val response = scanRepository.scanMedicamento(file)
 
                 _isLoading.postValue(false)
 
@@ -105,7 +105,7 @@ class CameraViewModel @Inject constructor(
     fun saveForLater(uri: Uri) {
         viewModelScope.launch {
             try {
-                repository.salvarScanOffline(uri)
+                scanRepository.salvarScanOffline(uri)
                 _showOfflineDialog.postValue(false)
                 _isLoading.postValue(false)
             } catch (e: Exception) {
