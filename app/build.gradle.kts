@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,9 +7,22 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use(::load)
+    }
+}
+
+fun projectConfig(name: String, fallback: String): String {
+    return providers.gradleProperty(name)
+        .orElse(localProperties.getProperty(name) ?: fallback)
+        .get()
+}
+
 android {
     namespace = "com.example.piec_1"
-    compileSdk = 36
+    compileSdk = 37
 
 
     defaultConfig {
@@ -18,12 +33,8 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val apiBaseUrl = providers.gradleProperty("MEDTRACK_API_BASE_URL")
-            .orElse("http://192.168.1.123:8081/")
-            .get()
-        val scanUrl = providers.gradleProperty("MEDTRACK_SCAN_URL")
-            .orElse("http://192.168.1.107:8000/detect")
-            .get()
+        val apiBaseUrl = projectConfig("MEDTRACK_API_BASE_URL", "http://192.168.1.123:8081/")
+        val scanUrl = projectConfig("MEDTRACK_SCAN_URL", "http://192.168.1.107:8000/detect")
 
         buildConfigField("String", "MEDTRACK_API_BASE_URL", "\"$apiBaseUrl\"")
         buildConfigField("String", "MEDTRACK_SCAN_URL", "\"$scanUrl\"")

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.piec_1.data.repository.LoginException
 import com.example.piec_1.data.repository.MedTrackRepository
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.Usuario
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,8 +27,8 @@ class LoginViewModel @Inject constructor(
     private val _usuario = MutableLiveData<Usuario>()
     val usuario: LiveData<Usuario> get() = _usuario
 
-    private val _medicamentos = MutableLiveData<List<Medicamento>>()
-    val medicamentos: LiveData<List<Medicamento>> get() = _medicamentos
+    private val _medicamentos = MutableLiveData<List<MedicamentoDomain>>()
+    val medicamentos: LiveData<List<MedicamentoDomain>> get() = _medicamentos
 
     fun login(username: String, password: String) {
         viewModelScope.launch {

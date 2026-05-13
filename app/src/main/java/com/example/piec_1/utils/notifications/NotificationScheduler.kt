@@ -10,34 +10,43 @@ import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoDomain
+import com.example.piec_1.domain.usecase.getDatesBetween
+import com.example.piec_1.domain.usecase.horariosDoDia
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalDate
-import java.util.Calendar
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class NotificationScheduler(private val context: Context) {
+@Singleton
+class NotificationScheduler @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    fun agendarNotificacao(medicamento: Medicamento) {
+    fun agendarNotificacao(medicamento: MedicamentoDomain) {
         try {
-            val horarios = medicamento.horarios
-            val isContinuo = medicamento.usoContinuo
+            val horarios = medicamento.frequenciaUso.horariosDoDia()
 
-            if (isContinuo) {
+            if (medicamento.frequenciaUso.usoContinuo) {
                 horarios.distinct().forEach { horario ->
-                    scheduleDailyNotification(medicamento.id, medicamento.nome, horario)
+                    scheduleDailyNotification(medicamento, horario)
                 }
             } else {
-                horarios.forEachIndexed { index, horario ->
-                    val dataAgendamento = LocalDate.now()
-                        .plusDays(index.toLong() / horarios.distinct().size)
-                    scheduleSingleNotification(
-                        medicamento.id,
-                        medicamento.nome,
-                        horario,
-                        dataAgendamento.toString()
-                    )
+                val startDate = medicamento.frequenciaUso.dataInicio ?: LocalDate.now()
+                val endDate = medicamento.frequenciaUso.dataTermino ?: startDate
+
+                getDatesBetween(startDate, endDate)
+                    .filter { !it.isBefore(LocalDate.now()) }
+                    .forEach { dataAgendamento ->
+                    horarios.forEach { horario ->
+                        scheduleSingleNotification(medicamento, horario, dataAgendamento)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -46,23 +55,22 @@ class NotificationScheduler(private val context: Context) {
         }
     }
 
-    fun scheduleUsingWorkManager(medicamento: Medicamento) {
+    fun scheduleUsingWorkManager(medicamento: MedicamentoDomain) {
         val constraints = Constraints.Builder()
             .setRequiresCharging(false)
             .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
             .build()
 
-        medicamento.horarios.forEach { horario ->
+        medicamento.frequenciaUso.horariosDoDia().forEach { horario ->
             val inputData = Data.Builder()
                 .putLong("medicamentoId", medicamento.id)
                 .putString("nome", medicamento.nome)
-                .putString("horario", horario)
+                .putString("compostoAtivo", medicamento.compostoAtivo)
+                .putString("horario", horario.toString())
                 .build()
 
-            val delay = calculateDelay(horario) // Implemente esta função
-
             val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setInitialDelay(calculateDelay(horario), TimeUnit.MILLISECONDS)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .build()
@@ -71,81 +79,78 @@ class NotificationScheduler(private val context: Context) {
         }
     }
 
-    private fun calculateDelay(horario: String): Long {
-        val (hours, minutes) = horario.split(":").take(2).map { it.toInt() }
-        val now = Calendar.getInstance()
-        val alarmTime = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hours)
-            set(Calendar.MINUTE, minutes)
-            set(Calendar.SECOND, 0)
-            if (before(now)) add(Calendar.DAY_OF_YEAR, 1)
-        }
-        return alarmTime.timeInMillis - now.timeInMillis
+    private fun calculateDelay(horario: LocalTime): Long {
+        return nextTriggerAt(horario) - System.currentTimeMillis()
     }
 
-    private fun scheduleDailyNotification(medicamentoId: Long, nome: String, horario: String) {
+    private fun scheduleDailyNotification(medicamento: MedicamentoDomain, horario: LocalTime) {
         val intent = Intent(context, NotificationReceiver::class.java).apply {
-            putExtra("medicamentoId", medicamentoId)
-            putExtra("nome", nome)
-            putExtra("horario", horario)
+            putExtra("medicamentoId", medicamento.id)
+            putExtra("nome", medicamento.nome)
+            putExtra("compostoAtivo", medicamento.compostoAtivo)
+            putExtra("horario", horario.toString())
             putExtra("isContinuo", true)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            "${medicamentoId}_${horario}".hashCode(),
+            "${medicamento.id}_${horario}".hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val (hour, minute) = horario.split(":").take(2).map { it.toInt() }
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            if (before(Calendar.getInstance())) add(Calendar.DAY_OF_YEAR, 1) // Próximo dia se horário já passou
-        }
-
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
+            nextTriggerAt(horario),
             AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }
 
     private fun scheduleSingleNotification(
-        medicamentoId: Long,
-        nome: String,
-        horario: String,
-        dataAgendamento: String
+        medicamento: MedicamentoDomain,
+        horario: LocalTime,
+        dataAgendamento: LocalDate
     ) {
         val intent = Intent(context, NotificationReceiver::class.java).apply {
-            putExtra("medicamentoId", medicamentoId)
-            putExtra("nome", nome)
-            putExtra("horario", horario)
+            putExtra("medicamentoId", medicamento.id)
+            putExtra("nome", medicamento.nome)
+            putExtra("compostoAtivo", medicamento.compostoAtivo)
+            putExtra("horario", horario.toString())
             putExtra("isContinuo", false)
-            putExtra("dataAgendamento", dataAgendamento)
+            putExtra("dataAgendamento", dataAgendamento.toString())
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            "${medicamentoId}_${horario}_${dataAgendamento}".hashCode(),
+            "${medicamento.id}_${horario}_${dataAgendamento}".hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val (year, month, day) = dataAgendamento.split("-").map { it.toInt() }
-        val (hour, minute) = horario.split(":").take(2).map { it.toInt() }
-
-        val calendar = Calendar.getInstance().apply {
-            set(year, month - 1, day, hour, minute, 0)
-        }
+        val triggerAt = dataAgendamento
+            .atTime(horario)
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
 
         alarmManager.setAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
+            triggerAt,
             pendingIntent
         )
     }
 
+    private fun nextTriggerAt(horario: LocalTime): Long {
+        val now = LocalDateTime.now()
+        var dateTime = now.toLocalDate().atTime(horario)
+
+        if (dateTime.isBefore(now)) {
+            dateTime = dateTime.plusDays(1)
+        }
+
+        return dateTime
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+    }
 }

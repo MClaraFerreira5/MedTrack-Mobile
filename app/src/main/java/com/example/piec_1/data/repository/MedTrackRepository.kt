@@ -45,7 +45,8 @@ class MedTrackRepository @Inject constructor(
     @ApplicationContext context: Context,
     private val apiService: ApiService,
     private val database: AppDatabase,
-    @param:Named("ScanUrl") private val scanUrl: String
+    @param:Named("ScanUrl") private val scanUrl: String,
+    private val notificationScheduler: NotificationScheduler
 ) {
     private val appContext = context.applicationContext
     private val usuarioDao = database.usuarioDao()
@@ -53,7 +54,6 @@ class MedTrackRepository @Inject constructor(
     private val medicamentoV2Dao = database.medicamentoV2Dao()
     private val confirmacaoDao = database.confirmacaoDao()
     private val scanQueueDao = database.scanQueueDao()
-    private val notificationScheduler = NotificationScheduler(appContext)
 
     suspend fun login(username: String, password: String): LoginData = withContext(Dispatchers.IO) {
         val response = apiService.login(LoginRequest(username, password))
@@ -77,14 +77,13 @@ class MedTrackRepository @Inject constructor(
         usuarioDao.insert(usuario)
         medicamentoV2Dao.insertAll(medicamentosDomain.map { it.toEntity() })
 
-        val medicamentosLegados = medicamentosDomain.map { it.toLegacyMedicamento() }
-        medicamentoDao.insertAll(medicamentosLegados)
-        agendarNotificacoes(medicamentosLegados)
+        medicamentoDao.insertAll(medicamentosDomain.map { it.toLegacyMedicamento() })
+        agendarNotificacoes(medicamentosDomain)
 
         return LoginData(
             token = token,
             usuario = usuario,
-            medicamentos = medicamentosLegados
+            medicamentos = medicamentosDomain
         )
     }
 
@@ -108,7 +107,7 @@ class MedTrackRepository @Inject constructor(
         return response.body().orEmpty()
     }
 
-    private fun agendarNotificacoes(medicamentos: List<Medicamento>) {
+    private fun agendarNotificacoes(medicamentos: List<MedicamentoDomain>) {
         medicamentos.forEach { medicamento ->
             notificationScheduler.agendarNotificacao(medicamento)
         }
@@ -265,7 +264,7 @@ class MedTrackRepository @Inject constructor(
 data class LoginData(
     val token: String,
     val usuario: Usuario,
-    val medicamentos: List<Medicamento>
+    val medicamentos: List<MedicamentoDomain>
 )
 
 class LoginException(message: String) : Exception(message)
