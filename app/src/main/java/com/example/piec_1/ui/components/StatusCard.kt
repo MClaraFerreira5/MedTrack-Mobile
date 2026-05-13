@@ -22,10 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 
 @Composable
-fun StatusCard(medicamento: Medicamento, isSuccess: Boolean) {
+fun StatusCard(medicamento: MedicamentoCapturadoDomain, isSuccess: Boolean) {
     val bgColor = if (isSuccess) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
     val strokeColor = if (isSuccess) Color(0xFF2E7D32) else Color(0xFFC62828)
     val icon = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Warning

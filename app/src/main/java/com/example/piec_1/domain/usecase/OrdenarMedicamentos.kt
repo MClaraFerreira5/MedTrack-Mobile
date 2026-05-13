@@ -1,61 +1,26 @@
 package com.example.piec_1.domain.usecase
 
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.FrequenciaUsoDomain
+import com.example.piec_1.domain.model.FrequenciaUsoTipo
+import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.MedicationItem
-import com.example.piec_1.utils.toFormattedTime
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
+private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 fun organizeMedicationsByDay(
-    medicamentos: List<Medicamento>,
+    medicamentos: List<MedicamentoDomain>,
     currentDate: LocalDate,
     maxDaysToShow: Int = 7
 ): Map<LocalDate, List<MedicationItem>> {
+    val datesToShow = getDatesBetween(currentDate, currentDate.plusDays(maxDaysToShow.toLong() - 1))
     val result = mutableMapOf<LocalDate, MutableList<MedicationItem>>()
-    val daysToShow = getDatesBetween(currentDate, currentDate.plusDays(maxDaysToShow.toLong() - 1))
 
     medicamentos.forEach { medicamento ->
-        val ehGenerico = medicamento.nome.equals("MEDICAMENTO GENÉRICO", ignoreCase = true)
-        val nomeExibicao = if (ehGenerico) medicamento.compostoAtivo else medicamento.nome
-
-        if (medicamento.usoContinuo) {
-            daysToShow.forEach { date ->
-                medicamento.horarios.forEach { horario ->
-                    result.getOrPut(date) { mutableListOf() }.add(
-                        MedicationItem(
-                            nomeExibicao = nomeExibicao,
-                            horario = horario.toFormattedTime(),
-                            isContinuous = true,
-                            isGenerico = ehGenerico
-                        )
-                    )
-                }
-            }
-        } else {
-            var currentDayIndex = 0
-            val horariosPorDia = mutableListOf<LocalTime>()
-
-            medicamento.horarios.forEach { horarioStr ->
-                val horario = LocalTime.parse(horarioStr)
-
-                if (horariosPorDia.isNotEmpty() && horario <= horariosPorDia.last()) {
-                    currentDayIndex++
-                    horariosPorDia.clear()
-                }
-
-                if (currentDayIndex < daysToShow.size) {
-                    val targetDate = daysToShow[currentDayIndex]
-                    result.getOrPut(targetDate) { mutableListOf() }.add(
-                        MedicationItem(
-                            nomeExibicao = nomeExibicao,
-                            horario = horarioStr.toFormattedTime(),
-                            isContinuous = false,
-                            isGenerico = ehGenerico
-                        )
-                    )
-                    horariosPorDia.add(horario)
-                }
-            }
+        medicamento.toScheduledMedicationItems(datesToShow).forEach { scheduledItem ->
+            result.getOrPut(scheduledItem.date) { mutableListOf() }.add(scheduledItem.item)
         }
     }
 
@@ -64,6 +29,56 @@ fun organizeMedicationsByDay(
     }
 
     return result.toSortedMap()
+}
+
+fun MedicamentoDomain.toScheduledMedicationItems(
+    datesToShow: List<LocalDate>
+): List<ScheduledMedicationItem> {
+    val ehGenerico = nome.equals("MEDICAMENTO GENERICO", ignoreCase = true) ||
+        nome.equals("MEDICAMENTO GENÉRICO", ignoreCase = true)
+    val nomeExibicao = if (ehGenerico) compostoAtivo else nome
+    val activeDates = datesToShow.filter { frequenciaUso.isActiveOn(it) }
+    val horarios = frequenciaUso.horariosDoDia()
+
+    return activeDates.flatMap { date ->
+        horarios.map { horario ->
+            ScheduledMedicationItem(
+                date = date,
+                item = MedicationItem(
+                    nomeExibicao = nomeExibicao,
+                    horario = horario.format(timeFormatter),
+                    isContinuous = frequenciaUso.usoContinuo,
+                    isGenerico = ehGenerico
+                )
+            )
+        }
+    }
+}
+
+fun FrequenciaUsoDomain.horariosDoDia(): List<LocalTime> {
+    return when (frequenciaUsoTipo) {
+        FrequenciaUsoTipo.HORARIOS_ESPECIFICOS -> horariosEspecificos.sorted()
+        FrequenciaUsoTipo.INTERVALO_ENTRE_DOSES -> horariosPorIntervalo()
+    }
+}
+
+private fun FrequenciaUsoDomain.horariosPorIntervalo(): List<LocalTime> {
+    val inicio = primeiroHorario ?: return emptyList()
+    val intervalo = intervaloHoras?.takeIf { it > 0 } ?: return emptyList()
+    val totalHorarios = (24 / intervalo).coerceAtLeast(1)
+
+    return generateSequence(inicio) { it.plusHours(intervalo.toLong()) }
+        .take(totalHorarios)
+        .distinct()
+        .sorted()
+        .toList()
+}
+
+private fun FrequenciaUsoDomain.isActiveOn(date: LocalDate): Boolean {
+    val startsBeforeOrOnDate = dataInicio?.let { !date.isBefore(it) } ?: true
+    val endsAfterOrOnDate = dataTermino?.let { !date.isAfter(it) } ?: usoContinuo
+
+    return startsBeforeOrOnDate && endsAfterOrOnDate
 }
 
 fun getDatesBetween(startDate: LocalDate, endDate: LocalDate): List<LocalDate> {
@@ -77,3 +92,8 @@ fun getDatesBetween(startDate: LocalDate, endDate: LocalDate): List<LocalDate> {
 
     return dates
 }
+
+data class ScheduledMedicationItem(
+    val date: LocalDate,
+    val item: MedicationItem
+)

@@ -34,12 +34,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
 
 @Composable
-fun TelaEsqueciSenha(navController: NavController) {
+fun TelaEsqueciSenha(
+    onEmailSent: () -> Unit,
+    onBackToLogin: () -> Unit
+) {
     val email = remember { mutableStateOf("") }
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
@@ -127,7 +129,7 @@ fun TelaEsqueciSenha(navController: NavController) {
                         if (email.value.isBlank()) {
                             errorMessage.value = "Por favor, insira um email válido."
                         } else {
-                            navController.navigate("TelaRedefinirSenha")
+                            onEmailSent()
                         }
                     },
                     shape = RoundedCornerShape(16.dp),
@@ -142,7 +144,7 @@ fun TelaEsqueciSenha(navController: NavController) {
                 }
 
                 TextButton(
-                    onClick = { navController.popBackStack() },
+                    onClick = onBackToLogin,
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text(

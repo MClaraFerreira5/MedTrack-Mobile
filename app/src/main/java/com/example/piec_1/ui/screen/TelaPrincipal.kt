@@ -31,21 +31,35 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.ListaHorarios
 import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 
 @Composable
-fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) {
+fun TelaPrincipal(
+    loginViewModel: LoginViewModel,
+    onScanClick: () -> Unit
+) {
 
     val usuario by loginViewModel.usuario.observeAsState()
     val medicamentos by loginViewModel.medicamentos.observeAsState()
     val isLoading = usuario == null || medicamentos == null
 
     if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color.White)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Buscando dados do usuário...",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
         return
     }
@@ -123,7 +137,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                 }
 
                 Button(
-                    onClick = { navController.navigate("TelaCamera") },
+                    onClick = onScanClick,
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()

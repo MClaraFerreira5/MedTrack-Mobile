@@ -1,24 +1,24 @@
 package com.example.piec_1.ui.screen.viewModel
 
-import android.app.Application
-import android.content.Context
-import android.os.Build
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.piec_1.data.local.AppDatabase
-import com.example.piec_1.domain.model.LoginRequest
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.data.repository.AuthRepository
+import com.example.piec_1.data.repository.LoginException
+import com.example.piec_1.data.repository.MedicamentoRepository
+import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.Usuario
-import com.example.piec_1.utils.notifications.NotificationScheduler
-import com.example.piec_1.data.remote.ApiClient
-import com.example.piec_1.data.SharedPreferencesHelper
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(application: Application): AndroidViewModel(application) {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val medicamentoRepository: MedicamentoRepository
+) : ViewModel() {
 
     private val _loginResponse = MutableLiveData<String>()
     val loginResponse: LiveData<String> get() = _loginResponse
@@ -29,94 +29,24 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
     private val _usuario = MutableLiveData<Usuario>()
     val usuario: LiveData<Usuario> get() = _usuario
 
-    private val _medicamentos = MutableLiveData<List<Medicamento>>()
-    val medicamentos: LiveData<List<Medicamento>> get() = _medicamentos
+    private val _medicamentos = MutableLiveData<List<MedicamentoDomain>>()
+    val medicamentos: LiveData<List<MedicamentoDomain>> get() = _medicamentos
 
-    private val apiService = ApiClient().apiService
-
-    private val database = AppDatabase.getDatabase(application)
-    private val usuarioDao = database.usuarioDao()
-    private val medicamentoDao = database.medicamentoDao()
-
-    fun login(username: String, password: String, context: Context) {
+    fun login(username: String, password: String) {
         viewModelScope.launch {
             try {
-                val response = apiService.login(LoginRequest(username, password))
-                Log.d("Login", "Response: $response")
-                if (response.isSuccessful) {
-                    val loginResponse = response.body()
-                    val token = loginResponse?.token
-                    if (token != null) {
-                        SharedPreferencesHelper.saveToken(context, token)
-                        Log.d("Login", "Token: $token")
-                        _loginResponse.postValue(token)
-                        fetchData(token)
-                    } else {
-                        _errorMessage.postValue("Token inválido")
-                    }
-                } else {
-                    _errorMessage.postValue("Usuário ou senha inválidos")
-                }
+                val token = authRepository.login(username, password)
+                val loginData = medicamentoRepository.sincronizarDadosDoUsuario(token)
+                Log.d("Login", "Token: ${loginData.token}")
+                _usuario.postValue(loginData.usuario)
+                _medicamentos.postValue(loginData.medicamentos)
+                _loginResponse.postValue(loginData.token)
+            } catch (e: LoginException) {
+                Log.e("Login", "Erro de login: ${e.message}")
+                _errorMessage.postValue(e.message ?: "Usuario ou senha invalidos")
             } catch (e: Exception) {
                 Log.e("Login", "Exception: ${e.message}")
                 _errorMessage.postValue("Erro ao tentar fazer login. Tente novamente")
-            }
-        }
-    }
-
-    private fun fetchData(token: String) {
-        viewModelScope.launch {
-            try {
-                val usuarioResponse = apiService.getUsuario("Bearer $token")
-                if (usuarioResponse.isSuccessful) {
-                    val usuario = usuarioResponse.body()
-                    if (usuario != null) {
-                        usuarioDao.insert(usuario)
-                        _usuario.postValue(usuario)
-                        Log.d("Room", "Usuário salvo: $usuario")
-                    } else {
-                        Log.e("Room", "Usuário não encontrado")
-                    }
-                } else {
-                    Log.e("Room", "Erro ao buscar usuário: ${usuarioResponse.errorBody()?.string()}")
-                }
-
-                val medicamentosResponse = apiService.getMedicamentos("Bearer $token")
-                if (medicamentosResponse.isSuccessful) {
-                    val medicamentos = medicamentosResponse.body()
-                    if (medicamentos != null) {
-                        medicamentoDao.insertAll(medicamentos)
-                        _medicamentos.postValue(medicamentos)
-                        agendarNotificacoes(medicamentos)
-                        Log.d("Room", "Medicamentos salvos: $medicamentos")
-                    } else {
-                        Log.e("Room", "Lista de medicamentos vazia")
-                    }
-                } else {
-                    Log.e("Room", "Erro ao buscar medicamentos: ${medicamentosResponse.errorBody()?.string()}")
-                }
-            } catch (e: Exception) {
-                Log.e("FetchData", "Erro ao buscar dados: ${e.message}")
-                _errorMessage.postValue("Erro ao buscar dados. Tente novamente")
-            }
-        }
-    }
-
-    private fun agendarNotificacoes(medicamentos: List<Medicamento>) {
-        val context = getApplication<Application>().applicationContext
-        val scheduler = NotificationScheduler(context)
-
-        medicamentos.forEach { medicamento ->
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        scheduler.agendarNotificacao(medicamento)
-                    } else {
-                        scheduler.scheduleUsingWorkManager(medicamento)
-                    }
-                } catch (e: Exception) {
-                    Log.e("Notification", "Erro ao agendar: ${e.message}")
-                }
             }
         }
     }

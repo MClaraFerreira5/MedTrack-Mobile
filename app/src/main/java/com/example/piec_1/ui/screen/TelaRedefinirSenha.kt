@@ -36,12 +36,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
 
 @Composable
-fun TelaRedefinirSenha(navController: NavController) {
+fun TelaRedefinirSenha(onPasswordReset: () -> Unit) {
     val codigo = remember { mutableStateOf("") }
     val novaSenha = remember { mutableStateOf("") }
     val repetirNovaSenha = remember { mutableStateOf("") }
@@ -163,7 +162,7 @@ fun TelaRedefinirSenha(navController: NavController) {
                             errorMessage.value = "As senhas não coincidem."
                         } else {
                             errorMessage.value = null
-                            navController.navigate("TelaPrincipal")
+                            onPasswordReset()
                         }
                     },
                     shape = RoundedCornerShape(16.dp),

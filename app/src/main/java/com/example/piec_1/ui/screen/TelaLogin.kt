@@ -32,18 +32,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.EntradaDeTexto
 import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 
 @Composable
-fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
+fun TelaLogin(
+    loginViewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit,
+    onForgotPasswordClick: () -> Unit
+) {
 
     val loginResponse = loginViewModel.loginResponse.observeAsState().value
     val errorMessage = loginViewModel.errorMessage.observeAsState().value
@@ -51,18 +53,16 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
-    val context = LocalContext.current
-
     val onLoginClick = {
         Log.d("Login", "Username: ${username.value}, Password: ${password.value}")
-        loginViewModel.login(username.value, password.value, context)
+        loginViewModel.login(username.value, password.value)
     }
 
     val isError = errorMessage != null
 
     LaunchedEffect(loginResponse) {
         if (loginResponse != null) {
-            navController.navigate("TelaPrincipal")
+            onLoginSuccess()
         }
     }
 
@@ -164,7 +164,7 @@ fun TelaLogin(navController: NavController, loginViewModel: LoginViewModel) {
                 }
 
                 TextButton(
-                    onClick = { navController.navigate("TelaEsqueciSenha") },
+                    onClick = onForgotPasswordClick,
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text(

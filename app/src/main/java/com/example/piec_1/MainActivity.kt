@@ -5,117 +5,85 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import com.example.piec_1.ui.navigation.NavigationManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.camera2.pipe.core.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
-import com.example.piec_1.data.remote.MedicamentoData
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.ui.navigation.AppNavigation
-import com.example.piec_1.utils.notifications.NotificationHelper
+import com.example.piec_1.ui.navigation.NavigationManager
 import com.example.piec_1.ui.theme.PIEC1Theme
+import com.example.piec_1.utils.notifications.NotificationHelper
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    companion object {
-        var pendingMedicamentoFromNotification: Medicamento? = null
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        NavigationManager.clearController()
-        NavigationManager.reset()
-    }
-
-    private var navController: NavController? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         processIntent(intent)
         enableEdgeToEdge()
-
         NotificationHelper.createNotificationChannel(this)
-
-        if (!areNotificationsEnabled()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Toast.makeText(
-                    this,
-                    "Por favor, habilite as notificações nas configurações do aplicativo",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
+        showNotificationPermissionWarningIfNeeded()
 
         setContent {
             PIEC1Theme {
                 val isPermissionGranted = remember { mutableStateOf(false) }
 
                 if (isPermissionGranted.value) {
-                    AppNavigation(
-                        onNavControllerReady = { controller ->
-                            NavigationManager.init(controller)
-                        }
-                    )
+                    AppNavigation()
                 } else {
                     RequestPermission { isGranted ->
                         isPermissionGranted.value = isGranted
                     }
                 }
             }
-        }}
+        }
+    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         processIntent(intent)
+    }
 
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            pendingMedicamentoFromNotification?.let { medicamento ->
-                NavigationManager.setMedicamento(medicamento)
-                pendingMedicamentoFromNotification = null
-            }
-        }, 500)
+    override fun onDestroy() {
+        super.onDestroy()
+        NavigationManager.reset()
     }
 
     private fun processIntent(intent: Intent) {
-        when (intent.action) {
-            "OPEN_CONFIRMATION" -> {
-                val medicamentoJson = intent.getStringExtra("medicamento_json")
-                if (medicamentoJson != null) {
-                    try {
-                        val medicamentoData = Gson().fromJson(medicamentoJson, MedicamentoData::class.java)
-                        val medicamento = Medicamento(
-                            id = 0,
-                            nome = medicamentoData.nome ?: "Não identificado",
-                            compostoAtivo = medicamentoData.agente_ativo ?: "Não identificado",
-                            dosagem = medicamentoData.dosagem ?: "N/A",
-                            quantidade = medicamentoData.quantidade ?: "0",
-                            validade = medicamentoData.validade ?: "",
-                            horarios = emptyList(),
-                            usoContinuo = false,
-                            sincronizado = false
-                        )
-                        pendingMedicamentoFromNotification = medicamento
+        if (intent.action != "OPEN_CONFIRMATION") return
 
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
+        val medicamentoJson = intent.getStringExtra("medicamento_json") ?: return
+
+        try {
+            val medicamento = Gson().fromJson(medicamentoJson, MedicamentoCapturadoDomain::class.java)
+            NavigationManager.setMedicamento(medicamento)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+    }
+
+    private fun showNotificationPermissionWarningIfNeeded() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || areNotificationsEnabled()) {
+            return
+        }
+
+        Toast.makeText(
+            this,
+            "Por favor, habilite as notificacoes nas configuracoes do aplicativo",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun areNotificationsEnabled(): Boolean {
@@ -152,7 +120,7 @@ private fun RequestPermission(onPermissionResult: (Boolean) -> Unit) {
         if (!allGranted) {
             Toast.makeText(
                 context,
-                "Algumas permissões necessárias foram negadas!",
+                "Algumas permissoes necessarias foram negadas!",
                 Toast.LENGTH_LONG
             ).show()
         }

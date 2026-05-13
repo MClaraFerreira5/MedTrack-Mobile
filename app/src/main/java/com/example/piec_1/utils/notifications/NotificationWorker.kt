@@ -11,8 +11,15 @@ class NotificationWorker(
 
     override fun doWork(): Result {
         val medicamentoId = inputData.getLong("medicamentoId", -1)
-        val nome = inputData.getString("nome") ?: return Result.failure()
+        var nome = inputData.getString("nome") ?: return Result.failure()
+        val compostoAtivo = inputData.getString("compostoAtivo").orEmpty()
         val horario = inputData.getString("horario") ?: return Result.failure()
+
+        if (nome.equals("MEDICAMENTO GENERICO", ignoreCase = true) ||
+            nome.equals("MEDICAMENTO GENÉRICO", ignoreCase = true)
+        ) {
+            nome = compostoAtivo.ifBlank { nome }
+        }
 
         NotificationHelper.showNotification(applicationContext, medicamentoId, nome, horario)
 

@@ -8,11 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.navigation.NavController
 import com.example.piec_1.ui.components.ContentCard
 
 @Composable
-fun TelaInicial(navController: NavController) {
+fun TelaInicial(onStartClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -26,6 +25,6 @@ fun TelaInicial(navController: NavController) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        ContentCard(navController)
+        ContentCard(onStartClick = onStartClick)
     }
 }
