@@ -1,8 +1,8 @@
 package com.example.piec_1.data.repository
 
 import com.example.piec_1.data.remote.ApiService
+import com.example.piec_1.data.remote.dto.LoginRequestDto
 import com.example.piec_1.data.session.SessionManager
-import com.example.piec_1.domain.model.LoginRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -14,7 +14,7 @@ class AuthRepository @Inject constructor(
     private val sessionManager: SessionManager
 ) {
     suspend fun login(username: String, password: String): String = withContext(Dispatchers.IO) {
-        val response = apiService.login(LoginRequest(username, password))
+        val response = apiService.login(LoginRequestDto(username, password))
 
         if (!response.isSuccessful) {
             throw LoginException("Usuario ou senha invalidos")

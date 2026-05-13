@@ -1,9 +1,10 @@
 package com.example.piec_1.data.repository
 
 import com.example.piec_1.data.local.AppDatabase
-import com.example.piec_1.data.remote.ApiService
 import com.example.piec_1.data.local.entity.ConfirmacaoEntity
-import com.example.piec_1.domain.model.DadosConfirmacaoRequest
+import com.example.piec_1.data.remote.ApiService
+import com.example.piec_1.data.remote.dto.ConfirmacaoRequestDto
+import com.example.piec_1.data.remote.mapper.toDomain
 import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.Usuario
@@ -65,7 +66,7 @@ class MedicamentoRepository @Inject constructor(
             throw IOException(response.errorBody()?.string() ?: "Erro ao buscar usuario")
         }
 
-        return response.body() ?: throw IOException("Usuario nao encontrado")
+        return response.body()?.toDomain() ?: throw IOException("Usuario nao encontrado")
     }
 
     private suspend fun buscarMedicamentos(authHeader: String): List<MedicamentoDomain> {
@@ -75,7 +76,7 @@ class MedicamentoRepository @Inject constructor(
             throw IOException(response.errorBody()?.string() ?: "Erro ao buscar medicamentos")
         }
 
-        return response.body().orEmpty()
+        return response.body().orEmpty().map { it.toDomain() }
     }
 
     private suspend fun encontrarMedicamentoCorrespondente(
@@ -111,7 +112,7 @@ class MedicamentoRepository @Inject constructor(
         )
         val confirmacaoId = confirmacaoDao.insert(confirmacao)
 
-        val request = DadosConfirmacaoRequest(
+        val request = ConfirmacaoRequestDto(
             usuarioId = usuarioDao.getUsuario().id,
             medicamentoId = medicamento.id,
             horario = horarioSelecionado,

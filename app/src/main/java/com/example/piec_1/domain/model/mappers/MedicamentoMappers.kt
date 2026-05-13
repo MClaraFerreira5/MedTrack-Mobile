@@ -2,10 +2,8 @@ package com.example.piec_1.domain.model.mappers
 
 import com.example.piec_1.data.local.entity.FrequenciaUsoEntity
 import com.example.piec_1.data.local.entity.MedicamentoEntity
-import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.domain.model.FrequenciaUsoDomain
 import com.example.piec_1.domain.model.FrequenciaUsoTipo
-import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.domain.model.MedicamentoDomain
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -48,12 +46,4 @@ fun MedicamentoDomain.toEntity() = MedicamentoEntity(
     compostoAtivo = compostoAtivo,
     dosagem = dosagem,
     frequenciaUso = frequenciaUso.toEntity()
-)
-
-fun MedicamentoData.toCapturadoDomain() = MedicamentoCapturadoDomain(
-    nome = nome ?: "Nao identificado",
-    compostoAtivo = agente_ativo ?: "Nao identificado",
-    dosagem = dosagem ?: "N/A",
-    quantidade = quantidade ?: "0",
-    validade = validade ?: ""
 )

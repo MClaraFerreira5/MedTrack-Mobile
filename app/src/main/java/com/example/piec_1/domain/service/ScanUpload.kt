@@ -11,8 +11,8 @@ import androidx.core.net.toUri
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.piec_1.MainActivity
-import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.repository.ScanRepository
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
 import com.google.gson.Gson
 import dagger.hilt.EntryPoint
@@ -55,11 +55,11 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
                     return@forEach
                 }
 
-                val medicamentoData = repository.uploadScanPendente(file)
+                val medicamento = repository.uploadScanPendente(file)
 
-                if (medicamentoData != null) {
+                if (medicamento != null) {
                     repository.updateScanStatus(scan.id, STATUS_CONCLUIDO)
-                    enviarNotificacaoComDados(medicamentoData)
+                    enviarNotificacaoComDados(medicamento)
                     file.delete()
                 } else {
                     allSuccess = false
@@ -75,7 +75,7 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
         return if (allSuccess) Result.success() else Result.retry()
     }
 
-    private fun enviarNotificacaoComDados(medicamentoData: MedicamentoData) {
+    private fun enviarNotificacaoComDados(medicamento: MedicamentoCapturadoDomain) {
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "offline_scan_channel"
@@ -87,7 +87,7 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
         )
         notificationManager.createNotificationChannel(channel)
 
-        val medicamentoJson = Gson().toJson(medicamentoData)
+        val medicamentoJson = Gson().toJson(medicamento)
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             action = "OPEN_CONFIRMATION"
             putExtra("medicamento_json", medicamentoJson)
@@ -105,16 +105,16 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(android.R.drawable.stat_sys_upload_done)
             .setContentTitle("Medicamento Processado")
-            .setContentText(medicamentoData.nome ?: "Clique para confirmar as informacoes")
+            .setContentText(medicamento.nome)
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText(
                         """
-                        ${medicamentoData.nome ?: "Medicamento"}
-                        ${medicamentoData.agente_ativo ?: ""}
-                        Dosagem: ${medicamentoData.dosagem ?: "N/A"}
-                        Quantidade: ${medicamentoData.quantidade ?: "N/A"}
-                        Validade: ${medicamentoData.validade ?: "N/A"}
+                        ${medicamento.nome}
+                        ${medicamento.compostoAtivo}
+                        Dosagem: ${medicamento.dosagem}
+                        Quantidade: ${medicamento.quantidade}
+                        Validade: ${medicamento.validade?.ifBlank { "N/A" } ?: "N/A"}
                         
                         Clique para confirmar ou editar as informacoes
                         """.trimIndent()

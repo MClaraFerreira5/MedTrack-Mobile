@@ -9,10 +9,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.data.repository.ScanRepository
 import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
-import com.example.piec_1.domain.model.mappers.toCapturadoDomain
 import com.example.piec_1.domain.service.CameraService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,9 +22,6 @@ class CameraViewModel @Inject constructor(
     private val scanRepository: ScanRepository,
     private val cameraService: CameraService
 ) : ViewModel() {
-
-    private val _scanResult = MutableLiveData<ScanResponse?>()
-    val scanResult: LiveData<ScanResponse?> = _scanResult
 
     private val _medicamento = MutableLiveData<MedicamentoCapturadoDomain?>()
     val medicamento: LiveData<MedicamentoCapturadoDomain?> = _medicamento
@@ -86,13 +81,12 @@ class CameraViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val file = File(uri.path.orEmpty())
-                val response = scanRepository.scanMedicamento(file)
+                val medicamento = scanRepository.scanMedicamento(file)
 
                 _isLoading.postValue(false)
 
-                if (response?.data != null) {
-                    _scanResult.postValue(response)
-                    _medicamento.postValue(response.data.toCapturadoDomain())
+                if (medicamento != null) {
+                    _medicamento.postValue(medicamento)
                     _navigateToConfirmation.postValue(true)
                 } else {
                     Log.e("CameraVM", "Erro na analise da IA")

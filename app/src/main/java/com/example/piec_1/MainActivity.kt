@@ -17,8 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import com.example.piec_1.data.remote.MedicamentoData
-import com.example.piec_1.domain.model.mappers.toCapturadoDomain
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.ui.navigation.AppNavigation
 import com.example.piec_1.ui.navigation.NavigationManager
 import com.example.piec_1.ui.theme.PIEC1Theme
@@ -68,8 +67,8 @@ class MainActivity : ComponentActivity() {
         val medicamentoJson = intent.getStringExtra("medicamento_json") ?: return
 
         try {
-            val medicamentoData = Gson().fromJson(medicamentoJson, MedicamentoData::class.java)
-            NavigationManager.setMedicamento(medicamentoData.toCapturadoDomain())
+            val medicamento = Gson().fromJson(medicamentoJson, MedicamentoCapturadoDomain::class.java)
+            NavigationManager.setMedicamento(medicamento)
         } catch (e: Exception) {
             e.printStackTrace()
         }

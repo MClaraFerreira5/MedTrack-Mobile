@@ -9,8 +9,9 @@ import androidx.work.WorkManager
 import com.example.piec_1.data.local.AppDatabase
 import com.example.piec_1.data.local.entity.ScanQueueItem
 import com.example.piec_1.data.remote.ApiService
-import com.example.piec_1.data.remote.MedicamentoData
-import com.example.piec_1.data.remote.ScanResponse
+import com.example.piec_1.data.remote.dto.ScanResponseDto
+import com.example.piec_1.data.remote.mapper.toCapturadoDomain
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.domain.service.ScanUpload
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -34,9 +35,9 @@ class ScanRepository @Inject constructor(
 ) {
     private val scanQueueDao = database.scanQueueDao()
 
-    suspend fun scanMedicamento(file: File): ScanResponse? = withContext(Dispatchers.IO) {
+    suspend fun scanMedicamento(file: File): MedicamentoCapturadoDomain? = withContext(Dispatchers.IO) {
         val token = authRepository.getToken() ?: throw TokenNaoEncontradoException()
-        enviarImagemParaScan(file, token, "file")
+        enviarImagemParaScan(file, token, "file")?.data?.toCapturadoDomain()
     }
 
     suspend fun getPendingScans(): List<ScanQueueItem> = withContext(Dispatchers.IO) {
@@ -47,14 +48,14 @@ class ScanRepository @Inject constructor(
         scanQueueDao.updateStatus(id, status)
     }
 
-    suspend fun uploadScanPendente(file: File): MedicamentoData? = withContext(Dispatchers.IO) {
+    suspend fun uploadScanPendente(file: File): MedicamentoCapturadoDomain? = withContext(Dispatchers.IO) {
         val token = authRepository.getToken() ?: throw TokenNaoEncontradoException()
         val partNames = listOf("file", "image", "photo")
 
         for (partName in partNames) {
             val response = enviarImagemParaScan(file, token, partName)
             if (response?.data != null) {
-                return@withContext response.data
+                return@withContext response.data.toCapturadoDomain()
             }
         }
 
@@ -89,7 +90,7 @@ class ScanRepository @Inject constructor(
         file: File,
         token: String,
         partName: String
-    ): ScanResponse? {
+    ): ScanResponseDto? {
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData(partName, file.name, requestFile)
         val response = apiService.scanMedicamento(scanUrl, "Bearer $token", body)

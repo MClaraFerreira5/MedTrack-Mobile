@@ -41,8 +41,8 @@ fun AppNavigation() {
         shouldNavigate.value?.let { medicamento ->
             delay(300)
             cameraViewModel.atualizarMedicamento(medicamento)
-            navController.navigate("TelaConfirmacao") {
-                popUpTo("TelaInicial") { inclusive = true }
+            navController.navigate(AppRoutes.CONFIRMACAO) {
+                popUpTo(AppRoutes.INICIAL) { inclusive = true }
                 launchSingleTop = true
             }
             NavigationManager.reset()
@@ -51,65 +51,65 @@ fun AppNavigation() {
 
     LaunchedEffect(shouldNavigateFromCamera) {
         if (shouldNavigateFromCamera) {
-            navController.navigate("TelaConfirmacao")
+            navController.navigate(AppRoutes.CONFIRMACAO)
             cameraViewModel.onNavigationToConfirmationHandled()
         }
     }
 
     NavHost(
         navController = navController,
-        startDestination = "TelaInicial"
+        startDestination = AppRoutes.INICIAL
     ) {
-        composable("TelaInicial") {
+        composable(AppRoutes.INICIAL) {
             TelaInicial(
-                onStartClick = { navController.navigate("TelaLogin") }
+                onStartClick = { navController.navigate(AppRoutes.LOGIN) }
             )
         }
-        composable("TelaLogin") {
+        composable(AppRoutes.LOGIN) {
             TelaLogin(
                 loginViewModel = loginViewModel,
                 onLoginSuccess = {
-                    navController.navigate("TelaPrincipal") {
-                        popUpTo("TelaLogin") { inclusive = true }
+                    navController.navigate(AppRoutes.PRINCIPAL) {
+                        popUpTo(AppRoutes.LOGIN) { inclusive = true }
                     }
                 },
-                onForgotPasswordClick = { navController.navigate("TelaEsqueciSenha") }
+                onForgotPasswordClick = { navController.navigate(AppRoutes.ESQUECI_SENHA) }
             )
         }
-        composable("TelaPrincipal") {
+        composable(AppRoutes.PRINCIPAL) {
             TelaPrincipal(
                 loginViewModel = loginViewModel,
-                onScanClick = { navController.navigate("TelaCamera") }
+                onScanClick = { navController.navigate(AppRoutes.CAMERA) }
             )
         }
-        composable("TelaEsqueciSenha") {
+        composable(AppRoutes.ESQUECI_SENHA) {
             TelaEsqueciSenha(
-                onEmailSent = { navController.navigate("TelaRedefinirSenha") },
+                onEmailSent = { navController.navigate(AppRoutes.REDEFINIR_SENHA) },
                 onBackToLogin = { navController.popBackStack() }
             )
         }
-        composable("TelaRedefinirSenha") {
+        composable(AppRoutes.REDEFINIR_SENHA) {
             TelaRedefinirSenha(
                 onPasswordReset = {
-                    navController.navigate("TelaPrincipal") {
-                        popUpTo("TelaLogin") { inclusive = true }
+                    navController.navigate(AppRoutes.PRINCIPAL) {
+                        popUpTo(AppRoutes.LOGIN) { inclusive = true }
                     }
                 }
             )
         }
-        composable("TelaConfirmacao") {
+        composable(AppRoutes.CONFIRMACAO) {
             TelaConfirmacao(
                 cameraViewModel = cameraViewModel,
                 medicamentoViewModel = medicamentoViewModel,
                 onConfirmSuccess = {
-                    navController.navigate("TelaPrincipal") {
-                        popUpTo("TelaPrincipal") { inclusive = true }
+                    navController.navigate(AppRoutes.PRINCIPAL) {
+                        popUpTo(AppRoutes.PRINCIPAL) { inclusive = true }
                     }
                 },
                 onRetakePhoto = { navController.popBackStack() }
             )
         }
-        composable("TelaCamera") {
+        composable(AppRoutes.CAMERA) {
             TelaCamera(
                 onBackClick = { navController.popBackStack() },
                 viewModel = cameraViewModel,
@@ -117,7 +117,7 @@ fun AppNavigation() {
             )
         }
         composable(
-            "TelaCamera/{medicamentoId}/{horario}",
+            AppRoutes.CAMERA_FROM_NOTIFICATION,
             arguments = listOf(
                 navArgument("medicamentoId") { type = NavType.LongType },
                 navArgument("horario") { type = NavType.StringType }
