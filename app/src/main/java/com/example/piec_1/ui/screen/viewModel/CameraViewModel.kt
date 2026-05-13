@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.data.repository.ScanRepository
 import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
@@ -44,6 +43,9 @@ class CameraViewModel @Inject constructor(
     private val _showOfflineDialog = MutableLiveData(false)
     val showOfflineDialog: LiveData<Boolean> get() = _showOfflineDialog
 
+    private val _navigateToConfirmation = MutableLiveData(false)
+    val navigateToConfirmation: LiveData<Boolean> get() = _navigateToConfirmation
+
     fun startCamera(previewView: PreviewView, lifecycleOwner: LifecycleOwner) {
         cameraService.startCamera(previewView, lifecycleOwner) { detected, detectedRect ->
             _isRectangleDetected.postValue(detected)
@@ -51,7 +53,7 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    fun capturePhoto(navController: NavController, isOnline: Boolean) {
+    fun capturePhoto(isOnline: Boolean) {
         if (!isOnline) {
             _showOfflineDialog.postValue(true)
             return
@@ -60,7 +62,7 @@ class CameraViewModel @Inject constructor(
         _isLoading.postValue(true)
         cameraService.capturePhotoOnly { uri ->
             if (uri != null) {
-                processOnlinePhoto(uri, navController)
+                processOnlinePhoto(uri)
             } else {
                 _isLoading.postValue(false)
                 Log.e("CameraVM", "Erro ao capturar imagem")
@@ -80,7 +82,7 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    private fun processOnlinePhoto(uri: Uri, navController: NavController) {
+    private fun processOnlinePhoto(uri: Uri) {
         viewModelScope.launch {
             try {
                 val file = File(uri.path.orEmpty())
@@ -91,7 +93,7 @@ class CameraViewModel @Inject constructor(
                 if (response?.data != null) {
                     _scanResult.postValue(response)
                     _medicamento.postValue(response.data.toCapturadoDomain())
-                    navController.navigate("TelaConfirmacao")
+                    _navigateToConfirmation.postValue(true)
                 } else {
                     Log.e("CameraVM", "Erro na analise da IA")
                 }
@@ -121,5 +123,9 @@ class CameraViewModel @Inject constructor(
 
     fun atualizarMedicamento(novoMedicamento: MedicamentoCapturadoDomain) {
         _medicamento.value = novoMedicamento
+    }
+
+    fun onNavigationToConfirmationHandled() {
+        _navigateToConfirmation.value = false
     }
 }

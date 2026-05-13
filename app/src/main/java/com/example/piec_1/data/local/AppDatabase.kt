@@ -10,17 +10,17 @@ import com.example.piec_1.data.local.daos.MedicamentoV2Dao
 import com.example.piec_1.data.local.daos.NotificacaoDao
 import com.example.piec_1.data.local.daos.ScanQueueDao
 import com.example.piec_1.data.local.daos.UsuarioDao
+import com.example.piec_1.data.local.entity.ConfirmacaoEntity
 import com.example.piec_1.data.local.entity.MedicamentoEntity
-import com.example.piec_1.domain.model.Confirmacao
-import com.example.piec_1.domain.model.Notificacao
-import com.example.piec_1.domain.model.Usuario
+import com.example.piec_1.data.local.entity.NotificacaoEntity
 import com.example.piec_1.data.local.entity.ScanQueueItem
+import com.example.piec_1.data.local.entity.UsuarioEntity
 @Database(
     entities = [
-        Usuario::class,
+        UsuarioEntity::class,
         MedicamentoEntity::class,
-        Notificacao::class,
-        Confirmacao::class,
+        NotificacaoEntity::class,
+        ConfirmacaoEntity::class,
         ScanQueueItem::class, ],
     version = 8
 )

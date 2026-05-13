@@ -31,13 +31,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.piec_1.R
 import com.example.piec_1.ui.components.ListaHorarios
 import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 
 @Composable
-fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) {
+fun TelaPrincipal(
+    loginViewModel: LoginViewModel,
+    onScanClick: () -> Unit
+) {
 
     val usuario by loginViewModel.usuario.observeAsState()
     val medicamentos by loginViewModel.medicamentos.observeAsState()
@@ -135,7 +137,7 @@ fun TelaPrincipal(navController: NavController, loginViewModel: LoginViewModel) 
                 }
 
                 Button(
-                    onClick = { navController.navigate("TelaCamera") },
+                    onClick = onScanClick,
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()

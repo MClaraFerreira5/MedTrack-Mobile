@@ -2,7 +2,7 @@ package com.example.piec_1.data.repository
 
 import com.example.piec_1.data.local.AppDatabase
 import com.example.piec_1.data.remote.ApiService
-import com.example.piec_1.domain.model.Confirmacao
+import com.example.piec_1.data.local.entity.ConfirmacaoEntity
 import com.example.piec_1.domain.model.DadosConfirmacaoRequest
 import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.domain.model.MedicamentoDomain
@@ -39,7 +39,7 @@ class MedicamentoRepository @Inject constructor(
         val usuario = buscarUsuario(authHeader)
         val medicamentos = buscarMedicamentos(authHeader)
 
-        usuarioDao.insert(usuario)
+        usuarioDao.insert(usuario.toEntity())
         medicamentoV2Dao.insertAll(medicamentos.map { it.toEntity() })
         medicamentos.forEach { notificationScheduler.agendarNotificacao(it) }
 
@@ -103,7 +103,7 @@ class MedicamentoRepository @Inject constructor(
             throw ConfirmacaoExistenteException()
         }
 
-        val confirmacao = Confirmacao(
+        val confirmacao = ConfirmacaoEntity(
             medicamentoId = medicamento.id,
             horario = horarioSelecionado,
             data = dataAtual,

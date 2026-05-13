@@ -21,11 +21,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.piec_1.R
 
 @Composable
-fun ContentCard(navController: NavController) {
+fun ContentCard(onStartClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround,
@@ -54,7 +53,7 @@ fun ContentCard(navController: NavController) {
             )
 
             Button(
-                onClick = { navController.navigate("TelaLogin") },
+                onClick = onStartClick,
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,

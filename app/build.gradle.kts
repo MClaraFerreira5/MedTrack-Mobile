@@ -28,6 +28,7 @@ android {
     defaultConfig {
         applicationId = "com.example.piec_1"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"

@@ -17,9 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
 import com.example.piec_1.data.remote.MedicamentoData
-import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.domain.model.mappers.toCapturadoDomain
 import com.example.piec_1.ui.navigation.AppNavigation
 import com.example.piec_1.ui.navigation.NavigationManager
@@ -30,12 +28,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    companion object {
-        var pendingMedicamentoFromNotification: MedicamentoCapturadoDomain? = null
-    }
-
-    private var navController: NavController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +42,7 @@ class MainActivity : ComponentActivity() {
                 val isPermissionGranted = remember { mutableStateOf(false) }
 
                 if (isPermissionGranted.value) {
-                    AppNavigation(
-                        onNavControllerReady = { controller ->
-                            navController = controller
-                            NavigationManager.init(controller)
-                        }
-                    )
+                    AppNavigation()
                 } else {
                     RequestPermission { isGranted ->
                         isPermissionGranted.value = isGranted
@@ -68,18 +55,10 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         processIntent(intent)
-
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            pendingMedicamentoFromNotification?.let { medicamento ->
-                NavigationManager.setMedicamento(medicamento)
-                pendingMedicamentoFromNotification = null
-            }
-        }, 500)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        NavigationManager.clearController()
         NavigationManager.reset()
     }
 
@@ -90,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
         try {
             val medicamentoData = Gson().fromJson(medicamentoJson, MedicamentoData::class.java)
-            pendingMedicamentoFromNotification = medicamentoData.toCapturadoDomain()
+            NavigationManager.setMedicamento(medicamentoData.toCapturadoDomain())
         } catch (e: Exception) {
             e.printStackTrace()
         }

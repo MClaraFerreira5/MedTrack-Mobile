@@ -4,16 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.piec_1.domain.model.Notificacao
+import com.example.piec_1.data.local.entity.NotificacaoEntity
 
 @Dao
 interface NotificacaoDao {
     @Insert
-    suspend fun insert(notificacao: Notificacao)
+    suspend fun insert(notificacao: NotificacaoEntity)
 
     @Query("SELECT * FROM notificacoes WHERE medicamentoId = :medicamentoId AND exibida = 0")
-    suspend fun getNotificacoesPendentes(medicamentoId: Long): List<Notificacao>
+    suspend fun getNotificacoesPendentes(medicamentoId: Long): List<NotificacaoEntity>
 
     @Update
-    suspend fun marcarComoExibida(notificacao: Notificacao)
+    suspend fun marcarComoExibida(notificacao: NotificacaoEntity)
 }

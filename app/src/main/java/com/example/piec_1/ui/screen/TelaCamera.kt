@@ -1,5 +1,4 @@
 package com.example.piec_1.ui.screen
-import androidx.compose.ui.unit.sp
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -14,8 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,26 +35,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.piec_1.ui.components.OverlayCamera
 import com.example.piec_1.ui.screen.viewModel.CameraViewModel
 import com.example.piec_1.utils.connection.ConnectivityObserver
-import android.content.Context
-import android.content.Intent
-import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import com.example.piec_1.MainActivity
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.widget.Toast
 
 @Composable
 fun TelaCamera(
-    navController: NavController,
+    onBackClick: () -> Unit,
     viewModel: CameraViewModel = hiltViewModel(),
     connectivityObserver: ConnectivityObserver
 ) {
@@ -87,7 +73,7 @@ fun TelaCamera(
         )
 
         IconButton(
-            onClick = { navController.popBackStack() },
+            onClick = onBackClick,
             modifier = Modifier
                 .padding(top = 40.dp, start = 16.dp)
                 .background(Color.Black.copy(alpha = 0.3f), CircleShape)
@@ -112,7 +98,7 @@ fun TelaCamera(
                 .clickable(enabled = isRectangleDetected) {
                     if (isWifi) {
                         // Online - captura e envia
-                        viewModel.capturePhoto(navController, true)
+                        viewModel.capturePhoto(true)
                     } else {
                         // Offline - mostra diálogo de confirmação
                         showOfflineDialog = true

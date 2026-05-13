@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.ui.components.EntradaDeTexto
 import com.example.piec_1.ui.components.MedTrackDialog
@@ -43,9 +42,10 @@ import com.example.piec_1.ui.screen.viewModel.MedicamentoViewModel
 
 @Composable
 fun TelaConfirmacao(
-    navController: NavController,
     cameraViewModel: CameraViewModel,
-    medicamentoViewModel: MedicamentoViewModel
+    medicamentoViewModel: MedicamentoViewModel,
+    onConfirmSuccess: () -> Unit,
+    onRetakePhoto: () -> Unit
 ) {
     val medicamento by cameraViewModel.medicamento.observeAsState()
     var showEditDialog by remember { mutableStateOf(false) }
@@ -91,9 +91,7 @@ fun TelaConfirmacao(
                                 medicamentoCapturado = medicamento!!,
                                 onSuccess = {
                                     loading = false
-                                    navController.navigate("TelaPrincipal") {
-                                        popUpTo("TelaPrincipal") { inclusive = true }
-                                    }
+                                    onConfirmSuccess()
                                 },
                                 onError = { error ->
                                     loading = false
@@ -127,7 +125,7 @@ fun TelaConfirmacao(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                TextButton(onClick = { navController.popBackStack() }) {
+                TextButton(onClick = onRetakePhoto) {
                     Text("Tirar outra foto", color = MaterialTheme.colorScheme.error)
                 }
             }

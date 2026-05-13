@@ -4,21 +4,21 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.piec_1.domain.model.Confirmacao
+import com.example.piec_1.data.local.entity.ConfirmacaoEntity
 
 @Dao
 interface ConfirmacaoDao {
     @Insert
-    suspend fun insert(confirmacao: Confirmacao): Long
+    suspend fun insert(confirmacao: ConfirmacaoEntity): Long
 
     @Query("SELECT * FROM confirmacoes WHERE medicamentoId = :medicamentoId AND data = :data AND horario = :horario")
-    suspend fun getConfirmacao(medicamentoId: Long, data: String, horario: String): Confirmacao?
+    suspend fun getConfirmacao(medicamentoId: Long, data: String, horario: String): ConfirmacaoEntity?
 
     @Query("SELECT * FROM confirmacoes WHERE sincronizado = 0")
-    suspend fun getConfirmacoesNaoSincronizadas(): List<Confirmacao>
+    suspend fun getConfirmacoesNaoSincronizadas(): List<ConfirmacaoEntity>
 
     @Update
-    suspend fun update(confirmacao: Confirmacao)
+    suspend fun update(confirmacao: ConfirmacaoEntity)
 
     @Query("DELETE FROM confirmacoes")
     suspend fun deleteAll()
