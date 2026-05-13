@@ -18,6 +18,16 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        val apiBaseUrl = providers.gradleProperty("MEDTRACK_API_BASE_URL")
+            .orElse("http://192.168.1.123:8081/")
+            .get()
+        val scanUrl = providers.gradleProperty("MEDTRACK_SCAN_URL")
+            .orElse("http://192.168.1.107:8000/detect")
+            .get()
+
+        buildConfigField("String", "MEDTRACK_API_BASE_URL", "\"$apiBaseUrl\"")
+        buildConfigField("String", "MEDTRACK_SCAN_URL", "\"$scanUrl\"")
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments["room.schemaLocation"] = "$projectDir/schemas"
@@ -46,6 +56,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
 }

@@ -39,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.piec_1.ui.components.OverlayCamera
 import com.example.piec_1.ui.screen.viewModel.CameraViewModel
@@ -58,7 +58,7 @@ import android.widget.Toast
 @Composable
 fun TelaCamera(
     navController: NavController,
-    viewModel: CameraViewModel = viewModel(),
+    viewModel: CameraViewModel = hiltViewModel(),
     connectivityObserver: ConnectivityObserver
 ) {
     var showOfflineDialog by remember { mutableStateOf(false) }

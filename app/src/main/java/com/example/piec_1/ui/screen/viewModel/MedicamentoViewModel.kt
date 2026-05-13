@@ -1,19 +1,22 @@
 package com.example.piec_1.ui.screen.viewModel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.piec_1.data.repository.MedTrackRepository
 import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.utils.exceptions.ConfirmacaoExistenteException
 import com.example.piec_1.utils.exceptions.MedicamentoNaoEncontradoException
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MedicamentoViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = MedTrackRepository(application)
+@HiltViewModel
+class MedicamentoViewModel @Inject constructor(
+    private val repository: MedTrackRepository
+) : ViewModel() {
 
     private val _uiState = MutableLiveData<MedicamentoUIState>(MedicamentoUIState.Idle)
     val uiState: LiveData<MedicamentoUIState> get() = _uiState

@@ -1,14 +1,13 @@
 package com.example.piec_1.ui.screen.viewModel
 
-import android.app.Application
 import android.graphics.Rect
 import android.net.Uri
 import android.util.Log
 import androidx.camera.view.PreviewView
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.piec_1.data.remote.MedicamentoData
@@ -16,12 +15,16 @@ import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.data.repository.MedTrackRepository
 import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.domain.service.CameraService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.File
+import javax.inject.Inject
 
-class CameraViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = MedTrackRepository(application)
-    private val cameraService = CameraService(getApplication())
+@HiltViewModel
+class CameraViewModel @Inject constructor(
+    private val repository: MedTrackRepository,
+    private val cameraService: CameraService
+) : ViewModel() {
 
     private val _scanResult = MutableLiveData<ScanResponse?>()
     val scanResult: LiveData<ScanResponse?> = _scanResult

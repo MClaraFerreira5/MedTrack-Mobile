@@ -7,8 +7,9 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.ObjectDetector
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
+import javax.inject.Inject
 
-class DetectionService {
+class DetectionService @Inject constructor() {
 
     private val objectDetector: ObjectDetector
 

@@ -1,12 +1,11 @@
 package com.example.piec_1.ui.navigation
 
-import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,7 +23,6 @@ import com.example.piec_1.ui.screen.TelaRedefinirSenha
 import com.example.piec_1.ui.screen.viewModel.CameraViewModel
 import com.example.piec_1.ui.screen.viewModel.LoginViewModel
 import com.example.piec_1.ui.screen.viewModel.MedicamentoViewModel
-import com.example.piec_1.ui.screen.viewModel.LoginViewModelFactory
 import com.example.piec_1.utils.connection.ConnectivityObserver
 import kotlinx.coroutines.delay
 
@@ -33,13 +31,11 @@ fun AppNavigation(
     onNavControllerReady: (NavController) -> Unit = {}
 ) {
     val navController = rememberNavController()
-    val cameraViewModel: CameraViewModel = viewModel()
-    val loginViewModel: LoginViewModel = viewModel(
-        factory = LoginViewModelFactory(LocalContext.current.applicationContext as Application)
-    )
+    val cameraViewModel: CameraViewModel = hiltViewModel()
+    val loginViewModel: LoginViewModel = hiltViewModel()
     val context = LocalContext.current
     val connectivityObserver = remember { ConnectivityObserver(context) }
-    val medicamentoViewModel: MedicamentoViewModel = viewModel()
+    val medicamentoViewModel: MedicamentoViewModel = hiltViewModel()
 
     val shouldNavigate = NavigationManager.shouldNavigate.collectAsState()
 

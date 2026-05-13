@@ -12,6 +12,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Url
 
 interface ApiService {
 
@@ -32,8 +33,9 @@ interface ApiService {
     ): Response<ConfirmacaoResponse>
 
     @Multipart
-    @POST("http://192.168.1.107:8000/detect")
+    @POST
     suspend fun scanMedicamento(
+        @Url url: String,
         @Header("Authorization") token: String,
         @Part image: MultipartBody.Part
     ): Response<ScanResponse>

@@ -15,6 +15,10 @@ import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.repository.MedTrackRepository
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
 import com.google.gson.Gson
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import java.io.File
 
 class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
@@ -25,7 +29,12 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
         private const val STATUS_CONCLUIDO = "CONCLUIDO"
     }
 
-    private val repository = MedTrackRepository(appContext)
+    private val repository: MedTrackRepository by lazy {
+        EntryPointAccessors.fromApplication(
+            applicationContext,
+            ScanUploadEntryPoint::class.java
+        ).medTrackRepository()
+    }
 
     override suspend fun doWork(): Result {
         val pendingScans = repository.getPendingScans()
@@ -117,5 +126,11 @@ class ScanUpload(appContext: Context, workerParams: WorkerParameters) :
             .build()
 
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+    }
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface ScanUploadEntryPoint {
+        fun medTrackRepository(): MedTrackRepository
     }
 }

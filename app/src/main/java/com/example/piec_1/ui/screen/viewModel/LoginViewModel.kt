@@ -1,18 +1,22 @@
 package com.example.piec_1.ui.screen.viewModel
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.piec_1.data.repository.LoginException
 import com.example.piec_1.data.repository.MedTrackRepository
 import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.domain.model.Usuario
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val repository: MedTrackRepository
+) : ViewModel() {
 
     private val _loginResponse = MutableLiveData<String>()
     val loginResponse: LiveData<String> get() = _loginResponse
@@ -25,8 +29,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _medicamentos = MutableLiveData<List<Medicamento>>()
     val medicamentos: LiveData<List<Medicamento>> get() = _medicamentos
-
-    private val repository = MedTrackRepository(application)
 
     fun login(username: String, password: String) {
         viewModelScope.launch {

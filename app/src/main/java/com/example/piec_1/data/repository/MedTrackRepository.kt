@@ -9,7 +9,6 @@ import androidx.work.WorkManager
 import com.example.piec_1.data.PreferencesManager
 import com.example.piec_1.data.local.AppDatabase
 import com.example.piec_1.data.local.entity.ScanQueueItem
-import com.example.piec_1.data.remote.ApiClient
 import com.example.piec_1.data.remote.ApiService
 import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.remote.ScanResponse
@@ -26,6 +25,7 @@ import com.example.piec_1.utils.exceptions.MedicamentoNaoEncontradoException
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
 import com.example.piec_1.domain.service.ScanUpload
 import com.example.piec_1.utils.notifications.NotificationScheduler
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -36,11 +36,16 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 
-class MedTrackRepository(
-    context: Context,
-    private val apiService: ApiService = ApiClient().apiService,
-    database: AppDatabase = AppDatabase.getDatabase(context)
+@Singleton
+class MedTrackRepository @Inject constructor(
+    @ApplicationContext context: Context,
+    private val apiService: ApiService,
+    private val database: AppDatabase,
+    @param:Named("ScanUrl") private val scanUrl: String
 ) {
     private val appContext = context.applicationContext
     private val usuarioDao = database.usuarioDao()
@@ -189,7 +194,7 @@ class MedTrackRepository(
         val token = PreferencesManager.getToken(appContext) ?: throw TokenNaoEncontradoException()
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-        val response = apiService.scanMedicamento("Bearer $token", body)
+        val response = apiService.scanMedicamento(scanUrl, "Bearer $token", body)
 
         if (response.isSuccessful) {
             response.body()
@@ -251,7 +256,7 @@ class MedTrackRepository(
     ): ScanResponse? {
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData(partName, file.name, requestFile)
-        val response = apiService.scanMedicamento("Bearer $token", body)
+        val response = apiService.scanMedicamento(scanUrl, "Bearer $token", body)
 
         return if (response.isSuccessful) response.body() else null
     }

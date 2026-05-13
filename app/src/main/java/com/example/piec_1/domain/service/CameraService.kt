@@ -22,14 +22,16 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
-class CameraService(
-    private val context: Context
+class CameraService @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val detectionService: DetectionService
 ) {
-    private val detectionService: DetectionService = DetectionService()
     private var imageCapture: ImageCapture? = null
 
     fun startCamera(
