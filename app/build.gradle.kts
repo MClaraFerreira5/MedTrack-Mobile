@@ -39,11 +39,6 @@ android {
         buildConfigField("String", "MEDTRACK_API_BASE_URL", "\"$apiBaseUrl\"")
         buildConfigField("String", "MEDTRACK_SCAN_URL", "\"$scanUrl\"")
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments["room.schemaLocation"] = "$projectDir/schemas"
-            }
-        }
     }
 
     buildTypes {
@@ -70,6 +65,10 @@ android {
         buildConfig = true
     }
 
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {

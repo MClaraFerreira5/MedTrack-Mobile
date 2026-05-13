@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.piec_1.data.repository.MedTrackRepository
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.utils.exceptions.ConfirmacaoExistenteException
 import com.example.piec_1.utils.exceptions.MedicamentoNaoEncontradoException
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
@@ -29,7 +29,7 @@ class MedicamentoViewModel @Inject constructor(
     }
 
     fun confirmarMedicamento(
-        medicamentoCapturado: Medicamento,
+        medicamentoCapturado: MedicamentoCapturadoDomain,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {

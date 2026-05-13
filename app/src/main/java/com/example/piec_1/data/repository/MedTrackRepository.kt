@@ -15,11 +15,12 @@ import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.domain.model.Confirmacao
 import com.example.piec_1.domain.model.DadosConfirmacaoRequest
 import com.example.piec_1.domain.model.LoginRequest
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.domain.model.MedicamentoDomain
 import com.example.piec_1.domain.model.Usuario
 import com.example.piec_1.domain.model.mappers.toEntity
-import com.example.piec_1.domain.model.mappers.toLegacyMedicamento
+import com.example.piec_1.domain.model.mappers.toDomain
+import com.example.piec_1.domain.usecase.horariosDoDia
 import com.example.piec_1.utils.exceptions.ConfirmacaoExistenteException
 import com.example.piec_1.utils.exceptions.MedicamentoNaoEncontradoException
 import com.example.piec_1.utils.exceptions.TokenNaoEncontradoException
@@ -44,13 +45,12 @@ import javax.inject.Singleton
 class MedTrackRepository @Inject constructor(
     @ApplicationContext context: Context,
     private val apiService: ApiService,
-    private val database: AppDatabase,
+    database: AppDatabase,
     @param:Named("ScanUrl") private val scanUrl: String,
     private val notificationScheduler: NotificationScheduler
 ) {
     private val appContext = context.applicationContext
     private val usuarioDao = database.usuarioDao()
-    private val medicamentoDao = database.medicamentoDao()
     private val medicamentoV2Dao = database.medicamentoV2Dao()
     private val confirmacaoDao = database.confirmacaoDao()
     private val scanQueueDao = database.scanQueueDao()
@@ -76,8 +76,6 @@ class MedTrackRepository @Inject constructor(
 
         usuarioDao.insert(usuario)
         medicamentoV2Dao.insertAll(medicamentosDomain.map { it.toEntity() })
-
-        medicamentoDao.insertAll(medicamentosDomain.map { it.toLegacyMedicamento() })
         agendarNotificacoes(medicamentosDomain)
 
         return LoginData(
@@ -113,7 +111,7 @@ class MedTrackRepository @Inject constructor(
         }
     }
 
-    suspend fun confirmarMedicamento(medicamentoCapturado: Medicamento) = withContext(Dispatchers.IO) {
+    suspend fun confirmarMedicamento(medicamentoCapturado: MedicamentoCapturadoDomain) = withContext(Dispatchers.IO) {
         val token = PreferencesManager.getToken(appContext) ?: throw TokenNaoEncontradoException()
         val medicamentoCorrespondente = encontrarMedicamentoCorrespondente(medicamentoCapturado)
             ?: throw MedicamentoNaoEncontradoException()
@@ -122,17 +120,19 @@ class MedTrackRepository @Inject constructor(
     }
 
     private suspend fun encontrarMedicamentoCorrespondente(
-        medicamentoCapturado: Medicamento
-    ): Medicamento? {
-        return medicamentoDao.getMedicamentos().firstOrNull { medicamentoSalvo ->
+        medicamentoCapturado: MedicamentoCapturadoDomain
+    ): MedicamentoDomain? {
+        return medicamentoV2Dao.getAll().map { it.toDomain() }.firstOrNull { medicamentoSalvo ->
             normalizarString(medicamentoSalvo.nome) == normalizarString(medicamentoCapturado.nome) &&
                 normalizarString(medicamentoSalvo.compostoAtivo) == normalizarString(medicamentoCapturado.compostoAtivo) &&
                 normalizarDosagem(medicamentoSalvo.dosagem) == normalizarDosagem(medicamentoCapturado.dosagem)
         }
     }
 
-    private suspend fun processarConfirmacao(medicamento: Medicamento, token: String) {
-        val horarioSelecionado = encontrarHorarioMaisProximo(medicamento.horarios)
+    private suspend fun processarConfirmacao(medicamento: MedicamentoDomain, token: String) {
+        val horarioSelecionado = encontrarHorarioMaisProximo(
+            medicamento.frequenciaUso.horariosDoDia().map { it.toString() }
+        )
         val dataAtual = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
         val confirmacaoExistente = confirmacaoDao.getConfirmacao(
             medicamentoId = medicamento.id,

@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import com.example.piec_1.ui.components.EntradaDeTexto
 import com.example.piec_1.ui.components.MedTrackDialog
 import com.example.piec_1.ui.components.StatusCard
@@ -174,19 +174,15 @@ fun TelaConfirmacao(
     }
 }
 
-private fun verificarMedicamento(medicamento: Medicamento): Boolean {
+private fun verificarMedicamento(medicamento: MedicamentoCapturadoDomain): Boolean {
     return medicamento.nome != "Desconhecido" && medicamento.compostoAtivo != "Desconhecido" &&
             medicamento.dosagem != "Desconhecido"
 }
 
-private val medicamentoDesconhecido = Medicamento(
+private val medicamentoDesconhecido = MedicamentoCapturadoDomain(
     nome = "Desconhecido",
     compostoAtivo = "Desconhecido",
     dosagem = "Desconhecido",
-    id = 0,
-    horarios = emptyList(),
-    usoContinuo = false,
-    sincronizado = false,
     quantidade = "",
     validade = ""
 )

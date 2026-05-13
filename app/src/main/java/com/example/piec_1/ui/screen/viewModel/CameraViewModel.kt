@@ -10,10 +10,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.piec_1.data.remote.MedicamentoData
 import com.example.piec_1.data.remote.ScanResponse
 import com.example.piec_1.data.repository.MedTrackRepository
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
+import com.example.piec_1.domain.model.mappers.toCapturadoDomain
 import com.example.piec_1.domain.service.CameraService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -29,8 +29,8 @@ class CameraViewModel @Inject constructor(
     private val _scanResult = MutableLiveData<ScanResponse?>()
     val scanResult: LiveData<ScanResponse?> = _scanResult
 
-    private val _medicamento = MutableLiveData<Medicamento?>()
-    val medicamento: LiveData<Medicamento?> = _medicamento
+    private val _medicamento = MutableLiveData<MedicamentoCapturadoDomain?>()
+    val medicamento: LiveData<MedicamentoCapturadoDomain?> = _medicamento
 
     private val _framePosition = MutableLiveData<Rect?>()
     val framePosition: LiveData<Rect?> get() = _framePosition
@@ -90,7 +90,7 @@ class CameraViewModel @Inject constructor(
 
                 if (response?.data != null) {
                     _scanResult.postValue(response)
-                    _medicamento.postValue(response.data.toMedicamento())
+                    _medicamento.postValue(response.data.toCapturadoDomain())
                     navController.navigate("TelaConfirmacao")
                 } else {
                     Log.e("CameraVM", "Erro na analise da IA")
@@ -119,19 +119,7 @@ class CameraViewModel @Inject constructor(
         _showOfflineDialog.postValue(false)
     }
 
-    fun atualizarMedicamento(novoMedicamento: Medicamento) {
+    fun atualizarMedicamento(novoMedicamento: MedicamentoCapturadoDomain) {
         _medicamento.value = novoMedicamento
     }
-
-    private fun MedicamentoData.toMedicamento() = Medicamento(
-        id = 0,
-        nome = nome ?: "Nao identificado",
-        compostoAtivo = agente_ativo ?: "Nao identificado",
-        dosagem = dosagem ?: "N/A",
-        quantidade = quantidade ?: "0",
-        validade = validade ?: "",
-        horarios = emptyList(),
-        usoContinuo = false,
-        sincronizado = false
-    )
 }

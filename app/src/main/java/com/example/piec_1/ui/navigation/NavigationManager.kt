@@ -2,16 +2,16 @@ package com.example.piec_1.ui.navigation
 
 import android.util.Log
 import androidx.navigation.NavController
-import com.example.piec_1.domain.model.Medicamento
+import com.example.piec_1.domain.model.MedicamentoCapturadoDomain
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 object NavigationManager {
     private var navController: NavController? = null
-    private var pendingMedicamento: Medicamento? = null
+    private var pendingMedicamento: MedicamentoCapturadoDomain? = null
     private var isNavigating = false
 
-    private val _shouldNavigate = MutableStateFlow<Medicamento?>(null)
+    private val _shouldNavigate = MutableStateFlow<MedicamentoCapturadoDomain?>(null)
     val shouldNavigate = _shouldNavigate.asStateFlow()
 
     fun init(controller: NavController) {
@@ -28,7 +28,7 @@ object NavigationManager {
         navController = null
     }
 
-    fun setMedicamento(medicamento: Medicamento) {
+    fun setMedicamento(medicamento: MedicamentoCapturadoDomain) {
         Log.d("NavigationManager", "📦 Medicamento recebido: ${medicamento.nome}")
 
         if (navController == null) {
@@ -41,7 +41,7 @@ object NavigationManager {
         _shouldNavigate.value = medicamento
     }
 
-    fun navigateToConfirmation(medicamento: Medicamento) {
+    fun navigateToConfirmation(medicamento: MedicamentoCapturadoDomain) {
         if (isNavigating) {
             Log.d("NavigationManager", "⏳ Já está navegando, ignorando")
             return

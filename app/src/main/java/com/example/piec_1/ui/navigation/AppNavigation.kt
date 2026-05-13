@@ -12,7 +12,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.piec_1.domain.model.Medicamento
 import com.example.piec_1.ui.screen.TelaLogin
 import com.example.piec_1.ui.screen.TelaCamera
 import com.example.piec_1.ui.screen.TelaConfirmacao
